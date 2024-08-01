@@ -1,0 +1,77 @@
+.table-container{
+    max-width: 1280px;
+    margin: 0 auto;
+    text-align: left;
+    padding: 40px 20px;
+    font-family: 'NanumSquare', sans-serif;
+    background-color: #f8f9fa;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+/* AddId.css */
+.table-container {
+    padding: 20px;
+  }
+  
+  .user-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    table-layout: fixed;
+  }
+  .user-table thead{
+
+    font-size: 2.3em;
+    font-weight: 900;
+  }
+
+  .user-table >thead>tr>th{
+    padding: 30px;
+  }
+  
+  .user-table tbody{
+    font-size: 1.1em;
+    font-weight: 700;
+  }
+  .user-table th, .user-table td {
+    border-bottom: 1px solid #ddd;
+    border-radius: 3px;
+    padding: 8px;
+    text-align: center;
+  }
+  
+  .user-table th {
+    
+    font-weight: bold;
+    padding: 10px 0px;
+  }
+
+  .user-table td{
+    background-color: #ffffff;
+  }
+
+  .btn-up, .btn-del{
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    width: 60px;
+    margin: 0px 2px;
+  }
+  .btn-up{
+    background-color: #0bda9c;
+    color: #110350;
+    font-weight: 600;
+  }
+  .btn-del{
+    background-color: #f01520d7;
+    color: #ffffff;
+    font-weight: 600;
+  }
+  .btn-add{
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #1b1175;
+    color: #ffffff;
+    font-weight: 600;
+    padding: 5px;
+  }
