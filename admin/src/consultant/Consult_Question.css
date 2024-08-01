@@ -1,0 +1,71 @@
+.question-container {
+  min-width: 1280px;
+}
+.question-container h2 {
+  text-align: left; 
+  color: #0E235B;
+}
+
+.question-input {
+  width: 1000px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px; /* 여백 추가 */
+}
+
+.question-q {
+  width: 100%;
+  margin: 10px 0 10px 0;
+}
+
+.question-key {
+  flex: 1; /* 입력 필드가 균등하게 공간을 차지하도록 합니다 */
+  min-width: 200px; /* 최소 너비를 설정하여 너무 좁아지지 않도록 합니다 */
+}
+
+.question-button button {
+  margin-top: 20px;
+  width: 1000px;
+}
+
+.question-list {
+  color: #333;
+  width: 1000px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;  
+  box-shadow: 5px 5px 15px 5px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  margin: 10px;
+  padding: 10px;
+}
+
+.question-list-left {
+  padding: 10px;
+  width: 60%;
+  text-align: left;
+}
+
+.question-list-right {
+  padding: 10px;
+  width: 40%;
+  text-align: left;
+  
+}
+
+.question-list h1{
+  color: #0E235B;
+  font-weight: bold;
+  font-size: 23px;
+  text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);  
+}
+
+.question-title h2{
+  width: 1000px;
+  background-color: #0A6065;
+  border-radius: 8px;
+  color: white;
+  padding: 10px;
+  text-align: left;
+}
