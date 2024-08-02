@@ -51,6 +51,8 @@
             <input v-model="newMessage" @keyup.enter="sendMessage" type="text" class="user-input" placeholder="메시지를 입력하세요...">
             <button @click="sendMessage" class="send-button">전송</button>
         </div>
+<div> <button @click="connect" class="send-button">임시 연결 버튼</button> </div>
+<input v-model="roomnum"  type="text" class="user-input" placeholder="임시 방설정">
     </div>
 </template>
 
@@ -59,24 +61,48 @@
 export default {
     data() {
         return {
+            ws: null, // 웹소켓을 위한 변수
             newMessage: '',
             messages: [
                 { type: 'consultant', profileImage: '/img/noimage.png', text: '안녕하세요, 어떻게 도와드릴까요?', time: this.getCurrentDateTime() },
                 { type: 'user', profileImage: '/img/noimage.png', text: '안녕하세요, 상담을 받고 싶습니다.', time: this.getCurrentDateTime() },
                 { type: 'user', profileImage: '/img/noimage.png', text: '제가 궁금한 점이 있습니다.', time: this.getCurrentDateTime() },
                 { type: 'consultant', profileImage: '/img/noimage.png', text: '그게 무엇인가요?', time: this.getCurrentDateTime() },
-            ]
+            ],
+            roomnum: null
         };
     },
     methods: {
+        connect() { //웹소켓 연결 시도
+            this.ws = new WebSocket('ws://localhost:8082/ws/chat'); // 서버 URL에 맞게 수정 필요
+            this.ws.onmessage = (event) => {
+            this.onMessage(event);
+            };
+            this.ws.onopen = () => this.onOpen();
+            this.ws.onerror = (error) => this.onError(error);
+            this.ws.onclose = () => this.onClose();
+        },
         sendMessage() {
             if (this.newMessage.trim() !== '') {
                 this.messages.push({ type: 'user', profileImage: '/img/noimage.png', text: this.newMessage, time: this.getCurrentDateTime()});
+                this.ws.send(this.newMessage);
+                
                 this.newMessage = '';
                 this.$nextTick(() => {
                     this.scrollToEnd();
                 });
-            }
+                
+            };
+        },
+        onMessage(event) {
+            console.log('Message received: ', event.data);
+            const message = {
+                text: event.data,
+                id: Date.now()
+            };
+            console.log(message.text)
+            this.messages.push({type: 'consultant',profileImage: '/img/noimage.png', text: message.text, time: this.getCurrentDateTime()});
+            this.scrollToEnd();
         },
         getCurrentDateTime() {
             const now = new Date();
@@ -90,9 +116,19 @@ export default {
         scrollToEnd() {
             const container = this.$el.querySelector('.chat-container');
             container.scrollTop = container.scrollHeight;
-        }
+        },
+        onOpen() { //연결 성공시
+            console.log('Connected to the WebSocket server.');
+        },
+        onError(error) { //소켓 에러시
+            console.error('WebSocket error:', error);
+        },
+        onClose() { //연결이 끊기는 경우
+            console.log('Disconnected from the WebSocket server.');
+        },
     },
     mounted() {
+        //this.connect();
         this.scrollToEnd();
     },
 };
