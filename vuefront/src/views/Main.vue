@@ -9,24 +9,32 @@
           <div>
             <img src="/img/consul1.jpg" class="center-img" />
           </div>
-          <div><p class="mains-headers-p">박보영</p></div>
+          <div>
+            <p class="mains-headers-p">{{ interviewReport.mname }}</p>
+          </div>
           <div>
             <table class="mains-headers-table">
               <tr>
                 <td class="mains-headers-td">지원분야</td>
-                <td class="mains-headers-td-a">IT/SI 면접자</td>
+                <td class="mains-headers-td-a">
+                  {{ interviewReport.applpart }}
+                </td>
               </tr>
               <tr>
                 <td class="mains-headers-td">핸 &nbsp;드&nbsp; 폰</td>
-                <td class="mains-headers-td-a">010-1111-2222</td>
+                <td class="mains-headers-td-a">
+                  {{ interviewReport.mphoneno }}
+                </td>
               </tr>
               <tr>
                 <td class="mains-headers-td">이&nbsp; 메&nbsp; 일</td>
-                <td class="mains-headers-td-a">lottone27@naver.com</td>
+                <td class="mains-headers-td-a">{{ interviewReport.memail }}</td>
               </tr>
               <tr>
                 <td class="mains-headers-td">선호지역</td>
-                <td class="mains-headers-td-a">서울</td>
+                <td class="mains-headers-td-a">
+                  {{ interviewReport.prefarea }}
+                </td>
               </tr>
             </table>
           </div>
@@ -37,15 +45,17 @@
               <p class="header-evaluation">종합평가</p>
               <div>
                 <hr class="evaluation-line" />
-                <p class="evaluation-text">보통</p>
+                <p class="evaluation-text">{{ interviewReport.rating }}</p>
               </div>
             </div>
             <div style="display: flex">
-              <p class="evaluation-letter">B</p>
+              <p class="evaluation-letter">{{ interviewReport.rating }}</p>
               <div style="margin-top: -18px">
-                <p class="evaluation-info">보통</p>
-                <p class="evaluation-subinfo">51점</p>
-                <p class="evaluation-subinfo">1등/1명(상위100%)</p>
+                <p class="evaluation-info">{{ interviewReport.analysisres }}</p>
+                <p class="evaluation-subinfo">
+                  {{ interviewReport.scoretot }}점
+                </p>
+                <p class="evaluation-subinfo">{{ interviewReport.rank }}등/{{ interviewReport.totalcnt }}명({{ interviewReport.percentile }}%)</p>
               </div>
             </div>
           </div>
@@ -56,21 +66,21 @@
                 <div style="display: flex; margin-bottom: 25px">
                   <div style="display: flex">
                     <img src="img/res_stress.png" class="res-img" />
-                    <p class="res-text">스트레스가 높아요</p>
+                    <p class="res-text">{{ interviewReport.stressLevel }}</p>
                   </div>
                   <div style="display: flex; margin-left: 20px">
                     <img src="img/ress_audio.png" class="res-img" />
-                    <p class="res-text">목소리가 불안정해요</p>
+                    <p class="res-text">{{ interviewReport.voiceStability }}</p>
                   </div>
                 </div>
                 <div style="display: flex">
                   <div style="display: flex">
                     <img src="img/res_po.png" class="res-img" />
-                    <p class="res-text">자세균형이 좋아요</p>
+                    <p class="res-text">{{ interviewReport.postureBalance }}</p>
                   </div>
                   <div style="display: flex; margin-left: 20px">
                     <img src="img/res_resume.png" class="res-img" />
-                    <p class="res-text">일관성이 떨어져요</p>
+                    <p class="res-text">{{ interviewReport.consultantMsg }}</p>
                   </div>
                 </div>
               </div>
@@ -85,30 +95,44 @@
                 <div class="analysis-left">
                   스트레스
                   <div class="progress-container">
-                    <div class="progress-bar" data-value="80"></div>
+                    <div
+                      class="progress-bar"
+                      :data-value="interviewReport.scoree"
+                    ></div>
                   </div>
-                  <div class="analysis-rate">80%</div>
+                  <div class="analysis-rate">{{ interviewReport.scoree }}%</div>
                 </div>
                 <div class="analysis-left">
                   음성분석
                   <div class="progress-container">
-                    <div class="progress-bar" data-value="35"></div>
+                    <div
+                      class="progress-bar"
+                      :data-value="interviewReport.scorev"
+                    ></div>
                   </div>
-                  <div class="analysis-rate">35%</div>
+                  <div class="analysis-rate">{{ interviewReport.scorev }}%</div>
                 </div>
                 <div class="analysis-left">
                   자세분석
                   <div class="progress-container">
-                    <div class="progress-bar" data-value="70"></div>
+                    <div
+                      class="progress-bar"
+                      :data-value="interviewReport.scorep"
+                    ></div>
                   </div>
-                  <div class="analysis-rate">70%</div>
+                  <div class="analysis-rate">{{ interviewReport.scorep }}%</div>
                 </div>
                 <div class="analysis-left">
-                  일&nbsp;&nbsp;관&nbsp;&nbsp;성
+                  평가점수
                   <div class="progress-container" style="margin-left: 8.5px">
-                    <div class="progress-bar" data-value="45"></div>
+                    <div
+                      class="progress-bar"
+                      :data-value="interviewReport.consultantScore"
+                    ></div>
                   </div>
-                  <div class="analysis-rate">45%</div>
+                  <div class="analysis-rate">
+                    {{ interviewReport.consultantScore }}점
+                  </div>
                 </div>
               </div>
             </div>
@@ -119,7 +143,7 @@
             <div style="display: flex">
               <img src="/img/user1.png" class="center-img2" />
               <div class="main-con-name" style="display: flex">
-                컨설턴트: 홍길동
+                컨설턴트: {{ interviewReport.consultantName }}
                 <div>
                   <img src="/img/consul2.svg" class="cons-svg" />
                 </div>
@@ -184,8 +208,6 @@
           <div class="box10">
             <div style="height: 120px">
               <p class="box-text3">직무면접 1번</p>
-              <!-- <hr class="box-line" /> -->
-
               <p class="interview-q">
                 RESTful API의 원칙과 이를 구현할 때 고려해야 할 사항은
                 무엇인가요?
@@ -206,7 +228,6 @@
           <div class="box10">
             <div style="height: 120px">
               <p class="box-text3">직무면접 2번</p>
-              <!-- <hr class="box-line" /> -->
               <p class="interview-q">
                 데이터베이스 인덱스의 종류와 이를 사용하는 이유는 무엇인가요?
               </p>
@@ -332,6 +353,7 @@ import Boost from "highcharts/modules/boost";
 import FullCalendar from "@fullcalendar/vue3";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
+import axios from "axios";
 
 Boost(Highcharts);
 
@@ -341,28 +363,42 @@ export default defineComponent({
   },
   setup() {
     const activeSection = ref("ai-analysis");
-    onMounted(() => {
+    const interviewReport = ref({});
+
+    // Function to fetch interview report
+    const fetchInterviewReport = async (id) => {
+      try {
+        // const response = await axios.get(`/mydream/interview/${id}`);
+        const id = 1;
+        const response = await axios.get(`${process.env.VUE_APP_BACK_END_URL}/interview?id=${id}`);
+        interviewReport.value = response.data;
+      } catch (error) {
+        console.error("Error fetching interview report:", error);
+      }
+    };
+
+    // Initialize data on component mount
+    onMounted(async () => {
+      await fetchInterviewReport(1);
+
       initHighcharts();
       initCustomPieChart();
       initDualChart();
       initSquareChart();
+
       const progressBars = document.querySelectorAll(".progress-bar");
       progressBars.forEach((bar) => {
         const value = bar.getAttribute("data-value");
-        console.log(`Progress bar value: ${value}`); // 확인용 콘솔 로그
         bar.style.width = value + "%";
       });
     });
+
     const activateSection = (sectionId, event) => {
       event.preventDefault();
-
       activeSection.value = sectionId;
     };
 
-    //달력
     const handleDateClick = (info) => {
-      console.log("Date clicked:", info.dateStr);
-      alert("Date clicked: " + info.dateStr);
       const title = prompt("Enter event title:");
       if (title) {
         calendarOptions.value.events.push({
@@ -371,6 +407,7 @@ export default defineComponent({
         });
       }
     };
+
     const calendarOptions = ref({
       plugins: [dayGridPlugin, interactionPlugin],
       initialView: "dayGridMonth",
@@ -379,13 +416,11 @@ export default defineComponent({
         { title: "SK하이닉스", start: "2024-07-07", end: "2024-07-10" },
         { title: "ICT", date: "2024-07-31" },
       ],
-      dateClick: handleDateClick, // 여기에서 직접 이벤트 핸들러를 추가합니다.
+      dateClick: handleDateClick,
     });
 
-    // 오늘 날짜
     const today = new Date();
 
-    // 일정 목록 계산
     const eventsList = computed(() => {
       return calendarOptions.value.events.map((event) => {
         if (event.start && event.end) {
@@ -400,7 +435,7 @@ export default defineComponent({
         };
       });
     });
-    // D-Day 계산
+
     const dDays = computed(() => {
       return calendarOptions.value.events
         .filter((event) => event.start || event.date)
@@ -429,12 +464,6 @@ export default defineComponent({
           backgroundColor: null,
         },
         title: { text: "" },
-        accessibility: {
-          point: {
-            valueDescriptionFormat:
-              "{xDescription}{separator}{value} million(s)",
-          },
-        },
         xAxis: {
           categories: ["Q1", "Q2", "Q3", "Q4", "Q5"],
         },
@@ -471,7 +500,7 @@ export default defineComponent({
             },
           },
         ],
-        credits: { enabled: false }, // 워터마크 제거
+        credits: { enabled: false },
       });
     };
 
@@ -484,9 +513,6 @@ export default defineComponent({
         title: { text: "", align: "center" },
         tooltip: {
           pointFormat: "{series.name}: <b>{point.percentage:.1f}%</b>",
-        },
-        accessibility: {
-          point: { valueSuffix: "%" },
         },
         plotOptions: {
           pie: {
@@ -514,7 +540,7 @@ export default defineComponent({
             ],
           },
         ],
-        credits: { enabled: false }, // 워터마크 제거
+        credits: { enabled: false },
       });
     };
 
@@ -525,11 +551,6 @@ export default defineComponent({
           backgroundColor: null,
         },
         title: { text: "", align: "center" },
-        credits: {
-          text:
-            'Source: <a href="https://www.yr.no/nb/historikk/graf/5-97251/Norge/Finnmark/Karasjok/Karasjok?q=2023"' +
-            'target="_blank">YR</a>',
-        },
         xAxis: [
           {
             categories: ["Q1", "Q2", "Q3", "Q4", "Q5"],
@@ -572,7 +593,7 @@ export default defineComponent({
             data: [-11.4, -9.5, -14.2, 0.2, 7.0],
           },
         ],
-        credits: { enabled: false }, // 워터마크 제거
+        credits: { enabled: false },
       });
     };
 
@@ -620,7 +641,7 @@ export default defineComponent({
             data: [1, 8, 2, 7, 3, 6, 4, 5],
           },
         ],
-        credits: { enabled: false }, // 워터마크 제거
+        credits: { enabled: false },
       });
     };
 
@@ -631,11 +652,8 @@ export default defineComponent({
       handleDateClick,
       eventsList,
       dDays,
+      interviewReport,
     };
   },
 });
 </script>
-
-<style scoped>
-
-</style>
