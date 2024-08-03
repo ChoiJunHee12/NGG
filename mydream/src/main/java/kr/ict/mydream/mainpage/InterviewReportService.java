@@ -8,7 +8,7 @@ public class InterviewReportService {
     public InterviewReportDTO getInterviewReport(String id) {
         InterviewReportDTO dto = new InterviewReportDTO();
 
-        // 문자열을 기반으로 스위치 문에서 처리
+        // 문자열을 기반으로 스위치 문에서 처리 (테스트용)
         switch (id) {
             case "1":
                 dto.setMname("박보영");
