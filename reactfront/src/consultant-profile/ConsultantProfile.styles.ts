@@ -321,13 +321,13 @@ export const Label = styled.label`
 `;
 
 export const Input = styled.input`
-  && {
     width: 100%;
-    padding: 8px;
-    border: 1px solid #ddd;
+    padding: 0.5em;
+    border: 1px solid #ccc;
     border-radius: 4px;
-    font-size: 1rem;
-  }
+    box-sizing: border-box;
+    font-size: 1em;
+    font-family: sans-serif;
 `;
 
 export const Button = styled.button`
@@ -359,3 +359,13 @@ export const CancelButton = styled(Button)`
   }
 `;
 
+export const Textarea = styled.textarea`
+    width: 100%;
+    padding: 0.5em;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 1em;
+    resize: vertical;  // 세로로만 크기 조절 가능
+    min-height: 100px; // 기본 높이 설정
+`;

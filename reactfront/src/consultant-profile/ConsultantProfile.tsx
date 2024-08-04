@@ -1,64 +1,120 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Container, Header, ProfileImage, HeaderInfo, Name, Gender, Title,
     TabContainer, Tab, Section, SectionTitle, InfoGrid, InfoItem,
     InfoIcon, InfoText, EducationItem, Year,
     Details, School, Degree, Introduce, EditButton,
     Modal, ModalContent, ModalHeader, ModalBody, ModalFooter,
-    Form, FormGroup, Label, Input, Button, CancelButton
+    Form, FormGroup, Label, Input, Button, CancelButton, Textarea
 } from './ConsultantProfile.styles';
 import { ProfileData, Education, Career } from './types';
 
 const ConsultantProfile: React.FC = () => {
     const [activeTab, setActiveTab] = useState('info');
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [profileData, setProfileData] = useState<ProfileData | null>(null);
+    const [educationData, setEducationData] = useState<Education[]>([]);
+    const [careerData, setCareerData] = useState<Career[]>([]);
+    const [editedProfile, setEditedProfile] = useState<ProfileData | null>(null);
 
-    const profileData: ProfileData = {
-        id: 1,
-        name: '김지원',
-        gender: '여',
-        title: '경영/컨설팅 컨설턴트',
-        phone: '010-1234-5678',
-        email: 'jiwon.kim@consultancy.com',
-        birthYear: '1992.07.07',
-        area: '서울',
-        expertise: '경영/컨설팅', 
-        experience: '5-10년',
-        clients: '100회 이상',
-        introduce: '글로벌 시장에서의 성공을 위한 맞춤형 전략을 제공합니다. 언어와 문화의 장벽을 넘어 여러분의 비즈니스가 세계로 나아갈 수 있도록 돕겠습니다.'
+    // 상태 추가: 비밀번호 및 비밀번호 확인
+    const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+    useEffect(() => {
+        fetchProfileData();
+    }, []);
+
+    const fetchProfileData = async () => {
+        try {
+            const profileResponse = await fetch(`${process.env.REACT_APP_BACK_END_URL}/consultantprofile/1/profile`);
+            if (!profileResponse.ok) {
+                throw new Error(`HTTP error! Status: ${profileResponse.status}`);
+            }
+            const profileData = await profileResponse.json();
+            setProfileData(profileData);
+
+            const educationResponse = await fetch(`${process.env.REACT_APP_BACK_END_URL}/consultantprofile/1/education`);
+            if (!educationResponse.ok) {
+                throw new Error(`HTTP error! Status: ${educationResponse.status}`);
+            }
+            const educationData = await educationResponse.json();
+            setEducationData(educationData);
+
+            const careerResponse = await fetch(`${process.env.REACT_APP_BACK_END_URL}/consultantprofile/1/career`);
+            if (!careerResponse.ok) {
+                throw new Error(`HTTP error! Status: ${careerResponse.status}`);
+            }
+            const careerData = await careerResponse.json();
+            setCareerData(careerData);
+
+        } catch (error) {
+            console.error('Error fetching profile data:', error);
+        }
     };
 
-    const [editedProfile, setEditedProfile] = useState<ProfileData>({ ...profileData });
-
-    const educationData: Education[] = [
-        { id: 1, profileId: 1, degree: '석사', field: '국제경영학', school: 'University of Canberra', year: '2018' },
-        { id: 2, profileId: 1, degree: '학사', field: '영어영문학', school: '서울대학교', year: '2015' }
-    ];
-
-    const careerData: Career[] = [
-        { id: 1, profileId: 1, company: 'ABC 컨설팅', position: '선임 컨설턴트', period: '2018-2023', description: '글로벌 기업 대상 비즈니스 전략 수립' },
-        { id: 2, profileId: 1, company: 'XYZ 교육', position: '영어 강사', period: '2015-2018', description: '기업 임직원 대상 비즈니스 영어 교육' }
-    ];
-
     const handleEditClick = () => {
-        setIsModalOpen(true);
+        if (profileData) {
+            setEditedProfile(profileData);
+            setIsModalOpen(true);
+        }
     };
 
     const handleCloseModal = () => {
         setIsModalOpen(false);
+        // 모달이 닫힐 때 비밀번호 필드 초기화
+        setPassword('');
+        setConfirmPassword('');
+        setShowConfirmPassword(false);
     };
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
-        setEditedProfile(prev => ({ ...prev, [name]: value }));
+        setEditedProfile(prev => prev ? { ...prev, [name]: value } : null);
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        // 프로필 업데이트 로직
-        console.log('Updated profile:', editedProfile);
-        setIsModalOpen(false);
+    const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        if (name === 'password') {
+            setPassword(value);
+            setShowConfirmPassword(value.length > 0); // 비밀번호가 입력되면 비밀번호 확인 필드를 보여줍니다.
+        } else if (name === 'confirmPassword') {
+            setConfirmPassword(value);
+        }
     };
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (editedProfile) {
+            if (password !== confirmPassword) {
+                alert('비밀번호와 비밀번호 확인이 일치하지 않습니다.');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${process.env.REACT_APP_BACK_END_URL}/consultantprofile/1/profile`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ ...editedProfile, password }), // 비밀번호 추가
+                });
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                const updatedProfile = await response.json();
+                setProfileData(updatedProfile);
+                setIsModalOpen(false);
+            } catch (error) {
+                console.error('Error updating profile:', error);
+            }
+        }
+    };
+
+    if (!profileData) {
+        return <div>Loading...</div>;
+    }
 
     return (
         <Container>
@@ -166,7 +222,7 @@ const ConsultantProfile: React.FC = () => {
                                     type="text"
                                     id="name"
                                     name="name"
-                                    value={editedProfile.name}
+                                    value={editedProfile?.name || ''}
                                     onChange={handleInputChange}
                                     disabled
                                 />
@@ -177,18 +233,40 @@ const ConsultantProfile: React.FC = () => {
                                     type="text"
                                     id="title"
                                     name="title"
-                                    value={editedProfile.title}
+                                    value={editedProfile?.title || ''}
                                     onChange={handleInputChange}
                                     disabled
                                 />
                             </FormGroup>
+                            <FormGroup>
+                                <Label htmlFor="password">🔒 새 비밀번호</Label>
+                                <Input
+                                    type="password"
+                                    id="password"
+                                    name="password"
+                                    value={password}
+                                    onChange={handlePasswordChange}
+                                />
+                            </FormGroup>
+                            {showConfirmPassword && (
+                                <FormGroup>
+                                    <Label htmlFor="confirmPassword">🔒 비밀번호 확인</Label>
+                                    <Input
+                                        type="password"
+                                        id="confirmPassword"
+                                        name="confirmPassword"
+                                        value={confirmPassword}
+                                        onChange={handlePasswordChange}
+                                    />
+                                </FormGroup>
+                            )}
                             <FormGroup>
                                 <Label htmlFor="phone">📞 전화번호</Label>
                                 <Input
                                     type="tel"
                                     id="phone"
                                     name="phone"
-                                    value={editedProfile.phone}
+                                    value={editedProfile?.phone || ''}
                                     onChange={handleInputChange}
                                 />
                             </FormGroup>
@@ -198,7 +276,7 @@ const ConsultantProfile: React.FC = () => {
                                     type="email"
                                     id="email"
                                     name="email"
-                                    value={editedProfile.email}
+                                    value={editedProfile?.email || ''}
                                     onChange={handleInputChange}
                                 />
                             </FormGroup>
@@ -208,7 +286,7 @@ const ConsultantProfile: React.FC = () => {
                                     type="text"
                                     id="birthYear"
                                     name="birthYear"
-                                    value={editedProfile.birthYear}
+                                    value={editedProfile?.birthYear || ''}
                                     onChange={handleInputChange}
                                 />
                             </FormGroup>
@@ -218,17 +296,17 @@ const ConsultantProfile: React.FC = () => {
                                     type="text"
                                     name="area"
                                     id="area"
-                                    value={editedProfile.area}
+                                    value={editedProfile?.area || ''}
                                     onChange={handleInputChange}
                                 />
                             </FormGroup>
                             <FormGroup>
                                 <Label htmlFor="expertise">🌟 전문 분야</Label>
                                 <Input
-                                    type="expertise"
+                                    type="text"
                                     id="expertise"
                                     name="expertise"
-                                    value={editedProfile.expertise}
+                                    value={editedProfile?.expertise || ''}
                                     onChange={handleInputChange}
                                     disabled
                                 />
@@ -236,40 +314,32 @@ const ConsultantProfile: React.FC = () => {
                             <FormGroup>
                                 <Label htmlFor="experience">💼 컨설팅 경력</Label>
                                 <Input
-                                    type="experience"
+                                    type="text"
                                     id="experience"
                                     name="experience"
-                                    value={editedProfile.experience}
+                                    value={editedProfile?.experience || ''}
                                     onChange={handleInputChange}
                                     disabled
                                 />
                             </FormGroup>
                             <FormGroup>
-                                <Label htmlFor="clients">👥 프로젝트 수행</Label>
+                                <Label htmlFor="clients">👥 주요 클라이언트</Label>
                                 <Input
-                                    type="clients"
+                                    type="text"
                                     id="clients"
                                     name="clients"
-                                    value={editedProfile.clients}
+                                    value={editedProfile?.clients || ''}
                                     onChange={handleInputChange}
                                     disabled
-                                />                                
+                                />
                             </FormGroup>
                             <FormGroup>
-                                <Label htmlFor="introduce">✏️ 자기 소개</Label>
-                                <textarea
+                                <Label htmlFor="introduce">📖 자기소개</Label>
+                                <Textarea
                                     id="introduce"
                                     name="introduce"
-                                    value={editedProfile.introduce}
+                                    value={editedProfile?.introduce || ''}
                                     onChange={handleInputChange}
-                                    rows={5}
-                                    style={{
-                                        width: '100%',
-                                        padding: '8px',
-                                        borderRadius: '4px',
-                                        border: '1px solid #ccc',
-                                        resize: 'vertical'
-                                    }}
                                 />
                             </FormGroup>
                             <ModalFooter>

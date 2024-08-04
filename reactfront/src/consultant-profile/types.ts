@@ -1,3 +1,4 @@
+// src/types.ts
 export interface TabProps {
   active?: boolean;
 }
@@ -17,11 +18,12 @@ export interface ProfileData {
   introduce: string;
 }
 
+
 export interface Education {
   id: number;
   profileId: number;
   degree: string;
-  field: string;
+  field: string; // field 프로퍼티 추가
   school: string;
   year: string;
 }
@@ -37,6 +39,6 @@ export interface Career {
   profileId: number;
   company: string;
   position: string;
-  period: string;
-  description: string;
+  period: string; // period 프로퍼티 추가
+  description: string; // description 프로퍼티 추가
 }
