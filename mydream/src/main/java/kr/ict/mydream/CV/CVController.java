@@ -1,4 +1,4 @@
-package kr.ict.mydream.CV;
+package kr.ict.mydream.cv;
 
 import java.util.HashMap;
 import java.util.Map;

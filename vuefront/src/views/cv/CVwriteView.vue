@@ -329,7 +329,7 @@ export default {
 
       if (num) {
         axios
-          .post(`${process.env.VUE_APP_MYBATIS_URL}/cv/cvUpdate?num=${num}`, this.detail, {
+          .post(`${process.env.VUE_APP_BACK_END_URL}/cv/cvUpdate?num=${num}`, this.detail, {
             headers: { "Content-Type": "application/json" },
           })
           .then((res) => {
@@ -340,7 +340,7 @@ export default {
         this.savecom = !this.savecom;
       } else {
         axios
-          .get(`${process.env.VUE_APP_MYBATIS_URL}/cv/cvAdd`, {
+          .get(`${process.env.VUE_APP_BACK_END_URL}/cv/cvAdd`, {
             headers: { "Content-Type": "application/json" },
           })
           .then((res) => {
