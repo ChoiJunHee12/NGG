@@ -4,7 +4,7 @@ export interface TabProps {
 }
 
 export interface ProfileData {
-  id: number;
+  id: string;
   name: string;
   gender: string;
   title: string;
@@ -20,8 +20,7 @@ export interface ProfileData {
 
 
 export interface Education {
-  id: number;
-  profileId: number;
+  id: string;
   degree: string;
   field: string; // field 프로퍼티 추가
   school: string;
@@ -29,16 +28,14 @@ export interface Education {
 }
 
 export interface Expertise {
-  id: number;
-  profileId: number;
+  id: string;
   skill: string;
 }
 
 export interface Career {
-  id: number;
-  profileId: number;
+  id: string;
   company: string;
   position: string;
-  period: string; // period 프로퍼티 추가
-  description: string; // description 프로퍼티 추가
+  period: string; 
+  description: string;
 }

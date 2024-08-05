@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 @Builder
 public class ConsultantProfileDTO {
-    private Long id;
+    private String id;
     private String name;
     private String gender;
     private String title;

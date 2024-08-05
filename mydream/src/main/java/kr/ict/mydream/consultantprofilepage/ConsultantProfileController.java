@@ -15,26 +15,26 @@ public class ConsultantProfileController {
     private ConsultantProfileService profileService;
 
     @GetMapping("/{id}/profile")
-    public ResponseEntity<ConsultantProfileDTO> getProfile(@PathVariable Long id) {
+    public ResponseEntity<ConsultantProfileDTO> getProfile(@PathVariable("id") String id) {
         ConsultantProfileDTO profile = profileService.getProfile();
         return new ResponseEntity<>(profile, HttpStatus.OK);
     }
 
     @PostMapping("/{id}/profile")
-    public ResponseEntity<ConsultantProfileDTO> updateProfile(@PathVariable Long id,
+    public ResponseEntity<ConsultantProfileDTO> updateProfile(@PathVariable("id") String id,
             @RequestBody ConsultantProfileDTO profileDTO) {
         ConsultantProfileDTO updatedProfile = profileService.updateProfile(profileDTO);
         return new ResponseEntity<>(updatedProfile, HttpStatus.OK);
     }
 
     @GetMapping("/{id}/education")
-    public ResponseEntity<List<ConsultantEducationDTO>> getEducation(@PathVariable Long id) {
+    public ResponseEntity<List<ConsultantEducationDTO>> getEducation(@PathVariable("id") String id) {
         List<ConsultantEducationDTO> educationList = profileService.getEducation(id);
         return new ResponseEntity<>(educationList, HttpStatus.OK);
     }
 
     @GetMapping("/{id}/career")
-    public ResponseEntity<List<ConsultantCareerDTO>> getCareer(@PathVariable Long id) {
+    public ResponseEntity<List<ConsultantCareerDTO>> getCareer(@PathVariable("id") String id) {
         List<ConsultantCareerDTO> careerList = profileService.getCareer(id);
         return new ResponseEntity<>(careerList, HttpStatus.OK);
     }
