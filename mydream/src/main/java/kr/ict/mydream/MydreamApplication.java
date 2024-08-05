@@ -18,11 +18,13 @@ public class MydreamApplication {
 		return new WebMvcConfigurer() {
 			@Override
 			public void addCorsMappings(CorsRegistry registry) {
-				System.out.println("크로스통신 연동성공");
+				System.out.println("Test ================");
+
 				registry.addMapping("/**")
 						.allowedOrigins("*")
 						.allowedHeaders("*")
 						.allowedMethods("*").maxAge(3600);
+
 			}
 		};
 	}
