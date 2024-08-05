@@ -5,7 +5,7 @@
         <div class="cvsave-text">이력서가 저장되었습니다.</div>
         <div class="cvsave-btn">
         <button class="cvsave-cvlist-btn" @click="cvlist()">이력서 관리</button>  
-        <button class="cvsave-cvhome-btn" @click="home()">홈으로</button>  
+        <button class="cvsave-cvhome-btn" @click="cvhome()">홈으로</button>  
     </div>
     </div>
 </div>
