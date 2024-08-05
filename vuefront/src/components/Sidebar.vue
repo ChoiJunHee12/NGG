@@ -1,27 +1,46 @@
 <template>
-<transition name="slide">
-  <div class="sidebar" v-if="isVisible">
-    <div>
+  <transition name="slide">
+    <div class="sidebar" v-if="isVisible">
+      <div>
         <div>
-            <img src="../../public/img/noimage.png" style="width:50%; radius:100">
-            <h3>침착맨 님</h3>
-        </div>    
-    </div>
-    <hr>
-    <div>
-        <router-link to="/userprofile" class="main-router"><p class="bar-p">마이 페이지</p></router-link>
-        <router-link to="/cvlist" class="main-router"><p class="bar-p">이력서 관리</p></router-link>
-        <router-link to="ConsultantInfo" class="main-router"><p class="bar-p">컨설턴트 101</p></router-link>
-        <router-link to="/AISetting" class="main-router"><p class="bar-p">AI면접</p></router-link>
-        <router-link to="/InterviewRes" class="main-router"><p class="bar-p">면접결과</p></router-link>
-        <router-link to="/OneToOne" class="main-router"><p class="bar-p">컨설턴트 1:1 상담</p></router-link>
-        <router-link to="/Calendar" class="main-router"><p class="bar-p">일정관리</p></router-link>
-    <hr>
-        <router-link to="/personalCol_Test" class="main-router"><p class="bar-p">퍼스널컬러</p></router-link>
+          <img
+            src="../../public/img/noimage.png"
+            style="width: 50%; radius: 100"
+          />
+          <h3>침착맨 님</h3>
+        </div>
+      </div>
+      <hr />
+      <div>
+        <router-link to="/Mypage" class="main-router"
+          ><p class="bar-p">마이 페이지</p></router-link
+        >
+        <router-link to="/cvlist" class="main-router"
+          ><p class="bar-p">이력서 관리</p></router-link
+        >
+        <router-link to="ConsultantInfo" class="main-router"
+          ><p class="bar-p">컨설턴트 101</p></router-link
+        >
+        <router-link to="/AISetting" class="main-router"
+          ><p class="bar-p">AI면접</p></router-link
+        >
+        <router-link to="/InterviewRes" class="main-router"
+          ><p class="bar-p">면접결과</p></router-link
+        >
+        <router-link to="/OneToOne" class="main-router"
+          ><p class="bar-p">컨설턴트 1:1 상담</p></router-link
+        >
+        <router-link to="/Calendar" class="main-router"
+          ><p class="bar-p">일정관리</p></router-link
+        >
+        <hr />
+        <router-link to="/personalCol_Test" class="main-router"
+          ><p class="bar-p">퍼스널컬러</p></router-link
+        >
         <i class="bi bi-power power-icon"></i>
+      </div>
     </div>
-  </div>
-</transition>
+  </transition>
 </template>
 
 <script>
@@ -29,9 +48,9 @@ export default {
   props: {
     isVisible: {
       type: Boolean,
-      required: true
-    }
-  }
+      required: true,
+    },
+  },
 };
 </script>
 
@@ -49,14 +68,16 @@ export default {
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
 }
 
-.slide-enter-active, .slide-leave-active {
+.slide-enter-active,
+.slide-leave-active {
   transition: transform 0.3s ease;
 }
 
-.slide-enter, .slide-leave-to {
+.slide-enter,
+.slide-leave-to {
   transform: translateX(-100%);
 }
-.bar-p{
+.bar-p {
   font-size: 18px;
 }
 .power-icon {

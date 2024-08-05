@@ -1,84 +1,624 @@
 <template>
-    <div class="container"  style="font-size:20px;">
-        <div class="w3-container w3-light-grey">
-            <h2 class="personal-title">개인정보 수정</h2>
-            <div style="display:flex;">
-                <div class="mypage-right">
-                    <form action="">
-                        <p><i class="bi bi-person-circle"></i>&nbsp; |&nbsp; 이름</p><hr>
-                        <p><i class="bi bi-envelope"></i>&nbsp; |&nbsp; cntjdgh0918@naver.com</p><hr>
-                        <p><i class="bi bi-key"></i>&nbsp; |&nbsp; <span> <input type="text" value="*******"></span></p><hr>
-                        <p><i class="bi bi-gender-ambiguous"></i>&nbsp; |&nbsp; 남성</p><hr>
-                        <p><i class="bi bi-cake2"></i>&nbsp; |&nbsp; 1998-09-18</p><hr>
-                        <p><i class="bi bi-geo-alt-fill"></i>&nbsp; |&nbsp; 서울</p><hr>
-                        <p><i class="bi bi-palette"></i>&nbsp; |&nbsp; <router-link :to="{ name: 'PersonalCol_Test' }" class="main-router" style="color:black;"  >가을 웜톤</router-link></p><hr>
-                        <p><i class="bi bi-pen"></i>&nbsp; |&nbsp; 2024-07-25</p>                                    
-                    </form>
-                    <div style="text-align:center;">
-                    <button class="btn btn-next personal-btn">수정</button>
-                    </div>                               
-                </div>                
-            </div>
-        </div>
+  <div class="container">
+    <div class="ProfileTitle">
+      <blockquote class="blockquote-profile">
+        <b> <p>내 정보</p></b>
+      </blockquote>
     </div>
+    <div class="user-container">
+      <div class="user-profile-header">
+        <img
+          class="profile-image"
+          src="/img/MakeUp_image/남_summer_2.png"
+          :alt="myprofile.mname"
+        />
+        <div class="header-info">
+          <div>
+            <h1 class="name">
+              {{ myprofile.mname }}
+              <span class="gender">({{ myprofile.mgender }})</span>
+            </h1>
+            <h2 class="title">{{ myprofile.mnick }}</h2>
+          </div>
+          <button class="edit-user-profile-button" @click="handleEditClick">
+            프로필 수정
+          </button>
+        </div>
+      </div>
+
+      <div class="user-profile-tab-container">
+        <button
+          :class="['tab', { active: activeTab === 'info' }]"
+          @click="activeTab = 'info'"
+        >
+          기본 정보
+        </button>
+      </div>
+
+      <section v-if="activeTab === 'info'">
+        <div class="user-profile-section">
+          <h3 class="user-profile-section-title">기본 정보</h3>
+          <div class="info-grid">
+            <div class="info-item">
+              <span class="info-icon">👔 지원 분야:</span>
+              <span class="info-text">{{ myprofile.applpart }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-icon">✉️ 이메일:</span>
+              <span class="info-text">{{ myprofile.memail }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-icon">📞 휴대폰 번호:</span>
+              <span class="info-text">{{ myprofile.mphoneno }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-icon">🎂 생년월일: </span>
+              <span class="info-text">{{ myprofile.mbirth }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-icon">📍 거주지역: </span>
+              <span class="info-text">{{ myprofile.prefarea }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-icon">🎨 퍼스널 컬러: </span>
+              <span class="info-text">{{ myprofile.season }}</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div :class="['user-profile-modal', { open: isModalOpen }]">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>프로필 수정</h2>
+          <button @click="handleCloseModal">&times;</button>
+        </div>
+        <div class="modal-body">
+          <form @submit.prevent="handleSubmit">
+            <div class="form-group">
+              <label for="name">🍀 이름</label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                v-model="tempProfile.mname"
+                disabled
+              />
+            </div>
+            <div class="form-group">
+              <label for="nickname">❤️ 닉네임</label>
+              <input
+                type="text"
+                id="nickname"
+                name="nickname"
+                v-model="tempProfile.mnick"
+              />
+            </div>
+            <div class="form-group">
+              <label for="title">👔 지원 분야</label>
+              <select id="title" name="title" v-model="tempProfile.applpart">
+                <option value="회계/재무">회계/재무</option>
+                <option value="교육">교육</option>
+                <option value="IT/개발">IT/개발</option>
+                <option value="기획/전략">기획/전략</option>
+                <option value="유통/물류">유통/물류</option>
+                <option value="제조/생산">제조/생산</option>
+                <option value="총무/법무">총무/법무</option>
+                <option value="사무직/문서작성">사무직/문서작성</option>
+                <option value="마케팅/광고">마케팅/광고</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="email">✉️ 이메일</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                v-model="tempProfile.memail"
+              />
+            </div>
+            <div class="form-group">
+              <label for="pwd">✅비밀번호</label>
+              <input
+                type="password"
+                id="pwd"
+                name="pwd"
+                v-model="tempProfile.mpwd"
+              />
+            </div>
+            <div class="form-group">
+              <label for="phone">📞 휴대폰 번호</label>
+              <input
+                type="tel"
+                id="phone"
+                name="phone"
+                v-model="tempProfile.mphoneno"
+              />
+            </div>
+            <div class="form-group">
+              <label for="birthYear">🎂 생년월일</label>
+              <input
+                type="text"
+                id="birthYear"
+                name="birthYear"
+                v-model="tempProfile.mbirth"
+                disabled
+              />
+            </div>
+            <div class="form-group">
+              <label for="area">📍 거주 지역</label>
+              <select id="area" name="area" v-model="tempProfile.prefarea">
+                <option value="서울">서울</option>
+                <option value="경기도">경기도</option>
+                <option value="충청도">충청도</option>
+                <option value="전라도">전라도</option>
+                <option value="경상도">경상도</option>
+                <option value="강원도">강원도</option>
+                <option value="제주도">제주도</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="area">🎨 퍼스널컬러</label>
+              <input
+                type="text"
+                id="area"
+                name="area"
+                v-model="tempProfile.season"
+                disabled
+              />
+            </div>
+            <div class="modal-footer">
+              <button type="submit" class="user-profile-button">저장</button>
+              <button
+                type="button"
+                class="cancel-user-profile-button"
+                @click="handleCloseModal"
+              >
+                취소
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
-<style>
-.mypage-content {
-    display: flex;
-    justify-content: space-between;
-}
 
-.mypage-left {
-    border-right: 2px solid rgba(0, 0, 0, 0.1); /* 선 추가 */
-    padding-right: 20px; /* 오른쪽 여백 추가 */
-}
-
-.mypage-right {
-    width: 750px;
-    border-radius: 10px;
-    padding: 20px 50px 20px 30px;
-    text-align: left;
-    background-color: #F1F5FB;
-    margin: 50px;
-}
-
-.mypage-profile {
-    width: 150px;
-    height: 150px;
-    border-radius: 70%;
-    overflow: hidden;
-    border: 2px solid #f1ebe7; /* 테두리 추가 */
-    margin: 20px;
-}
-
-.mypage-profile img {
-    width: 150px;
-    height: 150px;
-}
-
-</style>
 <script>
+import axios from "axios";
+
 export default {
-    data() {
-        return {
-            imagePreview: null,
-            detail: {},
-        }
+  data() {
+    return {
+      activeTab: "info",
+      isModalOpen: false,
+      myprofile: {},
+      myedu: {},
+      tempProfile: {},
+    };
+  },
+  mounted() {
+    this.fetchMemberDetails();
+    this.fetchMemberEduDetails();
+  },
+  methods: {
+    fetchMemberDetails() {
+      axios
+        .get("http://localhost/mydream/mypage/profile?mnum=3")
+        .then((response) => {
+          this.myprofile = response.data;
+          console.log(response.data);
+        })
+        .catch((error) => {
+          console.error("에러발생 에러발생");
+        });
     },
-    methods: {
-        changeImage(){
-            this.$refs.fileInput.click();
-        },
-        handleFileUpload(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                this.imagePreview = e.target.result;
-                };
-                reader.readAsDataURL(file);
-            }
-        },
+    fetchMemberEduDetails() {
+      axios
+        .get("http://localhost/mydream/mypage/eduprofile?mnum=3")
+        .then((response) => {
+          this.myedu = response.data;
+          console.log(response.data);
+        })
+        .catch((error) => {
+          console.log("학력에러발생");
+        });
     },
-}
+    handleEditClick() {
+      this.tempProfile = { ...this.myprofile };
+      this.isModalOpen = true;
+    },
+    handleCloseModal() {
+      this.isModalOpen = false;
+    },
+    handleSubmit() {
+      axios
+        .put("http://localhost/mydream/mypage/profile?mnum=3", this.tempProfile)
+        .then((response) => {
+          console.log("Profile updated successfully:", response.data);
+          alert("프로필이 성공적으로 업데이트되었습니다.");
+
+          this.myprofile = { ...this.tempProfile };
+        })
+        .catch((error) => {
+          console.error("Error updating profile:", error);
+          alert("프로필 업데이트 중 오류가 발생했습니다.");
+        });
+      // 여기에서 form 데이터를 제출하는 로직을 추가하세요.
+      // console.log("Profile updated:", this.profileData);
+      this.isModalOpen = false;
+    },
+  },
+};
 </script>
+<style>
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  font-family: "NanumSquare", sans-serif;
+  background-color: #f8f9fa;
+  border-radius: 5px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.blockquote-profile {
+  display: block;
+  background: #fff;
+  padding: 20px 20px 10px 45px;
+  margin: 0% 5%;
+  position: relative;
+
+  /*Font*/
+  font-size: 0.35em;
+  line-height: 1.5;
+  color: #11045e;
+
+  /*Box Shadow - (Optional)*/
+  -moz-box-shadow: 2px 2px 15px #ccc;
+  -webkit-box-shadow: 2px 2px 15px #ccc;
+  box-shadow: 2px 2px 15px #ccc;
+
+  /*Borders - (Optional)*/
+  border-left-style: solid;
+  border-left-width: 15px;
+  /* border-right-style: solid; */
+  border-right-width: 0px;
+}
+
+.ProfileTitle {
+  width: 100%;
+  margin: auto;
+  margin-bottom: 4%;
+  text-align: left;
+  color: #ffffff;
+  font-size: 5em;
+}
+
+.user-profile-header {
+  width: 80%;
+  display: flex;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.profile-image {
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-left: 40px;
+  margin-right: 30px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.header-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 610px;
+}
+
+.name {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #2c3e50;
+  margin: 0 0 5px 0;
+}
+
+.gender {
+  font-size: 1.2rem;
+  color: #7f8c8d;
+}
+
+.title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #9da2a8;
+  margin: 0;
+}
+
+.user-profile-tab-container {
+  width: 90%;
+  display: flex;
+  margin-bottom: 30px;
+  border-bottom: 2px solid #e0e0e0;
+  /* width: 860px; */
+}
+
+.tab {
+  padding: 10px 20px;
+  font-size: 1.2rem;
+  font-weight: 600;
+  background: none;
+  border: none;
+  color: #7f8c8d;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.tab.active {
+  color: #1659de;
+  font-weight: 900;
+  border-bottom: 5px solid #003d8c;
+}
+
+.tab:hover {
+  color: #3498db;
+}
+
+section {
+  width: 90%;
+}
+
+.user-profile-section {
+  background-color: white;
+  padding: 25px;
+  margin-bottom: 25px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  /* width: 810px; */
+}
+
+.user-profile-section-title {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #2c3e50;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #ecf0f1;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+}
+
+.info-icon {
+  font-size: 1.1rem;
+  margin-right: 10px;
+}
+
+.info-text {
+  font-size: 1.1rem;
+  color: #34495e;
+}
+
+.tag-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.tag {
+  background-color: #1659de;
+  color: #ffffff;
+  padding: 5px 10px;
+  border-radius: 8px;
+}
+
+.education-item {
+  display: flex;
+  margin-bottom: 20px;
+}
+
+.year {
+  font-weight: bold;
+  margin-right: 20px;
+  min-width: 60px;
+  font-size: 1.1rem;
+}
+
+.details {
+  flex: 1;
+  text-align: left;
+}
+
+.school {
+  font-weight: bold;
+  margin-bottom: 5px;
+  font-size: 1.1rem;
+  text-align: left;
+}
+
+.degree {
+  color: #7f8c8d;
+  text-align: left;
+}
+
+.introduce {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: #34495e;
+  text-align: left;
+}
+
+.edit-user-profile-button {
+  margin-left: 40%;
+  padding: 12px 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  width: 180px;
+  height: 50px;
+  font-size: 1.1rem;
+  background-color: #102669;
+  color: #fff;
+  transition:
+    background-color 0.5s,
+    color 0.5s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.edit-user-profile-button:hover {
+  background-color: #ffffff;
+  color: #102669;
+}
+
+.user-profile-modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.5);
+  justify-content: center;
+  align-items: center;
+}
+
+.user-profile-modal.open {
+  display: flex;
+}
+
+.modal-content {
+  background-color: #fefefe;
+  padding: 20px;
+  border-radius: 12px;
+  width: 80%;
+  max-width: 700px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.modal-header button {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #7f8c8d;
+}
+
+.modal-header h2 {
+  color: #2c3e50;
+  text-align: center;
+  font-weight: 600;
+}
+
+.modal-header user-profile-button {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #7f8c8d;
+}
+
+.modal-body {
+  margin-bottom: 20px;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group {
+  margin-bottom: 10px;
+  display: flex;
+}
+
+.form-group label {
+  display: flex;
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: #2c3e50;
+  flex: 5 0 30%;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+.form-group select {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+.form-group textarea {
+  width: 100%;
+}
+
+.user-profile-button {
+  background-color: #1659de;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-left: 10px;
+}
+
+.user-profile-button:hover {
+  background-color: #003d8c;
+}
+
+.cancel-user-profile-button {
+  background-color: #de1616;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-left: 10px;
+}
+
+.cancel-user-profile-button:hover {
+  background-color: #8c0000;
+}
+</style>
