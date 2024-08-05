@@ -51,8 +51,6 @@
             <input v-model="newMessage" @keyup.enter="sendMessage" type="text" class="user-input" placeholder="메시지를 입력하세요...">
             <button @click="sendMessage" class="send-button">전송</button>
         </div>
-<div> <button @click="connect" class="send-button">임시 연결 버튼</button> </div>
-<input v-model="roomnum"  type="text" class="user-input" placeholder="임시 방설정">
     </div>
 </template>
 
@@ -69,12 +67,14 @@ export default {
                 { type: 'user', profileImage: '/img/noimage.png', text: '제가 궁금한 점이 있습니다.', time: this.getCurrentDateTime() },
                 { type: 'consultant', profileImage: '/img/noimage.png', text: '그게 무엇인가요?', time: this.getCurrentDateTime() },
             ],
-            roomnum: null
+            roomnum: null,
+            token:null,
         };
     },
     methods: {
         connect() { //웹소켓 연결 시도
-            this.ws = new WebSocket('ws://localhost:8082/ws/chat'); // 서버 URL에 맞게 수정 필요
+            this.token = "your_token_value_here";
+            this.ws = new WebSocket('ws://localhost:8082/ws/chat',this.token); // 서버 URL에 맞게 수정 필요
             this.ws.onmessage = (event) => {
             this.onMessage(event);
             };
@@ -119,6 +119,7 @@ export default {
         },
         onOpen() { //연결 성공시
             console.log('Connected to the WebSocket server.');
+            
         },
         onError(error) { //소켓 에러시
             console.error('WebSocket error:', error);
@@ -128,7 +129,7 @@ export default {
         },
     },
     mounted() {
-        //this.connect();
+        this.connect();
         this.scrollToEnd();
     },
 };

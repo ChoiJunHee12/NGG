@@ -8,7 +8,7 @@
     </div>
     <!-- <div class="cv-subtitle">내 이력서</div> -->
 <div class="cv-notice">
-    <p>📢&nbsp; 답변 시간은 컨설턴트 상황에 따라 다르게 소요되며 욕설 및 비방을 한 사용자는 경고 조치 없이 불이익을 받을 수 있습니다.</p>
+    <p>📢&nbsp; 이력서 사진을 찍어 올려보세요. 인식 후 오타가 없는지 꼭 확인하세요.</p>
 </div>
 
     <div class="cv-listform" v-if="show">
@@ -25,7 +25,7 @@
             <tr class="cv-tr2" >
                 
             <td><div class="cv-cvtitle" @click="updatecv()">이거쓴 내 첫번째 이력서여....</div></td>
-                <td><button class="cv-upbtn" @click="updatecv()">수정</button>
+                <td class="cvbtn-area"><button class="cv-upbtn" @click="updatecv()">수정</button>
             <button class="cv-delbtn">삭제</button></td>
             <td><div class="cv-update-date">2024-07-25</div></td>
         </tr>
@@ -33,7 +33,7 @@
         <tr class="cv-tr2" >
                 
             <td><div class="cv-cvtitle" @click="updatecv()">이거쓴 내 두번째 이력서여....</div></td>
-                <td><button class="cv-upbtn" @click="updatecv()">수정</button>
+                <td class="cvbtn-area"><button class="cv-upbtn" @click="updatecv()">수정</button>
             <button class="cv-delbtn">삭제</button></td>
             <td><div class="cv-update-date">2024-07-25</div></td>
         </tr>

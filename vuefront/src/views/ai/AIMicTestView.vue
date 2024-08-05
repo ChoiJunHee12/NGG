@@ -33,7 +33,7 @@
             {{ recognitionStatus }}
           </div>
           <div class="image-container" v-if="isRecording">
-            <img src="img/mictest.png" class="mic-test-gif" />
+            <img src="img/mictest.gif" class="mic-test-gif" />
           </div>
 
           <!-- Buttons -->

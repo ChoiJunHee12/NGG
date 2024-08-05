@@ -3,7 +3,7 @@
     <h1 class="header-h1">
       <router-link to="/" style="color: white; text-decoration: none;">내가, 꿈</router-link>
       <div>
-      <router-link to="" class="custom-underline">
+      <router-link to="/login" class="custom-underline">
         <h5 class="header-h5" style="padding-right:20px;">로그아웃</h5>
       </router-link>
       </div>

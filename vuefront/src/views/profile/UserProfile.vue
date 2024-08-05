@@ -5,12 +5,13 @@
             <p>내 정보</p></b>
         </blockquote>
     </div>
+    <div class="user-container">
       <div class="user-profile-header">
         <img class="profile-image" src="/img/MakeUp_image/남_summer_2.png" :alt="profileData.name" />
         <div class="header-info">
           <div>
             <h1 class="name">{{ profileData.name }} <span class="gender">({{ profileData.gender }})</span></h1>
-            <h2 class="title">{{ profileData.title }}</h2>
+            <h2 class="title">{{ profileData.nickname }}</h2>
           </div>
           <button class="edit-user-profile-button" @click="handleEditClick">프로필 수정</button>
         </div>
@@ -41,6 +42,10 @@
               <span class="info-icon">📍</span>
               <span class="info-text">{{ profileData.area }}</span>
             </div>
+            <div class="info-item">
+              <span class="info-icon">👔</span>
+              <span class="info-text">{{ profileData.title }}</span>
+            </div>
           </div>
         </div>
         <div class="user-profile-section">
@@ -54,7 +59,7 @@
           </div>
         </div>
       </section>
-  
+      </div>
   
   
       <div :class="['user-profile-modal', { open: isModalOpen }]">
@@ -70,8 +75,16 @@
                 <input type="text" id="name" name="name" v-model="profileData.name" disabled />
               </div>
               <div class="form-group">
+                <label for="nickname">❤️ 닉네임</label>
+                <input type="text" id="nickname" name="nickname" v-model="profileData.nickname" disabled />
+              </div>
+              <div class="form-group">
                 <label for="title">👔 지원 분야</label>
                 <input type="text" id="title" name="title" v-model="profileData.title" />
+              </div>
+              <div class="form-group">
+                <label for="pwd">✅비밀번호</label>
+                <input type="password" id="pwd" name="pwd" v-model="profileData.pwd" />
               </div>
               <div class="form-group">
                 <label for="phone">📞 전화번호</label>
@@ -108,7 +121,9 @@
         isModalOpen: false,
         profileData: {
           id: 1,
-          name: '김면접자',
+          name: '김면접',
+          nickname: '후이즈히남',
+          pwd: 'pwd12',
           gender: '남',
           title: 'IT/SI 면접자',
           phone: '010-1234-5678',
@@ -177,7 +192,7 @@
   .ProfileTitle{
     width: 100%;
     margin: auto;
-    margin-bottom: 5%;
+    margin-bottom: 4%;
     text-align: left;
     color: #ffffff;
     font-size: 5em;
@@ -223,12 +238,12 @@
   .title {
     font-size: 1.2rem;
     font-weight: bold;
-    color: #34495e;
+    color: #9da2a8;
     margin: 0;
   }
   
   .user-profile-tab-container {  
-    width: 80%;
+    width: 90%;
     display: flex;
     margin-bottom: 30px;
     border-bottom: 2px solid #e0e0e0;
@@ -237,7 +252,7 @@
   
   .tab {
     padding: 10px 20px;
-    font-size: 1.1rem;
+    font-size: 1.2rem;
     font-weight: 600;
     background: none;
     border: none;
@@ -257,7 +272,7 @@
   }
   
   section{
-    width: 80%;
+    width: 90%;
   }
 
   .user-profile-section {
@@ -349,22 +364,27 @@
     text-align: left;
   }
   
+
+
   .edit-user-profile-button {
-    background-color: #1659de;
-    color: white;
+    margin-left: 40%;
+    padding: 12px 10px;
     border: none;
-    padding: 12px 25px;
-    border-radius: 8px;
-    font-size: 1.1rem;
-    font-weight: 600;
-    width: 150px;
+    border-radius: 5px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
-    margin-right: 40px;
+    font-weight: bold;
+    width: 180px;
+    height: 50px;
+    font-size: 1.1rem;
+    background-color:  #102669;
+    color: #fff;
+    transition: background-color 0.5s, color 0.5s;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   }
   
   .edit-user-profile-button:hover {
-    background-color: #003d8c;
+    background-color: #ffffff;
+    color: #102669;
   }
   
   .user-profile-modal {

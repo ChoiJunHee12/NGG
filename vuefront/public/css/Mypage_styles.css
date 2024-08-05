@@ -4,6 +4,12 @@
   font-size: 25px;
 }
 
+.user-container{
+  width: 90%;
+  padding: 5% 0% 5% 8%;
+  background-color: #9a9a9a1f;
+  border-radius: 8px;
+}
 .my-page-title {
   padding-top: 30px;
 }
@@ -98,12 +104,6 @@
   font-weight: bold;
   box-shadow: 5px 5px 15px 5px rgba(0, 0, 0, 0.1);
 }
-
-
-
-
-
-
 
 .my-profile {
   position: relative;

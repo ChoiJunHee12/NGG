@@ -3,7 +3,7 @@
     /* background: #0c1b49; */
     border-radius: 5px;
     color: white;
-    /* margin-bottom: 60px; */
+    margin-bottom: 2.5%;
     /* padding: 10px; */
 }
 
@@ -95,6 +95,7 @@
 }
 
 .chat-message.user {
+    max-width: 50%;
     align-self: flex-end;
     background-color: #0c1b49;
     color: white;
@@ -109,13 +110,19 @@
     border-bottom-left-radius: 0;
 }
 
+.OTO-name{
+    flex-direction: row;
+}
+
 .message-info {
+    margin-top: 8px;
     display: flex;
     flex-direction: column;
     max-width: 100%;
 }
 
 .message-text.user {
+    
     padding: 10px;
     border-radius: 10px;
     color: white;

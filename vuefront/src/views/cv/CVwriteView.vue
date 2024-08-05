@@ -1,17 +1,25 @@
 <template>
-    <div class="cvwrite-container">
-        <div class="cvwrite-title">이력서 작성</div>
-        <hr>
-        <div class="cvwirte-div-upload">
+    <div class="container">
+    <div class="cv-container">
+        <div class="CVtitle">
+        <blockquote class="blockquote-CV"><b>
+            <p>이력서작성</p></b>
+        </blockquote>
+    </div>
+        <div class="cv-notice">
             <div class="cvwirte-upload-con">
-                <img class="cvwrite-tipicon" src="\img\res_tip.png"/><div class="cvwirte-upload-con1">기존에 작성한 이력서를 업로드하시면 업로드한 파일을 기반하여 아래의 이력서 형식에 맞게 데이터가 들어가게 됩니다.</div>
+                <!-- <img class="cvwrite-tipicon" src="\img\res_tip.png"/> -->
+                <div class="cvwirte-upload-con1">📢 기존에 작성한 이력서를 업로드하시면 업로드한 파일을 기반하여 아래의 이력서 형식에 맞게 데이터가 들어가게 됩니다.</div>
                 <div class="cvwirte-upload-con2">입력값이 올바르게 들어가지 않는 경우가 있으므로 회원님께서 한번 더 확인을 부탁드립니다.</div>
             </div>
+            <div class="cvwirte-btn">
             <label className="cvwrite-input-file-button" for="input-file">
-  {{upload_text}}
-</label>
+                {{upload_text}}
+            </label>
+            </div>
 <input type="file" id="input-file" style="display:none;" @change="uploadchange"/> 
         </div>
+        <div class="form-container">
         <table class="cvwrite-cv-table">
             <tr>
                 <td class="cvwrite-cv-td1">이력서 제목</td>
@@ -136,6 +144,8 @@
 <CVsave v-if='savecom' @close="complete()"
     v-bind:mData="this.modalData"
   />
+</div>
+</div>
 </template>
 
 <script>

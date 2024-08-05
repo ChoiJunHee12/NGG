@@ -476,7 +476,7 @@ export default defineComponent({
           }
           // 비밀번호가 입력된 경우 로그인 시도
           alert('환영합니다.');
-          window.location.href = '/';
+          window.location.href = '/main';
         } else {
           // 이메일 형식이 유효하지 않으면 에러 메시지 표시 등 추가 로직 수행 가능
           alert('이메일 형식이 올바르지 않습니다.');

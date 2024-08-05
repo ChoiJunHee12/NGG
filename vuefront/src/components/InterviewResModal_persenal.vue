@@ -2,81 +2,15 @@
 <div class="modal-overlay" @click="$emit('close',false)">
     <div class="resh-container" @click.stop>
 
-    <div class="resh-btncon row">
-        <div @click="pagechage(1)" class="col-1" :class="{'resh-lbutton':true, 'personalactive': activePage === 1}">Q1</div>
-        <div @click="pagechage(2)" class="col-1" :class="{'resh-button':true, 'personalactive': activePage === 2}">Q2</div>
-        <div @click="pagechage(3)" class="col-1" :class="{'resh-button':true, 'personalactive': activePage === 3}">Q3</div>
-        <div @click="pagechage(4)" class="col-1" :class="{'resh-button':true, 'personalactive': activePage === 4}">Q4</div>
-        <div @click="pagechage(5)" class="col-1" :class="{'resh-button':true, 'personalactive': activePage === 5}">Q5</div>
-        <div @click="pagechage(6)" class="col-1" :class="{'resh-rbutton':true, 'personalactive': activePage === 6}">종합 평가</div>
-    </div>
+    
     <div :style="displayPage(1)" class="resh-con row scrollable-div">
-        <div class="resh-qcon">
-        <div class="resh-q">
-            <div class="resh-qnum">Q{{ i+1 }}.</div>
-            <div class="resh-question">{{ Question[i] }}</div>
-        </div>
-    </div>
-        <div class="resh-qcon2">
-            <div class="resh-vdiv">
-            <img class="resh-video" src="\img\InterviewRes_image\res_demovideo.png">
-            </div>
-            
-            <div class="resh-dgraph">
-                <div id="graph2"></div>
-                <div class="resh-stress">스트레스 : 80(%)</div>
-            </div>
-   
-        </div>
-        <div class="resh-qcon3">
-            
-            <div class="resh-dcontent row">
-                <div class="resh-vcon col-1">
-                <img class="resh-voicew" src="\img\InterviewRes_image\res_demovoice.png">
-                </div>
-                <div class="resh-voice col-2">
-                    <div class="resh-voice1">
-                    음성 안정도 : 90점
-                </div>
-                <div class="resh-voice1">
-                    공백 시간 : 12초
-                </div>
-                </div>
-            </div>
-        </div>
-        <div class="resh-qcon4">
-            <div class="resh-qcontent1">
-                <div class="resh-subtitle1 row">
-                    <div class="resh-subtitle2 col-1">면접 대답</div>
-                    <div class="resh-qcontent2">{{this.Comment[i]}}</div>
-                </div>
-            </div>
-        </div>
-        <div class="resh-qcon4" v-if="feedback[i]">
-            <div class="resh-qcontent1">
-                <div class="resh-subtitle1 row">
-                    <div class="resh-subtitle2 col-1">피드백</div>
-                    <div class="resh-qcontent2">{{feedback[i]}}</div>
-                </div>
-            </div>
-        </div>
-        <button v-if="page>1" class="resh-nextbtn col-1" @click="Previous">이전 문항</button>
-        <button class="resh-nextbtn col-1" @click="next">다음 문항</button>
-    </div>
-
-
-
-  <!--          종합 평가                       -->  
-    <div :style="displayPage(6)" class="resh-con row scrollable-div">
+          <!--          종합 평가                       -->  
+    <div class=" row scrollable-div displayPage6">
+        
         <div class="reshduty-summary">
-            <div class="reshduty-total-t row"><div class="reshduty-total-title col-1">종합 분석</div>
-            <div class="reshduty-total-subtitle col-1">- 인성 면접</div>
+            <div class="reshduty-total-t row"><div class="reshduty-total-title col-1">침착맨님 면접결과(날짜: 2024-07-25)</div>
         </div>
             
-            <div class="reshduty-summary-right">
-        <p>이름: 홍길동</p>
-        <p>날짜: 2024-07-25</p>
-      </div>
         </div>
 
 
@@ -131,8 +65,50 @@
                 <div class="res-ti">회원님이 작성한 이력서의 기반으로 키워드를 추출하여 면접 내용과 비교하여 유사도를 ...</div>
             </div>
         </div>
+
+    <div class="resh-btncon row">
+        <div @click="pagechage(1)" class="col-1" :class="{'resh-lbutton':true, 'personalactive': activePage === 1}">Q1</div>
+        <div @click="pagechage(2)" class="col-1" :class="{'resh-button':true, 'personalactive': activePage === 2}">Q2</div>
+        <div @click="pagechage(3)" class="col-1" :class="{'resh-button':true, 'personalactive': activePage === 3}">Q3</div>
+        <div @click="pagechage(4)" class="col-1" :class="{'resh-button':true, 'personalactive': activePage === 4}">Q4</div>
+        <div @click="pagechage(5)" class="col-1" :class="{'resh-button':true, 'personalactive': activePage === 5}">Q5</div>
+        <!-- <div @click="pagechage(6)" class="col-1" :class="{'resh-rbutton':true, 'personalactive': activePage === 6}">종합 평가</div> -->
+    </div>
+
+    <!--면접질문-->
+    <div class="displayPage-p">
+        <div class="resh-qcon">
+            <div class="res-subtitle3 col-1"><div class="res-subtitlecon3">
+
+                Q{{ i+1 }}. {{ Question[i] }}</div>
+        </div>
+    </div>
+        <div class="resh-qcon4">
+            <div class="resh-qcontent1">
+                <div class="resh-subtitle1 row">
+                    <div class="resh-subtitle2 col-1">면접 대답</div>
+                    <div class="resh-qcontent2">{{this.Comment[i]}}</div>
+                </div>
+            </div>
+        </div>
+        <div class="resh-qcon4" v-if="feedback[i]">
+            <div class="resh-qcontent1">
+                <div class="resh-subtitle1 row">
+                    <div class="resh-subtitle2 col-1">피드백</div>
+                    <div class="resh-qcontent2">{{feedback[i]}}</div>
+                </div>
+            </div>
+        </div>
+        </div>
+    </div>
+        <button v-if="page>1" class="resh-nextbtn col-1" @click="Previous">이전 문항</button>
+        <button v-if='page<5' class="resh-nextbtn col-1" @click="next">다음 문항</button>
         <button class="resh-homebtn col-1" @click="$emit('close',false)">닫기</button>
     </div>
+
+
+
+
     </div>
 </div>
 </template>
@@ -195,106 +171,7 @@ export default {
             
             return this.content === pageNum ? { display: 'block' } : { display: 'none' };
         },
-        graph2(){
-            // 임시 데이터
-            const data = [];
-            const time = (new Date()).getTime();
-            let y = 0;
-
-            for (let i = -9; i <= 0; i++) {
-                // Change y to -1 occasionally
-                if (Math.random() < 0.1) {
-                    y = -1;
-                } else {
-                    y = Math.random() > 0.5 ? 1 : 0;
-                }
-
-                data.push({
-                    x: time + i * 90000, // 90,000 milliseconds = 1 minute 30 seconds
-                    y: y
-                });
-            }
-            Highcharts.chart('graph2', {
-            chart: {
-                type: 'spline',
-                height: 320, // Height of the chart
-                width: 480   // Width of the chart
-            },
-
-            title: {
-                text: "",
-                align: 'left'
-            },
-
-            subtitle: {
-                text: '',
-                align: 'left'
-            },
-
-            xAxis: {
-                type: 'datetime',
-                title: {
-                    text: '시간'
-                }
-            },
-
-            yAxis: [{
-                title: {
-                    text: '감정 인식'
-                },
-                min: -1,
-                max: 1,
-                tickPositions: [-1, 0, 1],
-                labels: {
-                    formatter: function () {
-                        return this.value === -1 ? '부정' :
-                            this.value === 0 ? '중립' :
-                            this.value === 1 ? '긍정' : '';
-                    }
-                },
-            }],
-
-            plotOptions: {
-                series: {
-                    animation: {
-                        duration: 1000
-                    },
-                    marker: {
-                        enabled: false
-                    },
-                    lineWidth: 3
-                }
-            },
-
-            series: [{
-                name: '감정 라인',
-                data: data
-            }],
-            
-            responsive: {
-                rules: [{
-                    condition: {
-                        maxWidth: 300
-                    },
-                    chartOptions: {
-                        yAxis: [{
-                            tickAmount: 2,
-                            title: {
-                                x: 15,
-                                reserveSpace: false
-                            }
-                        }]
-                    }
-                }]
-            }
-        });
-
-
-        },
-
-
-
-
+        
         face(){
             const chartContainer = document.getElementById('face');
     chartContainer.style.width = '300px';
@@ -565,8 +442,6 @@ Highcharts.chart('wordcloud1', {
     }
     },
     mounted() {
-        // this.graph1();
-        this.graph2();
         this.wordcloud();
         this.barchart();
         this.face();

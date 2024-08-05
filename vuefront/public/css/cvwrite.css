@@ -1,4 +1,4 @@
-.cvwrite-container{
+title.cvwrite-container{
     width: 1280px;
     min-height: 800px;
     height: 100%;
@@ -27,38 +27,80 @@
             justify-content: space-between;
 }
 .cvwirte-upload-con {
-    border: 2px solid #EDEFF1;
-    background-color: #EDEFF1;
+    width: 80%;
+    /* border: 2px solid #EDEFF1; */
+    /* background-color: #EDEFF1; */
     border-radius: 15px;
-    height: 120px;
-    margin: 20px 10px;
+    /* height: 120px; */
+    /* margin: 20px 10px; */
     flex: 1;
-    padding: 10px 20px;
+    /* padding: 10px 20px; */
     text-align: left;
 }
-.cvwrite-input-file-button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 6px 25px;
-    background-color: #FF6600;
-    border-radius: 15px;
-    color: white;
+.form-container{
+    background: #9a9a9a1f;
+    margin-top: 1%;
+    border-radius: 8px;
+    padding: 3% 3%;
+}
+
+/*   .application-btn{
+    margin-left: 60%;
+    padding: 12px 60px;
+    border: none;
+    border-radius: 5px;
     cursor: pointer;
-    height: 120px;
-    margin: 20px 10px;
-    text-align: center;
-    width: 150px;
+    font-weight: bold;
+    height: 50px;
+    font-size: 1.1rem;
+    background-color:  #102669;
+    color: #fff;
+    transition: background-color 0.5s, color 0.5s;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  }
+
+  .application-btn:hover{
+    background-color: #ffffff;
+    color: #102669;
+  } */
+.cv-notice{
+    display: flex;
+    flex-direction: row;
+}
+.cvwrite-input-file-button {
+    width: 135px;
+    padding: 12px 40px;
+    margin-bottom: 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    height: 50px;
+    font-size: 1.1rem;
+    background-color:  #102669;
+    color: #fff;
+    transition: background-color 0.5s, color 0.5s;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.cvwrite-input-file-button:hover{
+    width: 135px;
+    padding: 9px 37px;
+    margin-bottom: 20px;
+    border: 3px solid #11045e;;
+    background-color: #fff;
+    color: #11045e;
+
 }
 .cvwrite-cv-table{
     
-    width:1100px;
+    width:100%;
     height: 55px;
     border: 3px solid #CDCDCD;
     margin: auto;
 }
 .cvwrite-cv-td1{
-    width:200px;
+    width:20%;
     background-color: #EDEFF1;
     font-size: 18px;
     font-weight: bold;
@@ -66,17 +108,17 @@
 .cvwrite-cv1-title{
     align-items: left;
     width: 150px;
-    margin-top: 20px;
+    margin-top: 25px;
     margin-bottom: 5px;
     text-align: left;
-    margin-left: 60px;
-    font-size: 36px;
+    margin-left: 30px;
+    font-size: 1.2em;
     font-weight: bold;
 }
 
 
 .cvwrite-cv1-table{
-    width:1100px;
+    width:100%;
     height: 270px;
     border: 3px solid #CDCDCD;
     margin: auto;
@@ -122,6 +164,7 @@
             justify-content: space-between;
             align-items: center;
             font-weight: bold;
+            
 
 }
 .cvwrite-delbtn{
@@ -149,14 +192,14 @@
     align-items: left;
     text-align: left;
     margin-left: 60px;
-    font-size: 36px;
+    font-size: 1.2em;
     width: 150px;
     margin-top: 20px;
     margin-bottom: 5px;
     font-weight: bold;
 }
 .cvwrite-cv2-table{
-    width: 1100px;
+    width: 100%;
     border: 3px solid #CDCDCD;
     margin: 10px auto ;
     
@@ -211,11 +254,11 @@
     margin-bottom: 5px;
     text-align: left;
     margin-left: 60px;
-    font-size: 36px;
+    font-size: 1.2em;
     font-weight: bold;
 }
 .cvwrite-cv3-table{
-    width: 1100px;
+    width: 100%;
     border: 3px solid #CDCDCD;
     margin: 10px auto ;
     
@@ -272,11 +315,11 @@
     margin-bottom: 5px;
     text-align: left;
     margin-left: 60px;
-    font-size: 36px;
+    font-size: 1.2em;
     font-weight: bold;
 }
 .cvwrite-cv4-table{
-    width: 1100px;
+    width: 100%;
     border: 3px solid #CDCDCD;
     margin: 10px auto ;
     
@@ -297,7 +340,7 @@
     border-bottom: 2px solid #CDCDCD;
 }
 .cvwrite-cv4-td1{
-    width: 130px;
+    width: 90px;
     height: 100%;
     border-right: 2px solid #EDEFF1;
 }

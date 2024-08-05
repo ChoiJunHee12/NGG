@@ -5,8 +5,8 @@ import OneToOne from '../views/OneToOne.vue'
 const routes = [
   {
     path: '/',
-    name: 'Rending',
-    component: () => import(/* webpackChunkName: "about" */ '../views/Rending.vue')
+    name: 'Lending',
+    component: () => import(/* webpackChunkName: "about" */ '../views/Lending.vue')
   },
 
   {

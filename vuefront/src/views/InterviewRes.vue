@@ -18,7 +18,9 @@
         <div class="interviewRes-text">
           <h5 class="interviewRes-h5">담당 컨설턴트가 없습니다</h5>
           <p>직무면접 컨설팅을 받기 위해서는 담당 컨설턴트를 선택하셔야 합니다</p>
-          <button class="btn btn-pre interviewRes-btn">담당 컨설턴트 선택하기</button>&nbsp;
+          <router-link to="ConsultantInfo">
+            <button class="btn btn-pre interviewRes-btn">담당 컨설턴트 선택하기</button>&nbsp;
+          </router-link>
         </div>
       </div>
       <div v-if="page === 2" class="interviewRes-counsel">

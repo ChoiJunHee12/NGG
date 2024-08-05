@@ -1,21 +1,27 @@
 
-.resduty-qcon,.res-qcon1,.res-qcon2,.res-qcon3,.res-qcon4{
+.reshduty-qcon,.resh-qcon1,.resh-qcon2,.resh-qcon3,.resh-qcon4{
     margin-bottom: 30px;
 }
-.resduty-container{
+.reshduty-container{
+    position: fixed;
+    top: 60px;
     width: 1280px;
-    height: 100%;
+    bottom: 60px;
     margin: auto;
     color:#010202;
+    height: 80hv;
+    justify-content: center;
+    z-index: 1000;
+    background: rgba(0, 0, 0, 0.5);
     /* background-color: white; */
+    /* border-radius:3px ; */
 }
-.resduty-btncon{
-    margin: 0px 10px ;
-
+.reshduty-btncon{
+    margin: 0px;
     
 }
-.resduty-button{
-    /* border-top: 3px solid #033a3d; */
+.reshduty-button{
+    border-top: 10px solid #0A6065;
     height: 60px;
     width: 90px;
     align-content: center;
@@ -24,14 +30,14 @@
     font-size: 18px;
     text-align: center;           /* 텍스트를 중앙에 정렬 */
     line-height: 60px;            /* 버튼의 높이와 같게 설정하여 텍스트 수직 중앙 정렬 */
-
+    border: none;                 /* 기본 테두리 제거 */
     cursor: pointer;              /* 마우스 커서를 포인터로 변경 */
     transition: background-color 0.3s ease, box-shadow 0.3s ease; /* 배경색과 그림자 변경에 부드러운 전환 효과 추가 */
     
 }
-.resduty-lbutton{
-    /* border-left: 3px solid #033a3d;
-    border-top: 3px solid #033a3d; */
+.reshduty-lbutton{
+    border-left: 10px solid #0A6065;
+    border-top: 10px solid #0A6065;
     font-size: 18px;
     width: 90px;
     height: 60px;
@@ -41,14 +47,14 @@
     border-radius: 3px 0px 0px 0px;
     text-align: center;           /* 텍스트를 중앙에 정렬 */
     line-height: 60px;            /* 버튼의 높이와 같게 설정하여 텍스트 수직 중앙 정렬 */
-
+    border: none;                 /* 기본 테두리 제거 */
     cursor: pointer;              /* 마우스 커서를 포인터로 변경 */
     transition: background-color 0.3s ease, box-shadow 0.3s ease; /* 배경색과 그림자 변경에 부드러운 전환 효과 추가 */
 }
-.resduty-rbutton{
+.reshduty-rbutton{
     font-size: 18px;
-    /* border-right: 3px solid #033a3d;
-    border-top: 3px solid #033a3d; */
+    border-right: 10px solid #0A6065;
+    border-top: 10px solid #0A6065;
     background-color: #0A6065;
     width: 110px;
     height: 60px;
@@ -57,43 +63,44 @@
     border-radius: 0px 3px 0px 0px;
     text-align: center;           /* 텍스트를 중앙에 정렬 */
     line-height: 60px;            /* 버튼의 높이와 같게 설정하여 텍스트 수직 중앙 정렬 */
+    border: none;                 /* 기본 테두리 제거 */
     cursor: pointer;              /* 마우스 커서를 포인터로 변경 */
     transition: background-color 0.3s ease, box-shadow 0.3s ease; /* 배경색과 그림자 변경에 부드러운 전환 효과 추가 */
 }
 /* 호버 상태에서 배경색 변경 */
-.resduty-button:hover {
-    background-color:  #064e52;
-
-}
-.resduty-rbutton:hover {
-    background-color: #064e52;
-
-}
-.resduty-lbutton:hover {
-    background-color: #064e52;
-
-}
-.resduty-qactive{
+.reshduty-button:hover {
     background-color: #033a3d;
+    box-shadow: 0 3px 0 #033a3d; /* 밑으로 2px 색 덮어쓰기 효과 추가 */
 }
-.resduty-con{
+.reshduty-rbutton:hover {
+    background-color: #033a3d;
+    box-shadow: 0 3px 0 #033a3d; /* 밑으로 2px 색 덮어쓰기 효과 추가 */
+}
+.reshduty-lbutton:hover {
+    background-color: #033a3d;
+    box-shadow: 0 3px 0 #033a3d; /* 밑으로 2px 색 덮어쓰기 효과 추가 */
+}
+.reshduty-con{
+    /* overflow-y:scroll; */
     background-color: white;
     padding:40px;
-    border: 4px solid #033a3d;
+    /* border: 4px solid #1241A4; */
     margin: 0px 10px;
     /* min-height: 1200px; */
     border-radius: 0px 3px 3px 3px;
     display: flex;
-            flex-direction: column; /* 수직 정렬 */
-            gap: 20px; /* 두 요소 간의 간격 */
+    flex-direction: row; /* 수직 정렬 */
+    /* gap: 20px;  */
+    overflow-y: auto;
+    height: 1000px;
 }
-.resduty-qcon {
+.reshduty-qcon {
     display: flex;
     text-align: left;
     font-weight: bold;
     margin-bottom: 10px; /* 각 질문 사이의 간격 */
 }
-.resduty-q {
+.reshduty-q {
     display: flex;
     align-items: center; /* 수직 중앙 정렬 */
     text-align: left;
@@ -110,17 +117,17 @@
     background-color: #e0f3ee;
     border-radius: 3px;
 }
-.resduty-qnum {
+.reshduty-qnum {
     font-size: 32px;
     display: flex;
     margin-right: 10px; /* 번호와 내용 사이의 간격 */
     white-space: nowrap; /* 번호가 줄 바꿈되지 않도록 */
 }
-.resduty-question {
+.reshduty-question {
     flex: 1; /* 남은 공간을 차지하도록 */
 }
 
-.resduty-qcontent{
+.reshduty-qcontent{
     display: flex;
     font-size: 36px;
     word-wrap: break-word;
@@ -131,14 +138,14 @@
 
     max-height: 160px;
 }
-.resduty-qcon2{
+.reshduty-qcon2{
     display: flex;
     align-items: center; /* 수직 중앙 정렬 */
     height: 400px;
     width:1250px;
     margin:30px 0px ;
 }
-.resduty-vdiv{
+.reshduty-vdiv{
     /* margin: 40px; */
     border: 2px solid #0C1B49;
     padding: 12px;
@@ -146,12 +153,12 @@
     border-radius:3px;
     height: 400px;
 }
-.resduty-video{
+.reshduty-video{
     text-align: left;
     height: 360px;
     width:480px;
 }
-.resduty-dgraph{
+.reshduty-dgraph{
     width:540px;
     height: 400px;
     margin:auto ;
@@ -163,7 +170,7 @@
     padding-top: 30px;
     
 }
-.resduty-stress{
+.reshduty-stress{
     font-size:25px;
 }
 #graph2 {
@@ -171,14 +178,14 @@
             height: 320px;
     
         }
-.resduty-qcon3{
+.reshduty-qcon3{
     display: flex;
     align-items: center; /* 수직 중앙 정렬 */
     height: 140px;
     width:1250px;
     margin:30px 0px ;
 }
-.resduty-vcon{
+.reshduty-vcon{
     display: flex;               /* Flexbox 레이아웃을 활성화 */
     justify-content: center;     /* 수평 중앙 정렬 */
     align-items: center;         /* 수직 중앙 정렬 */
@@ -189,18 +196,18 @@
     box-sizing: border-box;      /* 패딩과 테두리를 포함하여 전체 크기를 계산 */
     background-color: white;    /* 배경색 설정 (선택 사항) */
 }
-.resduty-dcontent{
+.reshduty-dcontent{
     width:100%;
     height: 140px;
     margin:0px 0px ;
     border: 2px solid #0A6065;
     /* box-shadow: 5px 5px 15px 5px rgba(0, 0, 0, 0.2); */
 }
-.resduty-voicew{
+.reshduty-voicew{
     width: 400px;                /* 이미지 너비 설정 */
     height: auto; 
 }
-.resduty-voice{
+.reshduty-voice{
     flex: 2;                     /* 공간을 더 많이 차지하도록 설정 */
     display: flex;               /* Flexbox 레이아웃을 활성화 */
     flex-direction: column;      /* 수직 방향으로 정렬 */
@@ -208,19 +215,19 @@
     align-items: center;         /* 수평 중앙 정렬 */
     text-align: center;          /* 텍스트 중앙 정렬 */
 }
-.resduty-voice1{
+.reshduty-voice1{
     margin: 10px 0;          /* 요소 간의 간격 */
     font-size: 20px;         /* 폰트 사이즈 조정 */
 }
-.resduty-mikeimg{
+.reshduty-mikeimg{
     width:40px;
     height: 40px;
 }
-.resduty-subtitle1{
+.reshduty-subtitle1{
     margin: 30px 0px  ;
     
 }
-.resduty-subtitle2{
+.reshduty-subtitle2{
 
     font-size: 20px; 
     width: 120px;
@@ -230,7 +237,7 @@
     color:white;
     border-radius: 3px 3px 0px 0px;
 }
-.resduty-qcontent2{
+.reshduty-qcontent2{
     padding:20px;
     border: 4px solid #0A6065;
     margin: 0px 0px;
@@ -244,7 +251,7 @@
             font-size: 20px;
     background-color: #CEE5DF;
 }
-.resduty-nextbtn{
+.reshduty-nextbtn{
     width: 100px;
     height: 55px;
     background-color: #08877D;
@@ -257,7 +264,7 @@
     
 }
 /* 호버 상태에서 배경색 변경 */
-.resduty-nextbtn:hover {
+.reshduty-nextbtn:hover {
     background-color: #01665e;
     
 }
@@ -268,37 +275,36 @@
 
 /* 종합 분석 css*/
 
-  .resduty-total-title {
+  .reshduty-total-title {
     font-size: 48px;
     font-weight: bold;
     margin-bottom: 0; /* 아래쪽 여백 제거 */
     width: auto;
   }
   
-  .resduty-summary {
+  .reshduty-summary {
     display: flex;
     justify-content: space-between; /* 왼쪽과 오른쪽을 공간 배치 */
     align-items: flex-end; /* 하단 맞춤 */
     width: 100%;
-    margin-top:20px;
     margin-bottom: 30px;
   }
   
-  .resduty-summary-left {
+  .reshduty-summary-left {
     display: flex;
     align-items: flex-end; /* 하단 맞춤 */
   }
   
-  .resduty-summary-right {
+  .reshduty-summary-right {
     text-align: right;
   }
   
-  .resduty-summary-right p {
+  .reshduty-summary-right p {
     margin: 0;
     font-size: 17px;
   }
   
-  .resduty-total-subtitle {
+  .reshduty-total-subtitle {
     font-size: 32px;
     padding: 0px;
     width: auto;
@@ -306,7 +312,7 @@
     align-items: flex-end;
     color:#1e3f3f
   }
-.resduty-subtitle3{
+.reshduty-subtitle3{
     border: 1px solid #0c3da8;
     width: 1250px;
     height: 60px;
@@ -318,14 +324,14 @@
     
 
 }
-.resduty-subtitlecon3{
+.reshduty-subtitlecon3{
     margin-left: 10px;
     margin-top: 12px;
     font-size: 22px;
     font-weight: bold;
     
 }
-.resduty-qcon5 {
+.reshduty-qcon5 {
     display: flex;
     justify-content: space-between; /* 요소들 사이에 공간을 배치 */
     align-items: center; /* 수직 중앙 정렬 */
@@ -334,7 +340,7 @@
     margin-bottom: 40px;
 }
 
-.resduty-face {
+.reshduty-face {
     border: 2px solid #A5CABB;
     display: flex;
     height: 400px;
@@ -346,9 +352,9 @@
     margin:30px;
   }
 
-.resduty-face-com {
+.reshduty-face-com {
     border: 2px solid #A5CABB;
-    background-color: white;
+    background-color: #CEE5DF;
     flex-grow: 1; /* 남은 공간을 차지 */
     height: 100%; /* 부모 요소의 높이에 맞춤 */
     font-size: 17px;
@@ -357,19 +363,19 @@
     margin:30px;
     text-align: left;
     flex-direction: column;
-    padding: 0px;
+    padding: 16px;
 }
-.resduty-face-coment{
+.reshduty-face-coment{
     margin: 3px;
     
 }
-.resduty-qcon6{
+.reshduty-qcon6{
     height: auto;
 }
-.resduty-posechart{
+.reshduty-posechart{
     margin: 30px 30px;
 }
-.resduty-analyze6{
+.reshduty-analyze6{
     margin: 0px 30px;
     border: 2px solid #A5CABB;
     margin-bottom: 40px;
@@ -380,17 +386,17 @@
     padding: 16px;
     background-color: #CEE5DF;
 }
-.resduty-analyze6-con{
+.reshduty-analyze6-con{
     margin: 3px;
     
 }
-.resduty-qcon8{
+.reshduty-qcon8{
     display: flex;
     align-items: center; /* 수직 중앙 정렬 */
     height: 400px;
     width:1250px;
 }
-.resduty-similarbox{
+.reshduty-similarbox{
     border: 2px solid #A5CABB;
     padding: 12px;
     width: 500px;
@@ -399,31 +405,31 @@
     margin: auto;
     margin-left: 30px;
 }
-.resduty-similarbox2{
+.reshduty-similarbox2{
     border: 2px solid #A5CABB;
-    padding: 12px;
+    padding: 16px;
     width: 500px;
     border-radius:3px;
     height: 400px;
     margin: auto;
     margin-right: 30px;
-    background-color: white;
+    background-color: #CEE5DF;
     text-align: left;
 }
-.resduty-similarT{
+.reshduty-similarT{
     font-size: 24px;
     margin-bottom: 6px;
 }
-.resduty-similarcom{
+.reshduty-similarcom{
     font-size: 17px;
 }
-.resduty-qcon9{
+.reshduty-qcon9{
     display: flex;
     align-items: center; /* 수직 중앙 정렬 */
     height: 100px;
     width:1250px;
 }
-.resduty-similartip {
+.reshduty-similartip {
     display: flex;
     align-items: center;
     background-color: #e6e5e5;
@@ -436,16 +442,16 @@
     padding: 0 20px; 
 }
 
-.resduty-tipicon {
+.reshduty-tipicon {
     height: 28px;
     margin-right: 10px; 
 }
 
-.resduty-tiptext {
+.reshduty-tiptext {
     margin-left: 20px; 
 }
 
-.resduty-totalcom {
+.reshduty-totalcom {
     padding: 16px;
     width: auto;
     border: 2px solid #A5CABB;
@@ -455,7 +461,10 @@
     background-color: #CEE5DF;
     font-size: 17px;
 }
-.resduty-homebtn{
+.reshdudy-btnarea{
+    text-align: right;
+}
+.reshduty-homebtn{
     width: 150px;
     height: 55px;
     background-color: #08877D;
@@ -466,7 +475,11 @@
     transition: background-color 0.3s ease
 }
 /* 호버 상태에서 배경색 변경 */
-.resduty-homebtn:hover {
+.reshduty-homebtn:hover {
     background-color: #01665e;
     
+}
+.reshduty-active {
+    background-color: #033a3d;
+    color: white;
 }
