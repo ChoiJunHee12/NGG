@@ -37,6 +37,13 @@ const routes = [
   }
   ,
   {
+    path: '/cvwrite',
+    name: 'cvUpdate',
+
+    component: () => import(/* webpackChunkName: "about" */ '../views/cv/CVwriteView.vue')
+  }
+  ,
+  {
     path: '/MyPage',
     name: 'MyPage',
     component: () => import( '../views/profile/MyPage.vue')
