@@ -20,7 +20,7 @@ public class MydreamApplication {
 			public void addCorsMappings(CorsRegistry registry) {
 				System.out.println("Test ================");
 				registry.addMapping("/**")
-						.allowedOrigins("http://192.168.0.220:3000", "http://localhost:3000", "*")
+						.allowedOrigins("*")
 						.allowedHeaders("*")
 						.allowedMethods("*").maxAge(3600);
 
