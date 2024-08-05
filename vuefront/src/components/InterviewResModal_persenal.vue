@@ -8,7 +8,14 @@
     <div class=" row scrollable-div displayPage6">
         
         <div class="reshduty-summary">
-            <div class="reshduty-total-t row"><div class="reshduty-total-title col-1">침착맨님 면접결과(날짜: 2024-07-25)</div>
+            <div class="reshduty-total-t row">
+                <div class="reshduty-total-title col-1">종합 분석</div>
+            <div class="reshduty-total-subtitle col-1">- 인성 면접</div>
+          </div>
+
+          <div class="reshduty-summary-right">
+            <p>이름: {{mname}}</p>
+            <p>날짜: {{resDate}}</p>
         </div>
             
         </div>
@@ -16,16 +23,13 @@
 
         <div class="res-subtitle3 col-1"><div class="res-subtitlecon3">종합 평가</div></div>
         <hr>
-        <div class="res-qcon10">
-            <div class="res-totalcom">
-                <div class="res-analyze6-con">○ 시간이 지날수록 자세가 불안정함이 보여 좀 더 집중도를 올려야합니다!</div>
-                <div class="res-analyze6-con">○ 회원님의 자세 흐트러짐은 평균보다 높아요.</div>
-                <div class="res-analyze6-con">○ 시간이 지날수록 자세가 불안정함이 보여 좀 더 집중도를 올려야합니다!</div>
-                <div class="res-analyze6-con">○ 전체적으로 자세를 유지하는 시간이 길지 않으며, 집중도가 떨어짐을 확인할 수 있다.</div>
-                <div class="res-analyze6-con">○ 너무 같은 단어를 반복하여 말했습니다.</div>
-                <div class="res-analyze6-con">○ 이력서와 면접 질문과 유사도가 떨어집니다.</div>
-                
+        <div class="resduty-qcon10">
+          <div class="reshduty-totalcom">
+            <div v-for="(feedback, index) in AIFeedback" :key="index" class="resduty-analyze6-con">
+              ○ {{ feedback }}
             </div>
+          </div>
+        </div>
 
 
         </div>
@@ -110,35 +114,59 @@
 
 
     </div>
-</div>
+
 </template>
 <script>
+import axios from 'axios';
 import * as echarts from 'echarts';
 export default {
     data() {
         return {
+            mname: "",
+            resDate:"",
             activePage: 1,
             page:1,
-            Q1 : [],
-            Question:['Q1. 번에 대한 질문을 표현 해주시고 back연결후에 data에 있는 Comment기본값을 지워주시면 됩니다.',
-                'Q2. 번에 대한 질문을 표현 해주시고 back연결후에 data에 있는 Comment기본값을 지워주시면 됩니다.',
-                'Q3. 번에 대한 질문을 표현 해주시고 back연결후에 data에 있는 Comment기본값을 지워주시면 됩니다.',
-                'Q4. 번에 대한 질문을 표현 해주시고 back연결후에 data에 있는 Comment기본값을 지워주시면 됩니다.',
-                'Q5. 번에 대한 질문을 표현 해주시고 back연결후에 data에 있는 Comment기본값을 지워주시면 됩니다.'
-            ],
-            Comment:['Q1번에 대한 답변을 STT로 표현 해주시고 back연결후에 data에 있는 Comment기본값을 지워주시면 됩니다.',
-            'Q2번에 대한 답변을 STT로 표현 해주시고 back연결후에 data에 있는 Comment기본값을 지워주시면 됩니다.',
-            'Q3번에 대한 답변을 STT로 표현 해주시고 back연결후에 data에 있는 Comment기본값을 지워주시면 됩니다.',
-            'Q4번에 대한 답변을 STT로 표현 해주시고 back연결후에 data에 있는 Comment기본값을 지워주시면 됩니다.',
-            'Q5번에 대한 답변을 STT로 표현 해주시고 back연결후에 data에 있는 Comment기본값을 지워주시면 됩니다.'],
-            feedback:[
-            ],
+            Question:[],
+            Comment:[],
+            feedback:[],
             i:0,
             content:1,
+            AIFeedback: [],
 
         }
     },
-    methods: {
+    methods: {fetchUserData(){
+      axios.get(`${process.env.VUE_APP_BACK_END_URL}/itv/userData`)
+    .then(response => {
+      const { mname, resDate } = response.data;
+      this.mname = mname;
+      this.resDate = resDate ;
+      console.log(response.data)
+    })
+    },
+    fetchQuestionData() {
+  axios.get(`${process.env.VUE_APP_BACK_END_URL}/itv/fetchData`)
+    .then(response => {
+      const { question, comment, feedback } = response.data;
+      this.Question = question || []; // Default to empty array if no data
+      this.Comment = comment || [];
+      this.feedback = feedback || [];
+      console.log(response.data)
+    })
+    .catch(error => {
+      console.error('서버 오류:', error);
+    });
+},
+fetchAIFeedback() {
+    axios.get(`${process.env.VUE_APP_BACK_END_URL}/itv/fetchAIFeedback`)
+      .then(response => {
+        // 서버에서 받은 데이터로 AIFeedback 변수 업데이트
+        this.AIFeedback = response.data;
+      })
+      .catch(error => {
+        console.error('서버 오류:', error);
+      });
+  },
         scrollToTop() {
             const container = this.$el.querySelector('.resh-con.scrollable-div');
             container.scrollTo({
@@ -446,6 +474,9 @@ Highcharts.chart('wordcloud1', {
         this.barchart();
         this.face();
         this.voiceg();
+        this.fetchQuestionData();
+        this.fetchAIFeedback();
+        this.fetchUserData();
     },
 }
 </script>

@@ -10,8 +10,8 @@
           </div>
 
           <div class="reshduty-summary-right">
-            <p>이름: 홍길동</p>
-            <p>날짜: 2024-07-25</p>
+            <p>이름: {{mname}}</p>
+            <p>날짜: {{resDate}}</p>
           </div>
         </div>
 
@@ -19,16 +19,13 @@
           <div class="resduty-subtitlecon3">종합 평가</div>
         </div>
 
+
         <div class="resduty-qcon10">
           <div class="reshduty-totalcom">
-            <div class="resduty-analyze6-con">○ 시간이 지날수록 자세가 불안정함이 보여 좀 더 집중도를 올려야합니다!</div>
-            <div class="resduty-analyze6-con">○ 회원님의 자세 흐트러짐은 평균보다 높아요.</div>
-            <div class="resduty-analyze6-con">○ 시간이 지날수록 자세가 불안정함이 보여 좀 더 집중도를 올려야합니다!</div>
-            <div class="resduty-analyze6-con">○ 전체적으로 자세를 유지하는 시간이 길지 않으며, 집중도가 떨어짐을 확인할 수 있다.</div>
-            <div class="resduty-analyze6-con">○ 너무 같은 단어를 반복하여 말했습니다.</div>
-            <div class="resduty-analyze6-con">○ 이력서와 면접 질문과 유사도가 떨어집니다.</div>
+            <div v-for="(feedback, index) in AIFeedback" :key="index" class="resduty-analyze6-con">
+              ○ {{ feedback }}
+            </div>
           </div>
-
         </div>
 
         <div class="resduty-subtitle3">
@@ -106,38 +103,20 @@
           <button class="reshduty-nextbtn col-1" @click="next">다음 문항</button>
         </div>
 
+        
+
         <div class="reshduty-subtitle3 col-1">
           <div class="resh-subtitlecon3">컨설턴트 피드백</div>
         </div>
 
         <div class="reshduty-qcon10">
           <div class="reshduty-totalcom">
-            전체적으로 자세를 유지하는 시간이 길지 않으며, 집중도가 떨어짐을 확인할 수 있다. dasdsadsa
-            ㅇㅁㄴㅇㅁㄴㅇㅁㄴㅇㄴㅁㅇㄴㅁㅇㅁㄴㅇㄴㅁㅇㅁㄴㅇㄴㅁㅇㄴㅁㅇㄴㅁㅇㄴㅁㅇㄴㅁㅇㄴㅁㅇㅁㄴㅇㅁ
-            ㄴㅇㄴㅁㅇㄹㅇㄴㄹㄴㅇㄹㄴㅇㄹㄴㅇㄹㄴㅇㄹㅇㄴㄹㄴㅇㄹㄴㅇㄹㄴㅇㄹㄴㅇㄹㄴㅇㄹㄴㅇㄹㄴㅇㄹㄴㅇd
-          </div>
-        </div>
-        <div class="reshduty-subtitle3 col-1">
-          <div class="resh-subtitlecon3">담당 컨설턴트 평가하기</div>
-        </div>
-
-        <div class="reshduty-qcon10">
-          <div v-if="!isReviewSubmitted" class="reshduty-totalcom">
-            <div style="margin:auto; text-align:center;">
-              <div style="width:100%; margin:10px;">
-                <input type="radio" name="review" value="매우 만족" v-model="review"> &nbsp; 매우 만족 &nbsp;
-                <input type="radio" name="review" value="만족" v-model="review"> &nbsp; 만족 &nbsp;
-                <input type="radio" name="review" value="보통" v-model="review"> &nbsp; 보통 &nbsp;
-                <input type="radio" name="review" value="불만족" v-model="review"> &nbsp; 불만족 &nbsp;
-                <input type="radio" name="review" value="매우 불만족" v-model="review"> &nbsp; 매우 불만족
-              </div>
-              <div style="height:50px; margin:auto;">
-                <button class="resh-homebtn col-1" style="height:40px; line-height: 30px; width:110px; margin:10px;" @click="submitReview">제출하기</button>
-              </div>
+            <div v-for="(feedback, index) in CTFeedback" :key="index">
+              ○ {{ feedback }}
             </div>
-          </div>
-                    <div v-if="isReviewSubmitted" class="reshduty-totalcom_1">
-            평점 : {{ review }}
+            <!-- 전체적으로 자세를 유지하는 시간이 길지 않으며, 집중도가 떨어짐을 확인할 수 있다. dasdsadsa
+            ㅇㅁㄴㅇㅁㄴㅇㅁㄴㅇㄴㅁㅇㄴㅁㅇㅁㄴㅇㄴㅁㅇㅁㄴㅇㄴㅁㅇㄴㅁㅇㄴㅁㅇㄴㅁㅇㄴㅁㅇㄴㅁㅇㅁㄴㅇㅁ
+            ㄴㅇㄴㅁㅇㄹㅇㄴㄹㄴㅇㄹㄴㅇㄹㄴㅇㄹㄴㅇㄹㅇㄴㄹㄴㅇㄹㄴㅇㄹㄴㅇㄹㄴㅇㄹㄴㅇㄹㄴㅇㄹㄴㅇㄹㄴㅇd -->
           </div>
         </div>
         <div class="reshdudy-btnarea">
@@ -149,42 +128,67 @@
 </template>
 
 <script>
+import axios from 'axios';
 import * as echarts from 'echarts';
 export default {
   data() {
     return {
+      mname: "",
+      resDate:"",
       activePage: 1,
       page: 1,
-      Q1: [],
-      Question: [
-        '자신에 대하여 소개해주세요.',
-        '자신의 강점, 단점을 지원 분야와 관련지어 말해주세요.',
-        '성공했던 혹은 실패했던 사례는 무엇인가요?',
-        '자랑할 만한 성과는 무엇이 있나요?',
-        '본인만의 업무상 경쟁력은 무엇인가요?',
-        '우리 회사의 (해당 직무)에서 가장 중요하다고 생각하는 업무는 무엇이며, 그 업무를 수행하기 위해 필요한 역량은 무엇이라고 생각하십니까?',
-        '(해당 직무)와 관련된 최근 트렌드나 기술 동향에 대해 어떻게 생각하시나요? 이러한 변화가 우리 회사와 해당 직무에 어떤 영향을 미칠 것으로 예상하십니까?'
-      ],
-      Comment: [
-        'Q1번에 대한 답변을 STT로 표현 해주시고 back연결후에 data에 있는 Comment기본값을 지워주시면 됩니다.',
-        'Q2번에 대한 답변을 STT로 표현 해주시고 back연결후에 data에 있는 Comment기본값을 지워주시면 됩니다.',
-        'Q3번에 대한 답변을 STT로 표현 해주시고 back연결후에 data에 있는 Comment기본값을 지워주시면 됩니다.',
-        'Q4번에 대한 답변을 STT로 표현 해주시고 back연결후에 data에 있는 Comment기본값을 지워주시면 됩니다.',
-        'Q5번에 대한 답변을 STT로 표현 해주시고 back연결후에 data에 있는 Comment기본값을 지워주시면 됩니다.',
-        'Q6번에 대한 답변을 STT로 표현 해주시고 back연결후에 data에 있는 Comment기본값을 지워주시면 됩니다.',
-        'Q7번에 대한 답변을 STT로 표현 해주시고 back연결후에 data에 있는 Comment기본값을 지워주시면 됩니다.'
-      ],
-      feedback: [
-        '피드백 존재시 v-if로 보이게 해주시면 됩니다.',
-        '현재 Q2. 까지만 보이게 설정했습니다.'
-      ],
+      Question: [],
+      Comment: [],
+      feedback: [],
       i: 0,
       content: 1,
       isReviewSubmitted: false,
-      review: ''
+      AIFeedback: [],
+      CTFeedback: [],
     };
   },
   methods: {
+    fetchUserData(){
+      axios.get(`${process.env.VUE_APP_BACK_END_URL}/itv/userData`)
+    .then(response => {
+      const { mname, resDate } = response.data;
+      this.mname = mname;
+      this.resDate = resDate ;
+      console.log(response.data)
+    })
+    },
+    fetchQuestionData() {
+  axios.get(`${process.env.VUE_APP_BACK_END_URL}/itv/fetchData`)
+    .then(response => {
+      const { question, comment, feedback } = response.data;
+      this.Question = question || []; // Default to empty array if no data
+      this.Comment = comment || [];
+      this.feedback = feedback || [];
+      console.log(response.data)
+    })
+    .catch(error => {
+      console.error('서버 오류:', error);
+    });
+},
+fetchAIFeedback() {
+    axios.get(`${process.env.VUE_APP_BACK_END_URL}/itv/fetchAIFeedback`)
+      .then(response => {
+        // 서버에서 받은 데이터로 AIFeedback 변수 업데이트
+        this.AIFeedback = response.data;
+      })
+      .catch(error => {
+        console.error('서버 오류:', error);
+      });
+  },
+  fetchCTFeedback(){
+    axios.get(`${process.env.VUE_APP_BACK_END_URL}/itv/fetchCTFeedback`)
+      .then(response => {
+        this.CTFeedback = response.data;
+      })
+      .catch(error => {
+        console.error('서버 오류:', error);
+      });
+  },
     scrollToTop() {
       const container = this.$el.querySelector('.reshduty-con.scrollable-div');
       container.scrollTo({
@@ -310,7 +314,7 @@ export default {
         },
         series: [
           {
-            name: '목 꺽임',
+            name: '목 꺾임',
             data: [8, 3],
             color: '#08AD94'
           }
@@ -453,6 +457,10 @@ export default {
     this.barchart();
     this.face();
     this.voiceg();
+    this.fetchQuestionData();
+    this.fetchAIFeedback();
+    this.fetchCTFeedback();
+    this.fetchUserData();
   }
 };
 </script>

@@ -1,18 +1,13 @@
 <template>
-    <div class="container2">
-        <div class="CTtitle" 
-            data-aos="zoom-out"
-            data-aos-easing="linear"
-            data-aos-duration="1500">
-            <blockquote class="blockquote-CT"><b>
-                <h1><span class="highlight-bold">내가꿈</span>과 함께하는 <span class="highlight">전문 컨설턴트</span></h1>
-                <p><span class="highlight">7개 분야</span>의 전문 <span class="highlight-bold">컨설턴트</span>가 당신의 꿈을 향한 </p>
-                <p>여정을 함께합니다.</p></b>
+
+    <div class="container">
+      <div class="container2">
+        <div class="CTtitle">
+            <blockquote class="blockquote-CT">
+              <b>내가꿈과 함께하는 전문 컨설턴트</b>
             </blockquote>
             </div>
           </div>
-    <div class="container">
-
       
         <div class="section secondary-section" id="portfolio">
           <div class="triangle"></div>
@@ -106,6 +101,7 @@
         
       </div>
     </div>
+
   </template>
   
   
