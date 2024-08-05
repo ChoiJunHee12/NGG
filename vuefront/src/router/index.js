@@ -40,9 +40,15 @@ const routes = [
       import(/* webpackChunkName: "about" */ "../views/cv/CVwriteView.vue"),
   },
   {
-    path: "/Mypage",
-    name: "Mypage",
-    component: () => import("../views/profile/Mypage.vue"),
+
+    path: '/cvwrite',
+    name: 'cvUpdate',
+    component: () => import(/* webpackChunkName: "about" */ '../views/cv/CVwriteView.vue')
+  },
+  {
+    path: '/MyPage',
+    name: 'MyPage',
+    component: () => import( '../views/profile/MyPage.vue')
   },
   {
     path: "/personalCol_Test",
