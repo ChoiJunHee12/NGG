@@ -19,12 +19,10 @@ public class MydreamApplication {
 			@Override
 			public void addCorsMappings(CorsRegistry registry) {
 				System.out.println("Test ================");
-
 				registry.addMapping("/**")
 						.allowedOrigins("*")
 						.allowedHeaders("*")
 						.allowedMethods("*").maxAge(3600);
-
 			}
 		};
 	}
