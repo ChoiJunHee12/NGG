@@ -1,5 +1,4 @@
 {
-
     "configurations": [
         {
             "type": "java",
@@ -7,16 +6,6 @@
             "request": "launch",
             "cwd": "${workspaceFolder}",
             "mainClass": "kr.ict.mydream.MydreamApplication",
-            "projectName": "mydream",
-            "args": "",
-            "envFile": "${workspaceFolder}/.env"
-        },
-        {
-            "type": "java",
-            "name": "Spring Boot-ITVResController<mydream>",
-            "request": "launch",
-            "cwd": "${workspaceFolder}",
-            "mainClass": "kr.ict.mydream.ITVRes.ITVResController",
             "projectName": "mydream",
             "args": "",
             "envFile": "${workspaceFolder}/.env"
