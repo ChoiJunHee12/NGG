@@ -64,7 +64,7 @@
                   type="text"
                   class="cvwrite-cv1-input"
                   placeholder="출생년도"
-                  v-model="detail.birth"
+                  v-model=detail.birth
                 />
               </td>
             </tr>
@@ -329,16 +329,18 @@ export default {
 
       if (num) {
         axios
-          .get(`${process.env.VUE_APP_MYBATIS_URL}/cv/cvUpdate?num=${num}`, {
+          .post(`${process.env.VUE_APP_BACK_END_URL}/cv/cvUpdate?num=${num}`, this.detail, {
             headers: { "Content-Type": "application/json" },
           })
           .then((res) => {
+            console.log(this.detail);
             console.log(res.data);
+
           });
         this.savecom = !this.savecom;
       } else {
         axios
-          .get(`${process.env.VUE_APP_MYBATIS_URL}/cv/cvAdd`, {
+          .get(`${process.env.VUE_APP_BACK_END_URL}/cv/cvAdd`, {
             headers: { "Content-Type": "application/json" },
           })
           .then((res) => {

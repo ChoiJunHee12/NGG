@@ -71,7 +71,7 @@ export default {
       this.$router.push({ name: "cvUpdate", query: { num: num } }); //나중에 파라미터 넣어주세요
     },
     deletecv(num){
-        axios.get(`${process.env.VUE_APP_MYBATIS_URL}/cv/cvDelete?num=${num}`)
+        axios.get(`${process.env.VUE_APP_BACK_END_URL}/cv/cvDelete?num=${num}`)
         .then(this.$router.push({name: "cvlist"}));
     }
   },
