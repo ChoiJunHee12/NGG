@@ -114,9 +114,6 @@
             <div v-for="(feedback, index) in CTFeedback" :key="index">
               ○ {{ feedback }}
             </div>
-            <!-- 전체적으로 자세를 유지하는 시간이 길지 않으며, 집중도가 떨어짐을 확인할 수 있다. dasdsadsa
-            ㅇㅁㄴㅇㅁㄴㅇㅁㄴㅇㄴㅁㅇㄴㅁㅇㅁㄴㅇㄴㅁㅇㅁㄴㅇㄴㅁㅇㄴㅁㅇㄴㅁㅇㄴㅁㅇㄴㅁㅇㄴㅁㅇㅁㄴㅇㅁ
-            ㄴㅇㄴㅁㅇㄹㅇㄴㄹㄴㅇㄹㄴㅇㄹㄴㅇㄹㄴㅇㄹㅇㄴㄹㄴㅇㄹㄴㅇㄹㄴㅇㄹㄴㅇㄹㄴㅇㄹㄴㅇㄹㄴㅇㄹㄴㅇd -->
           </div>
         </div>
         <div class="reshdudy-btnarea">
@@ -152,8 +149,8 @@ export default {
       axios.get(`${process.env.VUE_APP_BACK_END_URL}/itv/userData`)
     .then(response => {
       const { mname, resDate } = response.data;
-      this.mname = mname;
-      this.resDate = resDate ;
+      this.mname = response.data.mname[0];
+      this.resDate = response.data.resDate[0];
       console.log(response.data)
     })
     },
@@ -224,14 +221,20 @@ fetchAIFeedback() {
       this.isReviewSubmitted = true;
     },
     face() {
-      const chartContainer = document.getElementById('face');
-      chartContainer.style.width = '300px';
-      chartContainer.style.height = '400px';
+  const chartContainer = document.getElementById('face');
+  chartContainer.style.width = '300px';
+  chartContainer.style.height = '400px';
 
-      var myChart = echarts.init(chartContainer);
-      var option = {
+  var myChart = echarts.init(chartContainer);
+
+  axios.get(`${process.env.VUE_APP_BACK_END_URL}/itv/faceData`)
+    .then(function(response){
+      console.log(response.data); // 응답 데이터 확인
+
+      let faceData = response.data; // response.data가 faceData임을 가정
+      let option = {
         title: {
-          text: '감정 점수'
+          text: faceData.chartname // 감정 점수
         },
         tooltip: {
           trigger: 'axis'
@@ -267,16 +270,23 @@ fetchAIFeedback() {
             },
             data: [
               {
-                value: [60, 73, 85, 40, 65],
-                name: '감정 점수'
+                value: [faceData.values[0], faceData.values[1],faceData.values[2],faceData.values[3],faceData.values[4],],// [60, 73, 85, 40, 65]
+                name: faceData.chartname // 감정 점수
               }
             ]
           }
         ]
       };
       myChart.setOption(option);
-    },
+    })
+    .catch(function(error) {
+      console.error('서버 오류:', error);
+    });
+},
+
     barchart() {
+      axios.get(`${process.env.VUE_APP_BACK_END_URL}/itv/barData`)
+    .then(function(response){
       Highcharts.chart('barchart', {
         chart: {
           type: 'column',
@@ -291,7 +301,7 @@ fetchAIFeedback() {
           align: 'left'
         },
         xAxis: {
-          categories: ['Q1', 'Q2'],
+          categories: ['Q1', 'Q2', 'Q3', 'Q4', 'Q5'],
           crosshair: true,
           accessibility: {
             description: 'Countries'
@@ -314,14 +324,17 @@ fetchAIFeedback() {
         },
         series: [
           {
-            name: '목 꺾임',
-            data: [8, 3],
+            name: response.data.chartname,
+            data: response.data.values,
             color: '#08AD94'
           }
         ]
-      });
+      })
+    })
     },
     voiceg() {
+      axios.get(`${process.env.VUE_APP_BACK_END_URL}/itv/voicegData`)
+    .then(function(response){
       Highcharts.chart('voiceg', {
         chart: {
           height: 380,
@@ -337,7 +350,7 @@ fetchAIFeedback() {
         },
         yAxis: {
           title: {
-            text: '누적 목소리 떨림 횟수'
+            text: response.data.chartname
           }
         },
         xAxis: {
@@ -365,23 +378,23 @@ fetchAIFeedback() {
         series: [
           {
             name: 'Q1',
-            data: [0, 0, 1, 2, 2, 2, 2, 3, 3, 3]
+            data: response.data.q1
           },
           {
             name: 'Q2',
-            data: [0, 1, 2, 3, 3, 3, 3, 3, 4, 4]
+            data: response.data.q2
           },
           {
             name: 'Q3',
-            data: [0, 0, 1, 1, 1, 1, 1, 2, 2, 2]
+            data: response.data.q3
           },
           {
             name: 'Q4',
-            data: [0, 0, 1, 2, 2, 2, 2, 3, 4, 5]
+            data: response.data.q4
           },
           {
             name: 'Q5',
-            data: [0, 0, 0, 0, 0, 0, 0, 1, 1, 1]
+            data: response.data.q5
           }
         ],
         responsive: {
@@ -401,10 +414,12 @@ fetchAIFeedback() {
           ]
         }
       });
+    })
     },
     wordcloud() {
-      const text =
-        "Chapter 1. Down the Rabbit-Hole Alice was beginning to get very tired of sitting by her sister on the bank, and of having nothing to do: once or twice she had peeped into the book her sister was reading, but it had no pictures or conversations in it, 'and what is the use of a book,' thought Alice 'without pictures or conversation?' So she was considering in her own mind (as well as she could, for the hot day made her feel very sleepy and stupid), whether the pleasure of making a daisy-chain would be worth the trouble of getting up and picking the daisies, when suddenly a White Rabbit with pink eyes ran close by her.",
+      axios.get(`${process.env.VUE_APP_BACK_END_URL}/itv/wordCloud`)
+    .then(function(response){
+      const text =response.data,
         lines = text.replace(/[():'?0-9]+/g, '').split(/[,\. ]+/g),
         data = lines.reduce((arr, word) => {
           let obj = Highcharts.find(arr, obj => obj.name === word);
@@ -439,7 +454,7 @@ fetchAIFeedback() {
           }
         ],
         title: {
-          text: '이력서 키워드 유사도 카운트',
+          text: '면접답변 빈도 check',
           align: 'left'
         },
         subtitle: {
@@ -450,6 +465,7 @@ fetchAIFeedback() {
           headerFormat: '<span style="font-size: 16px"><b>{point.key}</b></span><br>'
         }
       });
+    })
     }
   },
   mounted() {

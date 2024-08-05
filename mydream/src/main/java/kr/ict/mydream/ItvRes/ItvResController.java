@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 import java.util.Map;
+
 import java.util.Arrays;
 import java.util.HashMap;
 
@@ -42,7 +43,7 @@ public class ItvResController {
         data.put("question", Arrays.asList("질문1", "질문2", "질문3", "질문4", "질문5", "질문6", "질문7"));
         data.put("comment", Arrays.asList("답변1", "답변2", "답변3", "답변4", "답변5", "답변6", "답변7"));
         data.put("feedback", Arrays.asList("피드백1", "피드백2", "피드백3", "피드백4", "피드백5"));
-        System.out.println(ResponseEntity.ok(data));
+        // System.out.println(ResponseEntity.ok(data));
 
         return ResponseEntity.ok(data);
     }
@@ -74,9 +75,54 @@ public class ItvResController {
         Map<String, Object> data = new HashMap<>();
         data.put("mname", Arrays.asList("야옹이"));
         data.put("resDate", Arrays.asList("2024.08.01"));
-        System.out.println(ResponseEntity.ok(data));
+        // System.out.println(ResponseEntity.ok(data));
 
         return ResponseEntity.ok(data);
+    }
+
+    @GetMapping("/faceData")
+    public ResponseEntity<Map<String, Object>> getFaceData() {
+        Map<String, Object> response = new HashMap<>();
+        int[] values = { 60, 73, 85, 40, 65 }; // 실제 데이터 값
+        response.put("values", values);
+        response.put("chartname", "감정 점수");
+        // System.out.println(ResponseEntity.ok(response));
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/barData")
+    public ResponseEntity<Map<String, Object>> getBarData() {
+        Map<String, Object> response = new HashMap<>();
+        int[] values = { 60, 73, 85, 40, 65 }; // 실제 데이터 값
+        response.put("values", values);
+        response.put("chartname", "머리흔들림");
+        System.out.println(ResponseEntity.ok(response));
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/voicegData")
+    public ResponseEntity<Map<String, Object>> getvoicegData() {
+        Map<String, Object> response = new HashMap<>();
+        int[] q1 = { 0, 0, 1, 2, 2, 2, 2, 3, 3, 3 }; // 실제 데이터 값
+        int[] q2 = { 0, 1, 2, 3, 3, 3, 3, 3, 4, 4 };
+        int[] q3 = { 0, 0, 1, 1, 1, 1, 1, 2, 2, 2 };
+        int[] q4 = { 0, 0, 1, 2, 2, 2, 2, 3, 4, 5 };
+        int[] q5 = { 0, 0, 0, 0, 0, 0, 0, 1, 1, 1 };
+        response.put("q1", q1);
+        response.put("q2", q2);
+        response.put("q3", q3);
+        response.put("q4", q4);
+        response.put("q5", q5);
+        response.put("chartname", "머리흔들림");
+        System.out.println(ResponseEntity.ok(response));
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/wordCloud")
+    public String getWordCloud() {
+        String wordCloud = "Chapter 1. Down the Rabbit-Hole Alice was beginning to get very tired of sitting by her sister on the bank, and of having nothing to do: once or twice she had peeped into the book her sister was reading, but it had no pictures or conversations in it, 'and what is the use of a book,' thought Alice 'without pictures or conversation?' So she was considering in her own mind (as well as she could, for the hot day made her feel very sleepy and stupid), whether the pleasure of making a daisy-chain would be worth the trouble of getting up and picking the daisies, when suddenly a White Rabbit with pink eyes ran close by her. ";
+        System.out.println(wordCloud);
+        return wordCloud;
     }
 
 }

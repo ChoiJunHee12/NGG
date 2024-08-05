@@ -120,27 +120,29 @@
 import axios from 'axios';
 import * as echarts from 'echarts';
 export default {
-    data() {
-        return {
-            mname: "",
-            resDate:"",
-            activePage: 1,
-            page:1,
-            Question:[],
-            Comment:[],
-            feedback:[],
-            i:0,
-            content:1,
-            AIFeedback: [],
-
-        }
-    },
-    methods: {fetchUserData(){
+  data() {
+    return {
+      mname: "",
+      resDate:"",
+      activePage: 1,
+      page: 1,
+      Question: [],
+      Comment: [],
+      feedback: [],
+      i: 0,
+      content: 1,
+      isReviewSubmitted: false,
+      AIFeedback: [],
+      CTFeedback: [],
+    };
+  },
+  methods: {
+    fetchUserData(){
       axios.get(`${process.env.VUE_APP_BACK_END_URL}/itv/userData`)
     .then(response => {
       const { mname, resDate } = response.data;
-      this.mname = mname;
-      this.resDate = resDate ;
+      this.mname = response.data.mname[0];
+      this.resDate = response.data.resDate[0];
       console.log(response.data)
     })
     },
@@ -167,319 +169,301 @@ fetchAIFeedback() {
         console.error('서버 오류:', error);
       });
   },
-        scrollToTop() {
-            const container = this.$el.querySelector('.resh-con.scrollable-div');
-            container.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
-        },
-        next(){
-            this.pagechage(this.page+1);
-            this.activePage = this.page;
-            this.scrollToTop();
-        },
-        Previous(){
-            this.pagechage(this.page-1);
-            this.activePage = this.page;
-            this.scrollToTop();
-        },
-        pagechage(num){
-            console.log(num)
-            this.page=num;
-            this.activePage = num;
-            this.i=num-1;
-            if(num===6){
-                this.content=6
-            }else{
-                this.content=1
-            }
-        },
-        displayPage(pageNum) {
-            
-            return this.content === pageNum ? { display: 'block' } : { display: 'none' };
-        },
-        
-        face(){
-            const chartContainer = document.getElementById('face');
-    chartContainer.style.width = '300px';
-    chartContainer.style.height = '400px';
-
-    // ECharts 초기화
-    var myChart = echarts.init(chartContainer);
-var option = {
-  title: {
-    text: '감정 점수'
+  fetchCTFeedback(){
+    axios.get(`${process.env.VUE_APP_BACK_END_URL}/itv/fetchCTFeedback`)
+      .then(response => {
+        this.CTFeedback = response.data;
+      })
+      .catch(error => {
+        console.error('서버 오류:', error);
+      });
   },
-  tooltip: {
-    trigger: 'axis'
-  },
-  legend: {
-    left: 'left',
-    data: [
-      '점',
+    scrollToTop() {
+      const container = this.$el.querySelector('.reshduty-con.scrollable-div');
+      container.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    },
+    next() {
+      this.pagechage(this.page + 1);
+      this.activePage = this.page;
+      this.scrollToTop();
+    },
+    Previous() {
+      this.pagechage(this.page - 1);
+      this.activePage = this.page;
+      this.scrollToTop();
+    },
+    pagechage(num) {
+      console.log(num);
+      this.page = num;
+      this.activePage = num;
+      this.i = num - 1;
+      if (num === 8) {
+        this.content = 8;
+      } else {
+        this.content = 1;
+      }
+    },
+    displayPage(pageNum) {
+      return this.content === pageNum ? { display: 'block' } : { display: 'none' };
+    },
+    submitReview() {
+      this.isReviewSubmitted = true;
+    },
+    face() {
+  const chartContainer = document.getElementById('face');
+  chartContainer.style.width = '300px';
+  chartContainer.style.height = '400px';
 
-    ]
-  },
-  radar: [
-    {
-      indicator: [
-        { text: 'Q1', max: 100 },
-        { text: 'Q2', max: 100 },
-        { text: 'Q3', max: 100 },
-        { text: 'Q4', max: 100 },
-        { text: 'Q5', max: 100}
-      ],
-      center: ['50%', '50%'],
-      radius: 80
-    },
+  var myChart = echarts.init(chartContainer);
 
+  axios.get(`${process.env.VUE_APP_BACK_END_URL}/itv/faceData`)
+    .then(function(response){
+      console.log(response.data); // 응답 데이터 확인
 
-  ],
-  series: [
-    {
-      type: 'radar',
-      tooltip: {
-        trigger: 'item'
-      },
-      areaStyle: {},
-      data: [
-        {
-          value: [60, 73, 85, 40,65],
-          name: '감정 점수'
-        }
-      ]
-    },
-    
-  ]
-};
-myChart.setOption(option);
-        },
-        barchart(){
-            Highcharts.chart('barchart', {
-    chart: {
-        type: 'column',
-        height:'380px',
-    },
-    title: {
-        text: '자세 흐트러짐',
-        align: 'left'
-    },
-    subtitle: {
-        text:
-            '',
-        align: 'left'
-    },
-    xAxis: {
-        categories: ['Q1', 'Q2'],
-        crosshair: true,
-        accessibility: {
-            description: 'Countries'
-        }
-    },
-    yAxis: {
-        min: 0,
+      let faceData = response.data; // response.data가 faceData임을 가정
+      let option = {
         title: {
+          text: faceData.chartname // 감정 점수
+        },
+        tooltip: {
+          trigger: 'axis'
+        },
+        legend: {
+          left: 'left',
+          data: ['점']
+        },
+        radar: [
+          {
+            indicator: [
+              { text: 'Q1', max: 100 },
+              { text: 'Q2', max: 100 },
+              { text: 'Q3', max: 100 },
+              { text: 'Q4', max: 100 },
+              { text: 'Q5', max: 100 }
+            ],
+            center: ['50%', '50%'],
+            radius: 80
+          }
+        ],
+        series: [
+          {
+            type: 'radar',
+            tooltip: {
+              trigger: 'item'
+            },
+            areaStyle: {},
+            data: [
+              {
+                value: [faceData.values[0], faceData.values[1],faceData.values[2],faceData.values[3],faceData.values[4],],// [60, 73, 85, 40, 65]
+                name: faceData.chartname // 감정 점수
+              }
+            ]
+          }
+        ]
+      };
+      myChart.setOption(option);
+    })
+    .catch(function(error) {
+      console.error('서버 오류:', error);
+    });
+},
+
+    barchart() {
+      axios.get(`${process.env.VUE_APP_BACK_END_URL}/itv/barData`)
+    .then(function(response){
+      Highcharts.chart('barchart', {
+        chart: {
+          type: 'column',
+          height: '380px'
+        },
+        title: {
+          text: '자세 흐트러짐',
+          align: 'left'
+        },
+        subtitle: {
+          text: '',
+          align: 'left'
+        },
+        xAxis: {
+          categories: ['Q1', 'Q2', 'Q3', 'Q4', 'Q5'],
+          crosshair: true,
+          accessibility: {
+            description: 'Countries'
+          }
+        },
+        yAxis: {
+          min: 0,
+          title: {
             text: 'Count'
-        }
-    },
-    tooltip: {
-        valueSuffix: '(회)'
-    },
-    plotOptions: {
-        column: {
+          }
+        },
+        tooltip: {
+          valueSuffix: '(회)'
+        },
+        plotOptions: {
+          column: {
             pointPadding: 0.2,
             borderWidth: 0
-        }
+          }
+        },
+        series: [
+          {
+            name: response.data.chartname,
+            data: response.data.values,
+
+          }
+        ]
+      })
+    })
     },
-    series: [
-        {
-            name: '목 꺽임',
-            data: [8, 3],
-            // color:'#08AD94'
+    voiceg() {
+      axios.get(`${process.env.VUE_APP_BACK_END_URL}/itv/voicegData`)
+    .then(function(response){
+      Highcharts.chart('voiceg', {
+        chart: {
+          height: 380,
+          width: 470
         },
-        
-        
-    ]
-});
+        title: {
+          text: '음성 떨림',
+          align: 'left'
         },
-        voiceg(){
-    Highcharts.chart('voiceg', {
-chart:{
-    height: 380, // Height of the chart
-    width: 470,   // Width of the chart
-},
-title: {
-    text: '음성 떨림',
-    align: 'left'
-},
-
-subtitle: {
-    text: '',
-    align: 'left'
-},
-
-yAxis: {
-    title: {
-        text: '누적 목소리 떨림 횟수'
-    }
-},
-
-xAxis: {
-    title:{
-        text:'(초)'
-    },
-    accessibility: {
-        rangeDescription: '(초)'
-    }
-},
-
-legend: {
-    layout: 'vertical',
-    align: 'right',
-    verticalAlign: 'middle'
-},
-
-plotOptions: {
-    series: {
-        label: {
-            connectorAllowed: false
+        subtitle: {
+          text: '',
+          align: 'left'
         },
-        pointStart: 0,
-        pointInterval: 10
-    }
-},
-
-series: [{
-    name: 'Q1',
-    data: [
-        0, 0, 1, 2, 2, 2,2,
-        3, 3, 3
-    ]
-},
-{
-    name: 'Q2',
-    data: [
-        0, 1, 2, 3, 3, 3,3,
-        3, 4, 4
-    ]
-},
-{
-    name: 'Q3',
-    data: [
-        0, 0, 1, 1, 1, 1,1,
-        2, 2, 2
-    ]
-},
-{
-    name: 'Q4',
-    data: [
-        0, 0, 1, 2, 2, 2,2,
-        3, 4, 5
-    ]
-},
-{
-    name: 'Q5',
-    data: [
-        0, 0, 0, 0, 0, 0,0,
-        1, 1, 1
-    ]
-}
-],
-
-responsive: {
-    rules: [{
-        condition: {
-            maxWidth: 500
+        yAxis: {
+          title: {
+            text: response.data.chartname
+          }
         },
-        chartOptions: {
-            legend: {
-                layout: 'horizontal',
-                align: 'center',
-                verticalAlign: 'bottom'
+        xAxis: {
+          title: {
+            text: '(초)'
+          },
+          accessibility: {
+            rangeDescription: '(초)'
+          }
+        },
+        legend: {
+          layout: 'vertical',
+          align: 'right',
+          verticalAlign: 'middle'
+        },
+        plotOptions: {
+          series: {
+            label: {
+              connectorAllowed: false
+            },
+            pointStart: 0,
+            pointInterval: 10
+          }
+        },
+        series: [
+          {
+            name: 'Q1',
+            data: response.data.q1
+          },
+          {
+            name: 'Q2',
+            data: response.data.q2
+          },
+          {
+            name: 'Q3',
+            data: response.data.q3
+          },
+          {
+            name: 'Q4',
+            data: response.data.q4
+          },
+          {
+            name: 'Q5',
+            data: response.data.q5
+          }
+        ],
+        responsive: {
+          rules: [
+            {
+              condition: {
+                maxWidth: 500
+              },
+              chartOptions: {
+                legend: {
+                  layout: 'horizontal',
+                  align: 'center',
+                  verticalAlign: 'bottom'
+                }
+              }
             }
+          ]
         }
-    }]
-}
-
-});
-},
-
-        wordcloud(){
-        const text =
-        'Chapter 1. Down the Rabbit-Hole ' +
-        'Alice was beginning to get very tired of sitting by her sister on ' +
-        'the bank, and of having nothing to do: ' +
-        'once or twice she had peeped into the book her sister was reading, ' +
-        'but it had no pictures or conversations ' +
-        'in it, \'and what is the use of a book,\' thought Alice ' +
-        '\'without pictures or conversation?\'' +
-        'So she was considering in her own mind (as well as she could, for ' +
-        'the hot day made her feel very sleepy ' +
-        'and stupid), whether the pleasure of making a daisy-chain would be ' +
-        'worth the trouble of getting up and picking ' +
-        'the daisies, when suddenly a White Rabbit with pink eyes ran close ' +
-        'by her.',
-    lines = text.replace(/[():'?0-9]+/g, '').split(/[,\. ]+/g),
-    data = lines.reduce((arr, word) => {
-        let obj = Highcharts.find(arr, obj => obj.name === word);
-        if (obj) {
+      });
+    })
+    },
+    wordcloud() {
+      axios.get(`${process.env.VUE_APP_BACK_END_URL}/itv/wordCloud`)
+    .then(function(response){
+      const text =response.data,
+        lines = text.replace(/[():'?0-9]+/g, '').split(/[,\. ]+/g),
+        data = lines.reduce((arr, word) => {
+          let obj = Highcharts.find(arr, obj => obj.name === word);
+          if (obj) {
             obj.weight += 1;
-        } else {
+          } else {
             obj = {
-                name: word,
-                weight: 1
+              name: word,
+              weight: 1
             };
             arr.push(obj);
-        }
-        return arr;
-    }, []);
+          }
+          return arr;
+        }, []);
 
-Highcharts.chart('wordcloud1', {
-    chart: {
-            height: 380, // Height of the chart
-            width: 470,   // Width of the chart
-
+      Highcharts.chart('wordcloud1', {
+        chart: {
+          height: 380,
+          width: 470
         },
-    accessibility: {
-        screenReaderSection: {
-            beforeChartFormat: '<h5>{chartTitle}</h5>' +
-                '<div>{chartSubtitle}</div>' +
-                '<div>{chartLongdesc}</div>' +
-                '<div>{viewTableButton}</div>'
+        accessibility: {
+          screenReaderSection: {
+            beforeChartFormat:
+              '<h5>{chartTitle}</h5><div>{chartSubtitle}</div><div>{chartLongdesc}</div><div>{viewTableButton}</div>'
+          }
+        },
+        series: [
+          {
+            type: 'wordcloud',
+            data,
+            name: 'Occurrences'
+          }
+        ],
+        title: {
+          text: '면접답변 빈도 check',
+          align: 'left'
+        },
+        subtitle: {
+          text: '',
+          align: 'left'
+        },
+        tooltip: {
+          headerFormat: '<span style="font-size: 16px"><b>{point.key}</b></span><br>'
         }
-    },
-    series: [{
-        type: 'wordcloud',
-        data,
-        name: 'Occurrences'
-    }],
-    title: {
-        text: '이력서 키워드 유사도 카운트',
-        align: 'left'
-    },
-    subtitle: {
-        text: '',
-        align: 'left'
-    },
-    tooltip: {
-        headerFormat: '<span style="font-size: 16px"><b>{point.key}</b>' +
-            '</span><br>'//커서 내용
+      });
+    })
     }
-});
-    }
-    },
-    mounted() {
-        this.wordcloud();
-        this.barchart();
-        this.face();
-        this.voiceg();
-        this.fetchQuestionData();
-        this.fetchAIFeedback();
-        this.fetchUserData();
-    },
-}
+  },
+  mounted() {
+    this.wordcloud();
+    this.barchart();
+    this.face();
+    this.voiceg();
+    this.fetchQuestionData();
+    this.fetchAIFeedback();
+    this.fetchCTFeedback();
+    this.fetchUserData();
+  }
+};
 </script>
-<style scoped>
-
-</style>
