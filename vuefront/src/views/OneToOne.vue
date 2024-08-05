@@ -74,7 +74,7 @@ export default {
     methods: {
         connect() { //웹소켓 연결 시도
             this.token = "your_token_value_here";
-            this.ws = new WebSocket('ws://localhost:8082/ws/chat',this.token); // 서버 URL에 맞게 수정 필요
+            this.ws = new WebSocket('ws://192.168.0.13/ws/chat',this.token); // 서버 URL에 맞게 수정 필요
             this.ws.onmessage = (event) => {
             this.onMessage(event);
             };
