@@ -11,26 +11,6 @@
         </div>
         <div class="OTO-notice">
             📢&nbsp; 답변 시간은 컨설턴트 상황에 따라 다르게 소요되며 욕설 및 비방을 한 사용자는 경고 조치 없이 불이익을 받을 수 있습니다.
-            <div class="chat-container-ex">
-            <div class="chat-message consultant">
-                <img src="/img/noimage.png" alt="message.type" class="chat-profile-image" >
-                <div class="message-info">
-                    <div class="message-text">
-                        컨설턴트의 메세지입니다.<br>
-                        컨설턴트의 답변이 왼쪽에 보입니다.
-                    </div>
-                    </div>
-                </div>
-            <div class="chat-message user">
-                <img src="/img/noimage.png" alt="message.type" class="chat-profile-image" >
-                <div class="message-info">
-                    <div class="message-text">
-                        당신의 메세지입니다.<br>
-                        당신의 메세지는 오른쪽에 보입니다.
-                    </div>
-                </div>
-            </div>
-            </div>
         </div>   
         <div class="OTO-con">
             <div class="chat-container scrollable-div" ref="chatContainer">
