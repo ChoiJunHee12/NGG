@@ -5,6 +5,8 @@ import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -36,8 +38,9 @@ public class CVController {
         System.out.println(num + "번 이력서 삭제");
     }
 
-    @GetMapping("/cvUpdate")
-    public ResponseEntity<?> cvUpdate(@RequestParam("num") int num) {
+    @PostMapping("/cvUpdate")
+    public ResponseEntity<?> cvUpdate(@RequestParam("num") int num, @RequestBody Map<String, String> resp) {
+        System.out.println("받은 데이터 : " + resp);
         System.out.println(num + "번 이력서 수정");
         return ResponseEntity.ok().body(2);
     }
