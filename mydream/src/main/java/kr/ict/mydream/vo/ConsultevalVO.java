@@ -15,7 +15,7 @@ public class ConsultevalVO {
     private int qno;
     private int memno;
     private int cnsno;
-    private String qcnsfpeedbk;
+    private String qcnsfeedbk;
     private float qcnsscore;
     private Date credt;
     private Date upddt;
