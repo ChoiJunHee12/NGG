@@ -13,7 +13,7 @@ public class ChatRoomVO {
 
     private int chtno;
     private int memno;
-    private int snsno;
+    private int cnsno;
     private String chatname;
     private Date credt;
     private Date upddt;
