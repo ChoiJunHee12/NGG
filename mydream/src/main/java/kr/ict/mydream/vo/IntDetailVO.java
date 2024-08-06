@@ -9,10 +9,10 @@ import java.util.Date;
 @Getter
 @Setter
 @Alias("intdetailvo")
-public class IntresVO {
+public class IntDetailVO {
     private int intno;
     private int qno;
-    private int aiqno
+    private int aiqno;
     private int cnsqno;
     private String question;
     private String answer;

@@ -16,7 +16,7 @@ export default {
     props:['mData'],
     methods:{
         cvlist(){
-            this.$router.push('/cvlist')
+            this.$router.push('/ResumeList')
         },
         cvhome(){
             this.$router.push('/Main')

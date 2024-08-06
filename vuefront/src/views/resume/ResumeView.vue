@@ -25,15 +25,17 @@
             <!-- 이쪽 데이터받으면 for 문-->
             <tr v-for="(item, index) in items" :key="index" class="cv-tr2">
               <td>
-                <div class="cv-cvtitle" @click="updatecv(index)">
-                  {{ item }}
+                <div class="cv-cvtitle" @click="updatecv(item.rsmno)">
+                  {{ item.title }}
                 </div>
               </td>
               <td class="cvbtn-area">
-                <button class="cv-upbtn" @click="updatecv(index)">수정</button>
+                <button class="cv-upbtn" @click="updatecv(item.rsmno)">수정</button>
                 <button class="cv-delbtn" @click="deletecv(index)">삭제</button>
               </td>
-              <td><div class="cv-update-date">2024-07-25</div></td>
+              <td>
+                  <div class="cv-update-date">{{dateFormat(item.upddt)}}</div>
+              </td>
             </tr>
             <!--  -->
           </table>
@@ -58,21 +60,39 @@ export default {
   data() {
     return {
       show: true,
-      items: [
-        "이거쓴 내 첫번째 이력서여....",
-        "이거쓴 내 두번째 이력서여....",
-        "이거쓴 내 세번째 이력서여....",
-        "이거쓴 내 네번째 이력서여....",
-      ],
+      items: {},
     };
   },
+  created() {
+    this.fetchData();
+  },
   methods: {
+    fetchData(){
+      axios.post(`${process.env.VUE_APP_BACK_END_URL}/resume/resumeList`)
+      .then((res)=>{
+        console.log("호출 성공")
+        this.items = res.data
+        console.log(this.items)
+        if(this.items.rsmno.length === 0){
+          this.show = false;
+        }else{
+          this.show = false;
+        }
+      })
+      .catch((err)=> {
+        console.log("호출 실패")
+        console.log(err)
+      })
+    },
+    dateFormat(str){
+      return str.split('T')[0];
+    },
     updatecv(num) {
-      this.$router.push({ name: "cvUpdate", query: { num: num } }); //나중에 파라미터 넣어주세요
+      this.$router.push({ name: "ResumeUpdate", query: { num: num } }); //나중에 파라미터 넣어주세요
     },
     deletecv(num){
-        axios.get(`${process.env.VUE_APP_BACK_END_URL}/cv/cvDelete?num=${num}`)
-        .then(this.$router.push({name: "cvlist"}));
+        axios.get(`${process.env.VUE_APP_BACK_END_URL}/resume/resumeDelete?num=${num}`)
+        .then(this.$router.push({name: "ResumeList"}));
     }
   },
 };
