@@ -8,14 +8,15 @@ import org.apache.ibatis.type.Alias;
 
 @Getter
 @Setter
-@Alias("chatroomvo")
-public class ChatRoomVO {
+@Alias("consultevalvo")
+public class ConsultevalVO {
 
-    private int chtno;
+    private int intno;
+    private int qno;
     private int memno;
     private int cnsno;
-    private String chatname;
+    private String qcnsfeedbk;
+    private float qcnsscore;
     private Date credt;
     private Date upddt;
-
 }

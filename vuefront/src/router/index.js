@@ -5,9 +5,10 @@ import OneToOne from "../views/OneToOne.vue";
 const routes = [
   {
     path: "/",
-    name: "Lending",
+    name: "Landing",
     component: () =>
-      import(/* webpackChunkName: "about" */ "../views/Lending.vue"),
+      import(/* webpackChunkName: "about" */ "../views/Landing.vue"),
+    // meta: { hideLayout: true }  // 메타 필드 추가
   },
 
   {
