@@ -9,14 +9,12 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@Alias("cnscareervo")
-public class CnsCareerVO {
+@Alias("selfintrovo")
+public class SelfIntroVO {
     private int seqno;
-    private int cnsno;
-    private String term;
+    private int rsmno;
+    private String title;
     private String content;
-    private String detail;
-    private String careerdiv;
     private Date credt;
     private Date upddt;
 }

@@ -291,7 +291,7 @@
 </template>
 
 <script>
-import CVsave from "../../components/CVsave.vue";
+import CVsave from "../../components/ResumeSave.vue";
 import axios from "axios";
 export default {
   data() {
@@ -315,7 +315,7 @@ export default {
     fetchData(num) {
       console.log(num);
       axios
-        .get(`${process.env.VUE_APP_MYBATIS_URL}/cv/cvDetail?num=${num}`)
+        .get(`${process.env.VUE_APP_BACK_END_URL}/resume/resumeDetail?num=${num}`)
         .then((resp) => {
           console.log(resp.data);
           this.detail = resp.data;
@@ -329,7 +329,7 @@ export default {
 
       if (num) {
         axios
-          .post(`${process.env.VUE_APP_BACK_END_URL}/cv/cvUpdate?num=${num}`, this.detail, {
+          .post(`${process.env.VUE_APP_BACK_END_URL}/resume/resumeUpdate?num=${num}`, this.detail, {
             headers: { "Content-Type": "application/json" },
           })
           .then((res) => {
@@ -340,7 +340,7 @@ export default {
         this.savecom = !this.savecom;
       } else {
         axios
-          .get(`${process.env.VUE_APP_BACK_END_URL}/cv/cvAdd`, {
+          .get(`${process.env.VUE_APP_BACK_END_URL}/resume/resumeAdd`, {
             headers: { "Content-Type": "application/json" },
           })
           .then((res) => {

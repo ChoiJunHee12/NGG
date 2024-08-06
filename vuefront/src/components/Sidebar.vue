@@ -15,7 +15,7 @@
         <router-link to="/Mypage" class="main-router"
           ><p class="bar-p">마이 페이지</p></router-link
         >
-        <router-link to="/cvlist" class="main-router"
+        <router-link to="/resumelist" class="main-router"
           ><p class="bar-p">이력서 관리</p></router-link
         >
         <router-link to="ConsultantInfo" class="main-router"
