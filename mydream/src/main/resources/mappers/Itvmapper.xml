@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.ict.mydream.ItvRes.ItvDao">
+    <select id="itvAttitudeList" resultType="hvo"> 
+        SELECT intno, memno, inttypecd, credt FROM TBINTRES where inttypecd='1' order by 1 desc
+    </select>
+    <select id="itvCareerList" resultType="hvo">
+        SELECT intno, memno, inttypecd, credt FROM TBINTRES where inttypecd='2' order by 1 desc
+    </select>
+</mapper>
