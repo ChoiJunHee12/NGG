@@ -19,7 +19,7 @@ public class MemberVO {
     private String password;
     private String phonenum;
     private String birthymd;
-    private int loccd;
+    private String loccd;
     private String seasoncd;
     private String entymd;
     private String quitymd;
