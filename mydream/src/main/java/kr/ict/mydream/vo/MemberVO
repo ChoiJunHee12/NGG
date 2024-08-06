@@ -13,6 +13,7 @@ public class MemberVO {
     private int memno;
     private String name;
     private String gendercd;
+    private String nickname;
     private String categcd;
     private String email;
     private String password;
