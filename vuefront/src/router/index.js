@@ -5,9 +5,10 @@ import OneToOne from "../views/OneToOne.vue";
 const routes = [
   {
     path: "/",
-    name: "Lending",
+    name: "Landing",
     component: () =>
-      import(/* webpackChunkName: "about" */ "../views/Lending.vue"),
+      import(/* webpackChunkName: "about" */ "../views/Landing.vue"),
+    // meta: { hideLayout: true }  // 메타 필드 추가
   },
 
   {
@@ -27,23 +28,23 @@ const routes = [
       import(/* webpackChunkName: "about" */ "../views/ai/ResDutyView.vue"),
   },
   {
-    path: "/cvlist",
-    name: "cvlist",
+    path: "/ResumeList",
+    name: "ResumeList",
     component: () =>
-      import(/* webpackChunkName: "about" */ "../views/cv/CVView.vue"),
+      import(/* webpackChunkName: "about" */ "../views/resume/ResumeView.vue"),
   },
   {
-    path: "/cvwrite",
-    name: "cvwrite",
+    path: "/ResumeWrite",
+    name: "ResumeWrite",
 
     component: () =>
-      import(/* webpackChunkName: "about" */ "../views/cv/CVwriteView.vue"),
+      import(/* webpackChunkName: "about" */ "../views/resume/ResumeWriteView.vue"),
   },
   {
 
-    path: '/cvwrite',
-    name: 'cvUpdate',
-    component: () => import(/* webpackChunkName: "about" */ '../views/cv/CVwriteView.vue')
+    path: '/ResumeWrite',
+    name: 'ResumeUpdate',
+    component: () => import(/* webpackChunkName: "about" */ '../views/resume/ResumeWriteView.vue')
   },
   {
     path: '/MyPage',

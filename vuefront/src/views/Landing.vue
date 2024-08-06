@@ -1,10 +1,12 @@
 <template>
-  
-    <div class="section">
+  <div class="landing">
+      <div class="section">
         <div class="video-section">
       <img src="img/Main_image/Nervous.gif" class="landing-img">
     </div>
     <div class="image-section">
+
+
 
 <div class="container1">
   <div data-aos="fade-up">
@@ -90,7 +92,7 @@ data-aos-anchor-placement="top-bottom">
 </div>
 </div>
   
-</div>
+</div></div>
   </template>
   
   <script>
@@ -104,5 +106,26 @@ data-aos-anchor-placement="top-bottom">
   </script>
   
   <style>
+  /* .main-content.sidebar-open {
+  margin-left: -300px;
+  margin-top:-100px;
+  } */
+
+   /* .sidebar-open {
+    padding-left: 0px !important;;
+  } */
+  .landing {
+  position: relative; /* Use absolute positioning */
+  top: -100px;
+  /* left: -100px; */
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  /* height: 100%; */
+  /* overflow-y: auto; 
+  z-index: 99999; 
+  background: rgba(255, 255, 255, 0.9);  
+} */
+  }
   </style>
   

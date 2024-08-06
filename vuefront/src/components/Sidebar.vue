@@ -15,7 +15,7 @@
         <router-link to="/Mypage" class="main-router"
           ><p class="bar-p">마이 페이지</p></router-link
         >
-        <router-link to="/cvlist" class="main-router"
+        <router-link to="/resumelist" class="main-router"
           ><p class="bar-p">이력서 관리</p></router-link
         >
         <router-link to="ConsultantInfo" class="main-router"
@@ -36,8 +36,9 @@
         <hr />
         <router-link to="/personalCol_Test" class="main-router"
           ><p class="bar-p">퍼스널컬러</p></router-link
-        >
-        <i class="bi bi-power power-icon"></i>
+        ><div style="align-items: center;">
+        <i class="bi bi-power power-icon" style="font-style: normal;">&nbsp;&nbsp;로그아웃</i>
+      </div>
       </div>
     </div>
   </transition>
@@ -82,9 +83,12 @@ export default {
 }
 .power-icon {
   position: absolute;
-  bottom: 20px; /* 하단에서 20px 떨어진 위치 */
-  left: 130px; /* 오른쪽에서 20px 떨어진 위치 */
-  font-size: 30px; /* 아이콘 크기 조정 */
+  bottom: 60px;
+   /* 하단에서 20px 떨어진 위치 */
+  left: 31%; 
+  /* 오른쪽에서 20px 떨어진 위치 */
+  font-size: 20px; 
+  /* 아이콘 크기 조정 */
   cursor: pointer; /* 클릭 가능한 표시 */
 }
 </style>

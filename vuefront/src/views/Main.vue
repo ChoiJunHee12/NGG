@@ -31,7 +31,7 @@
                 <td class="mains-headers-td-a">{{ interviewReport.memail }}</td>
               </tr>
               <tr>
-                <td class="mains-headers-td">선호지역</td>
+                <td class="mains-headers-td">거주지역</td>
                 <td class="mains-headers-td-a">
                   {{ interviewReport.prefarea }}
                 </td>
@@ -127,7 +127,7 @@
                   <div class="analysis-rate">{{ interviewReport.scorep }}%</div>
                 </div>
                 <div class="analysis-left">
-                  피드백점수
+                  컨설턴트 평가
                   <div class="progress-container" style="margin-left: 8.5px">
                     <div
                       class="progress-bar"
@@ -194,7 +194,7 @@
             <div id="chart-3" style="height: 300px"></div>
           </div>
           <div class="box6">
-            <p class="box-text">일관성 분석 결과</p>
+            <p class="box-text">컨설턴트 평가 결과</p>
             <hr class="box-line" />
             <div id="chart-4" style="height: 300px"></div>
           </div>
@@ -277,46 +277,7 @@
       </div>
     </div>
 
-    <!-- 일정관리 탭 -->
-    <div
-      id="schedule-management"
-      class="tab-content"
-      v-if="activeSection === 'schedule-management'"
-    >
-      <div style="display: flex; justify-content: flex-start">
-        <div class="box14">
-          <FullCalendar
-            v-if="activeSection === 'schedule-management'"
-            :options="calendarOptions"
-            @dateClick="handleDateClick"
-          />
-        </div>
-
-        <div class="box13-container">
-          <div class="box13">
-            <p class="box-text">D-Day</p>
-            <hr class="box-line" />
-            <ul class="cal-day">
-              <li v-for="(dDay, index) in dDays" :key="index">
-                <strong>{{ dDay.title }}</strong
-                >: {{ dDay.daysAway }}일 남음
-              </li>
-            </ul>
-          </div>
-
-          <div class="box13">
-            <p class="box-text">일정</p>
-            <hr class="box-line" />
-            <ul class="cal-day">
-              <li v-for="event in eventsList" :key="event.title">
-                <strong>{{ event.title }}</strong
-                >: {{ event.start }} ~ {{ event.end || event.start }}
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
+    <!-- 일정관리 탭 삭제 : 사이드 바로 이동 -->
 
     <div>
       <p
