@@ -9,7 +9,7 @@ import java.util.Date;
 @Getter
 @Setter
 @Alias("intresvo")
-public class IntresVO {
+public class IntResVO {
     private int intno;
     private int memno;
     private String inttypecd;
