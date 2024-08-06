@@ -187,6 +187,12 @@ export default {
         "#4C4C4C",
         "#030119",
       ],
+      season:null,
+      spring:null,
+      winter:null,
+      autumn:null,
+      summer:null,
+
     };
   },
   methods: {
@@ -226,7 +232,7 @@ export default {
         this.formData = new FormData();
         this.formData.append('imgfile', file);
 
-        axios.post(`${process.env.VUE_APP_DJANGO_APP_BACK_END_URL}/detect_mask`, this.formData, {
+        axios.post(`${process.env.VUE_APP_DJANGO_APP_BACK_END_URL}personalcol/detect_mask`, this.formData, {
           headers: { 'Content-Type': 'multipart/form-data' },
         }).then((response) => {
           
@@ -245,6 +251,22 @@ export default {
             this.imageUploaded = false;
           }
           console.log('전송완료!');
+
+          axios.post(`${process.env.VUE_APP_DJANGO_APP_BACK_END_URL}personalcol/seasontone`,this.formData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        }).then((response) =>{
+            this.season=response.data.season
+            this.spring=response.data.Spring.toFixed(2);
+            this.summer=response.data.Summer.toFixed(2);
+            this.autumn=response.data.Autumn.toFixed(2);
+            this.winter=response.data.Winter.toFixed(2);
+        }).catch((error) => {
+          console.error('장고 서버로 컬러 요청 실패:', error);
+          alert('이미지 전송 중 오류가 발생했습니다.');
+        });
+
+
+
         }).catch((error) => {
           console.error('장고 서버로 이미지 전송 실패:', error);
           alert('이미지 전송 중 오류가 발생했습니다.');
@@ -255,7 +277,11 @@ export default {
       }
     },
     movepage(){
-      this.$router.push('/personal_Result');
+      const list ={season:this.season,
+        spring:this.spring,summer:this.summer,autumn:this.autumn,winter:this.winter};
+      console.log(list)
+      this.$router.push({name:"PersonalCol_Result",query:list
+            });
     }
     
 

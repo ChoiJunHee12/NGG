@@ -1,5 +1,8 @@
 <template>
+    
   <div id="content" class="AI-Setting">
+    <!-- TTS audio 숨김-->
+    <audio ref="audio" style="display: none;"></audio>
     <!-- Progress bar -->
     <div class="progress-bar">
       <div class="progress" :style="{ width: progress + '%' }"></div>
@@ -17,7 +20,7 @@
     <!-- Interview section -->
     <div class="device-check">
       <h3 class="AI-interview-title">
-        질문 1<br />자신에 대하여 소개해주세요.
+        질문 1<br />{{question}}
       </h3>
       <transition name="fade">
         <div v-if="showInterviewSection">
@@ -48,6 +51,7 @@
               </div>
 
               <!-- Buttons -->
+              
               <button
                 class="btn btn-start-interview"
                 v-if="!interviewStarted"
@@ -102,6 +106,7 @@
 </template>
 
 <script>
+import axios from 'axios';
 export default {
   data() {
     return {
@@ -119,17 +124,15 @@ export default {
       hasRestarted: false,
       showInterviewSection: false,
       interviewStarted: false,
+      question:"우리 회사의 (해당 직무)에서 가장 중요하다고 생각하는 업무는 무엇이며, \n 그 업무를 수행하기 위해 필요한 역량은 무엇이라고 생각하십니까?",
     };
   },
-  mounted() {
-    setTimeout(() => {
-      this.showInterviewSection = true;
-    }, 2000);
-  },
+  
   methods: {
     startInterview() {
       this.interviewStarted = true;
       this.startThinkingTime();
+      this.$refs.audio.play();
     },
     startThinkingTime() {
       this.isThinkingTime = true;
@@ -182,6 +185,29 @@ export default {
       this.allChecked = true;
       this.$router.push({ name: "AIInterview2" });
     },
+    /*TTS 평상시에는 비용 발생의 이유로 주석 처리하겠습니다.....*/
+    async convertTextToSpeech() {
+        try {
+          const response = await axios.post(
+            'http://192.168.0.26:8000/tts/text_to_speech/',
+            { text: this.question },
+            { responseType: 'blob' }
+          );
+  
+          const url = window.URL.createObjectURL(new Blob([response.data], { type: 'audio/mpeg' }));
+          this.$refs.audio.src = url;
+          
+        } catch (error) {
+          console.error('Error converting text to speech:', error);
+          alert('Failed to convert text to speech');
+        }
+      },
+  },
+  mounted() {
+    setTimeout(() => {
+      this.showInterviewSection = true;
+    }, 2000);
+    this.convertTextToSpeech()
   },
 };
 </script>

@@ -16,7 +16,7 @@
             </div>
         </div>
         <!-- <div class="personal-btn-grp"> -->
-        <button type="button" class="btn btn-next personal-btn" @click="historyUpdate" >
+        <button type="button" class="btn btn-next personal-btn" @click="proupdate" >
             프로필 사진 업데이트
         </button>
         <!-- </div> -->
@@ -33,7 +33,7 @@
                     style="padding:20px ">
             <swiper-slide v-for="index in 4" :key="index" >
                 <p style="font-size:20px; font-weight:bold;">{{ translatedSeason }} {{ translatedGender }} MakeUp {{ index }}</p><br>
-                <img :src="getMakeupImage(index)" class="personal-target-img" >
+                <img :src="getMakeupImage(index)" class="personal-target-img" @click="afterMakeup(getMakeupImage(index))">
             </swiper-slide>
             <div class="swiper-pagination-custom"></div> <!-- Pagination을 위한 요소 -->
             </swiper>
@@ -48,7 +48,7 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import { Popover } from 'bootstrap'; // Bootstrap에서 Popover 가져오기
-
+import axios from "axios";
 export default {
     data() {
         return {
@@ -58,9 +58,10 @@ export default {
             season: 'summer', 
             mgender: '여', 
             imgpath: '/img/before_image/',
-            beforeImage: localStorage.getItem('befimg'),
-            afterImage: localStorage.getItem('befimg'),
+            beforeImage: localStorage.getItem('uploadedImage'),
+            afterImage: localStorage.getItem('uploadedImage'),
             loadingImage: '/img/MakeUp_image/loading.gif',
+            
         }
     },
     computed: {
@@ -87,6 +88,69 @@ export default {
             const mgender = this.mgender;
             return `/img/MakeUp_image/${mgender}_${season}_${index}.png`;
         },
+        async proupdate(){
+            try {
+            const afimgn = 'makeup_'
+            const afterImage = await this.loadImageAsBase64(this.afterImage);
+            const formData = new FormData();
+            formData.append('afterimage', this.dataURItoBlob(afterImage), afimgn);
+
+            const response = await axios.post(`${process.env.VUE_APP_DJANGO_APP_BACK_END_URL}personalcol/base64toFile`, formData, {
+            headers: { 'Content-Type': 'multipart/form-data' },
+            responseType: 'blob'
+            });
+            console.log(response.data)
+            const springformData = new FormData();
+            springformData.append('imgfile', response.data, this.afimgn);
+            }catch (error) {
+                console.error('Error updating history:', error);
+            }
+        },
+        async afterMakeup(makeupImagePath) {
+            try {
+                const beforeImage = await this.loadImageAsBase64(this.beforeImage);
+                const makeupImage = await this.loadImageAsBase64(makeupImagePath);
+                this.afterImage = this.loadingImage;
+                const response = await axios.post(`${process.env.VUE_APP_DJANGO_APP_BACK_END_URL}personalcol/PersonalPredict`, {
+                before_image: beforeImage,
+                makeup_image: makeupImage
+                });
+                const imageData = response.data.image_base64;
+                this.afterImage = 'data:image/jpeg;base64,' + imageData;
+            } catch (error) {
+                console.error('Error loading makeup image:', error);
+            }
+        },
+        loadImageAsBase64(imagePath) {
+        return new Promise((resolve, reject) => {
+            const xhr = new XMLHttpRequest();
+            xhr.onload = function() {
+            const reader = new FileReader();
+            reader.onloadend = function() {
+                resolve(reader.result);
+            };
+            reader.readAsDataURL(xhr.response);
+            };
+            xhr.onerror = function() {
+            reject(new Error('Failed to load image'));
+            };
+            xhr.open('GET', imagePath);
+            xhr.responseType = 'blob';
+            xhr.send();
+        });
+        },
+        dataURItoBlob(dataURI) {
+        const byteString = atob(dataURI.split(',')[1]);
+        const mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+        const ab = new ArrayBuffer(byteString.length);
+        const ia = new Uint8Array(ab);
+        for (let i = 0; i < byteString.length; i++) {
+            ia[i] = byteString.charCodeAt(i);
+        }
+        return new Blob([ab], { type: mimeString });
+        },
+
+
 
     },
     mounted() {

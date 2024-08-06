@@ -30,17 +30,33 @@
         </div>
         <div class="personal-btn-grp">
           <button class="btn btn-next personal-btn" @click="movepage" style="width: 240px;">가상 MakeUp</button>
+          <button class="btn btn-next personal-btn" @click="cuttingImage" style="width: 240px;">테스트</button>
         </div>
     </div>
 </template>
 
 <script>
+import { useRoute } from 'vue-router';
+import axios from "axios";
 export default {
     data() {
         return {
             befimg: localStorage.getItem('befimg'),
+            befimgn: localStorage.getItem('befimgn'),
             activePage: 1
         }
+    },
+    setup(){
+        // 하이차트에 들어갈 값
+        // useRoute 훅을 사용하여 현재 라우트 객체를 가져옵니다.
+    const route = useRoute();
+return {
+    season : parseFloat(route.query.season),
+    spring : parseFloat(route.query.spring),
+    summer : parseFloat(route.query.summer),
+    autumn : parseFloat(route.query.autumn),
+    winter : parseFloat(route.query.winter),
+};
     },
     methods: {
         pageChange(pageNum) {
@@ -51,10 +67,60 @@ export default {
                 });
             }
         },
+        dataURItoBlob(dataURI) {
+            const byteString = atob(dataURI.split(',')[1]);
+            const mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+            const ab = new ArrayBuffer(byteString.length);
+            const ia = new Uint8Array(ab);
+            for (let i = 0; i < byteString.length; i++) {
+                ia[i] = byteString.charCodeAt(i);
+            }
+            return new Blob([ab], { type: mimeString });
+        },
+
+
         displayPage(pageNum) {
             return this.activePage === pageNum ? { display: 'block' } : { display: 'none' };
         },
+        cuttingImage(){
+            const cuttingImageformData = new FormData();
+            cuttingImageformData.append('imgfile', this.dataURItoBlob(this.befimg), this.befimgn);
+            for (let [key, value] of cuttingImageformData.entries()) {
+                console.log(key, ':', value);
+                }
+            axios.post(`${process.env.VUE_APP_DJANGO_APP_BACK_END_URL}personalcol/cuttingImage`, cuttingImageformData, {
+                headers: { 'Content-Type': 'multipart/form-data' },
+                responseType: 'blob'  // blob으로 응답받기 위해 설정
+            })
+            .then(response => {
+
+                const reader = new FileReader();
+                reader.onloadend = function() {
+                    const base64data = reader.result;
+                    localStorage.setItem('uploadedImage', base64data);
+
+                    // 이미지 로드 및 표시
+                };
+                reader.readAsDataURL(response.data);
+                })
+
+            },
+
+
+
+
         highchart() {
+            let bestTone="Total"
+            let toneTotal=0
+            if((this.spring+this.autumn)>(this.summer+this.winter)){
+                bestTone= "웜톤 Total";
+                toneTotal = this.spring+this.autumn
+            }else{
+                bestTone= "쿨톤 Total";
+                toneTotal = this.summer+this.winter
+            }
+            console.log(bestTone)
+            console.log(toneTotal)
             Highcharts.chart('highchart', {
                 chart: {
                     type: 'pie',
@@ -69,8 +135,8 @@ export default {
                             if (!customLabel) {
                                 customLabel = chart.options.chart.custom.label =
                                     chart.renderer.label(
-                                        '웜톤 Total<br/>' +
-                                        '<strong>61%</strong><br/>'
+                                        bestTone+'<br/>' +
+                                        '<strong>'+toneTotal+'%</strong><br/>'
                                     )
                                     .css({
                                         color: '#000',
@@ -136,16 +202,16 @@ export default {
                     innerSize: '75%',
                     data: [{
                         name: '봄 웜톤',
-                        y: 23.9
+                        y: this.spring
                     }, {
                         name: '여름 쿨톤',
-                        y: 12.6
+                        y: this.summer
                     }, {
                         name: '가을 웜톤',
-                        y: 37.0
+                        y: this.autumn
                     }, {
                         name: '겨울 쿨톤',
-                        y: 26.4
+                        y: this.winter
                     }]
                 }]
             });
@@ -155,9 +221,11 @@ export default {
         }
     },
     mounted() {
+        
         if (this.activePage === 1) {
             this.highchart();
         }
+        
     }
 }
 </script>
