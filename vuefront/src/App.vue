@@ -1,15 +1,20 @@
 <template>
   <div id="app">
     <Header
+    v-show="!$route.meta.hideLayout"
       @toggle-sidebar="toggleSidebar"
       :class="{'main-header': true, 'sidebar-open': isSidebarVisible}"
     />
-    <i class="bi bi-list fixed-menu-icon" @click="toggleSidebar"></i>
-    <Sidebar :isVisible="isSidebarVisible" />
+    <i 
+    v-show="!$route.meta.hideLayout"
+    class="bi bi-list fixed-menu-icon" @click="toggleSidebar"></i>
+    <Sidebar 
+    v-show="!$route.meta.hideLayout"
+    :isVisible="isSidebarVisible" />
     <main :class="{'main-content': true, 'sidebar-open': isSidebarVisible}">
       <router-view :isSidebarVisible="isSidebarVisible" :setSidebarVisibility="setSidebarVisibility"/>
     </main>
-    <i class="bi bi-caret-up scroll-to-top" @click="scrollToTop"><p style="display:inline; font-size:20px">TOP</p></i>
+    <i class="bi bi-caret-up scroll-to-top" @click="scrollToTop"><p style="display:inline; font-size:20px; font-style: normal; ">TOP</p></i>
     <Footer/>
   </div>
 </template>
@@ -57,4 +62,16 @@ html, body {
   background: #0c1b49 no-repeat center center fixed;
   background-size: cover;
 }
+
+
+
+.header-visible, .sidebar-visible, .footer-visible {
+  position: relative; /* Ensure lower z-index than .landing */
+  z-index: 10;
+}
+
+.landing-hidden {
+  margin-top: 0; /* Adjust layout if necessary */
+}
+
 </style>

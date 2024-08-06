@@ -1,20 +1,19 @@
 package kr.ict.mydream.vo;
 
-import java.util.Date;
-
 import org.apache.ibatis.type.Alias;
+
+import java.util.Date;
 
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-@Alias("selfintrovo")
-public class SelfIntro {
-    private int seqno;
-    private int rsmno;
-    private String title;
-    private String content;
+@Alias("cmmgrpvo")
+public class CmmGrpVO {
+    private String cmmgrpcd;
+    private String cmmgrpname;
+    private String useyn;
     private Date credt;
     private Date upddt;
 }

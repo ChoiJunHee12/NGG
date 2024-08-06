@@ -1,9 +1,13 @@
-package kr.ict.mydream.ItvRes;
+package kr.ict.mydream.itvres;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+// import kr.ict.mydream.vo.ItvDTO;
+
 import java.util.List;
 import java.util.Map;
 
@@ -13,19 +17,22 @@ import java.util.HashMap;
 @RestController
 @RequestMapping("/itv")
 public class ItvResController {
-    // public static void main(String[] args) {
-    // System.out.println("컨트롤러");
+
+    // @Autowired
+    // private ItvService itvService;
+
+    // @GetMapping("/attitude")
+    // public List<ItvDTO> getAttitudeResults() {
+    // return itvService.itvAttitudeList();
+
     // }
 
     @GetMapping("/attitude")
     public List<String> getAttitudeResults() {
-
         return Arrays.asList(
                 "<인성면접> 침착맨님 면접결과 24.07.07",
                 "<인성면접> 침착맨님 면접결과 24.07.08",
-                "<인성면접> 침착맨님 면접결과 24.07.09",
-                "<인성면접> 침착맨님 면접결과 24.07.10",
-                "<인성면접> 침착맨님 면접결과 24.07.11");
+                "<인성면접> 침착맨님 면접결과 24.07.09");
     }
 
     @GetMapping("/career")
