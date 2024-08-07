@@ -469,9 +469,9 @@ fetchAIFeedback() {
     }
   },
   mounted() {
+    this.face();
     this.wordcloud();
     this.barchart();
-    this.face();
     this.voiceg();
     this.fetchQuestionData();
     this.fetchAIFeedback();
