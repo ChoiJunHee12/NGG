@@ -172,6 +172,42 @@
               </div>
             </div>
 
+            <!-- 모달 -->
+            <div
+              class="modal fade"
+              id="errorModal"
+              tabindex="-1"
+              role="dialog"
+              aria-labelledby="errorModalLabel"
+              aria-hidden="true"
+            >
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="errorModalLabel">오류</h5>
+                    <button
+                      type="button"
+                      class="close"
+                      data-dismiss="modal"
+                      aria-label="Close"
+                    >
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">인증번호가 올바르지 않습니다.</div>
+                  <div class="modal-footer">
+                    <button
+                      type="button"
+                      class="btn btn-secondary"
+                      data-dismiss="modal"
+                    >
+                      닫기
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <!-- 비밀번호 -->
             <div class="info-input-container">
               <span class="label-area">
@@ -238,6 +274,25 @@
             </div>
             <br />
 
+            <!-- 생년월일 -->
+            <div class="info-input-container">
+              <span class="label-area">
+                <label for="birthymd" class="join-label dateCHeck"
+                  >✔️ 생년월일</label
+                >
+              </span>
+              <div class="input-area">
+                <Datepicker
+                  locale="ko"
+                  v-model="birthymd"
+                  class="datepicker"
+                  :enable-time-picker="false"
+                  style="display: inline-block"
+                />
+              </div>
+            </div>
+            <br />
+
             <!-- 전화번호 -->
             <div class="info-input-container">
               <span class="label-area">
@@ -253,25 +308,6 @@
                   id="phonenum"
                   v-model="phonenum"
                   placeholder="전화번호 입력"
-                />
-              </div>
-            </div>
-            <br />
-
-            <!-- 생년월일 -->
-            <div class="info-input-container">
-              <span class="label-area">
-                <label for="birthymd" class="join-label dateCHeck"
-                  >✔️ 생년월일</label
-                >
-              </span>
-              <div class="input-area">
-                <Datepicker
-                  locale="ko"
-                  v-model="birthymd"
-                  class="datepicker"
-                  :enable-time-picker="false"
-                  style="display: inline-block"
                 />
               </div>
             </div>
@@ -448,6 +484,7 @@ export default defineComponent({
     const email = ref("");
     const name = ref("");
     const birthymd = ref(null); // v-model에 사용할 변수
+
     const rightPanelActive = ref(false);
 
     const code = ref("");
@@ -456,14 +493,6 @@ export default defineComponent({
       const cont = document.querySelector(".cont");
       cont.classList.toggle("s--signup");
     };
-
-    // 이벤트 리스너 추가
-    onMounted(() => {
-      const imgBtn = document.querySelector(".img__btn");
-      if (imgBtn) {
-        imgBtn.addEventListener("click", toggleSignup);
-      }
-    });
     const formatBirthDate = (date) => {
       //생일변환했음
       if (!date) return "";
@@ -473,6 +502,15 @@ export default defineComponent({
       const day = String(d.getDate()).padStart(2, "0"); // Ensure two digits
       return `${year}${month}${day}`; // Format to YYYYMMDD
     };
+
+    // 이벤트 리스너 추가
+    onMounted(() => {
+      const imgBtn = document.querySelector(".img__btn");
+      if (imgBtn) {
+        imgBtn.addEventListener("click", toggleSignup);
+      }
+    });
+
     return {
       email,
       name,
@@ -480,11 +518,12 @@ export default defineComponent({
       rightPanelActive,
       code,
       verificationMessage,
-      formatBirthDate, // Ensure this method is returned
+      formatBirthDate,
     };
   },
   data() {
     return {
+      isEmailVerified: false,
       email: "",
       code: "",
       name: "",
@@ -499,6 +538,7 @@ export default defineComponent({
       pwdError: false,
     };
   },
+
   methods: {
     back() {
       // 뒤로가기 기능 구현
@@ -518,7 +558,7 @@ export default defineComponent({
     emailCheck() {
       const email = document.getElementById("email").value;
       axios
-        .post(`http://192.168.0.54/mydream/api/auth/emailCheck`, {
+        .post(`${process.env.VUE_APP_BACK_END_URL}/api/auth/emailCheck`, {
           email: email,
         })
         .then((res) => {
@@ -542,20 +582,26 @@ export default defineComponent({
       const email = document.getElementById("email").value;
       const code = document.getElementById("code").value;
       axios
-        .post(`http://192.168.0.54/mydream/api/auth/emailCheck/certification`, {
-          email: email,
-          code: code,
-        })
+        .post(
+          `${process.env.VUE_APP_BACK_END_URL}/api/auth/emailCheck/certification`,
+          {
+            email: email,
+            code: code,
+          }
+        )
         .then((res) => {
           if (res.data) {
             alert("인증번호가 확인되었습니다.");
+            this.isEmailVerified = true;
           } else {
             alert("인증번호가 올바르지 않습니다.");
+            this.isEmailVerified = false;
           }
         })
         .catch((error) => {
           alert("인증번호 확인에 오류가 발생했습니다.");
           console.error("API 호출 에러(인증번호 확인)", error);
+          this.isEmailVerified = false;
         });
     },
     checkPwdFormat() {
@@ -611,7 +657,10 @@ export default defineComponent({
         console.log("Signup data:", signupData); // 콘솔에 출력
         // 회원가입 요청
         axios
-          .post(`http://192.168.0.54/mydream/tbmember/signup`, signupData)
+          .post(
+            `${process.env.VUE_APP_BACK_END_URL}/tbmember/signup`,
+            signupData
+          )
           .then((res) => {
             console.log("서버응답:", res.data);
             if (res.status === 200) {
