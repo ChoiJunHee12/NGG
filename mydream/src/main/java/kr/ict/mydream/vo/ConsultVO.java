@@ -9,7 +9,7 @@ import org.apache.ibatis.type.Alias;
 @Setter
 @Alias("consultvo")
 public class ConsultVO {
-    private int cnsno; // 컨설턴트 번호
+    private int cnsno; // 컨설턴트 번호(PK)
     private String name; // 컨설턴트 성명
     private String gendercd; // 컨설턴트 성별
     private String categcd; // 전문분야

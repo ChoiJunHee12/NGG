@@ -14,27 +14,31 @@
           </div>
 
           <div class="reshduty-summary-right">
-            <p>이름: {{mname}}</p>
-            <p>날짜: {{resDate}}</p>
+            <p>이름: {{userName}}</p>
+            <p>날짜: {{formatDate(credt)}}</p>
         </div>
             
         </div>
 
 
-        <div class="res-subtitle3 col-1"><div class="res-subtitlecon3">종합 평가</div></div>
-        <hr>
+        <div class="res-subtitle3 col-1">
+          <div class="res-subtitlecon3">종합 평가</div>
+        </div>
+
         <div class="resduty-qcon10">
           <div class="reshduty-totalcom">
-            <div v-for="(feedback, index) in AIFeedback" :key="index" class="resduty-analyze6-con">
-              ○ {{ feedback }}
+            <div class="resduty-analyze6-con">
+              ○ {{ aifeedbk }}
             </div>
           </div>
         </div>
 
 
         </div>
-        <div class="res-subtitle3"><div class="res-subtitlecon3">표정 분석 / 자세 분석</div></div>
-        <hr>
+        <div class="res-subtitle3">
+          <div class="res-subtitlecon3">표정 분석 / 자세 분석</div>
+        </div>
+
         <div class="res-qcon5">
             <div class="res-face"> 
                 <div id="face" style="width: 400px;height:400px;"></div>
@@ -84,14 +88,14 @@
         <div class="resh-qcon">
             <div class="res-subtitle3 col-1"><div class="res-subtitlecon3">
 
-                Q{{ i+1 }}. {{ Question[i] }}</div>
+                Q{{ i+1 }}. {{ question}}</div>
         </div>
     </div>
         <div class="resh-qcon4">
             <div class="resh-qcontent1">
                 <div class="resh-subtitle1 row">
                     <div class="resh-subtitle2 col-1">면접 대답</div>
-                    <div class="resh-qcontent2">{{this.Comment[i]}}</div>
+                    <div class="resh-qcontent2">{{ answer }}</div>
                 </div>
             </div>
         </div>
@@ -99,16 +103,17 @@
             <div class="resh-qcontent1">
                 <div class="resh-subtitle1 row">
                     <div class="resh-subtitle2 col-1">피드백</div>
-                    <div class="resh-qcontent2">{{feedback[i]}}</div>
+                    <div class="resh-qcontent2">{{feedback}}</div>
                 </div>
             </div>
         </div>
         </div>
-    </div>
         <button v-if="page>1" class="resh-nextbtn col-1" @click="Previous">이전 문항</button>
         <button v-if='page<5' class="resh-nextbtn col-1" @click="next">다음 문항</button>
         <button class="resh-homebtn col-1" @click="$emit('close',false)">닫기</button>
     </div>
+    </div>
+
 
 
 
@@ -120,86 +125,96 @@
 import axios from 'axios';
 import * as echarts from 'echarts';
 export default {
+  props: {
+    intno: {
+      type: Number,
+      required: true
+    }
+  },
+  created() {
+    console.log('Received intno:', this.intno);  // 콘솔에 찍기
+  },
   data() {
     return {
-      mname: "",
-      resDate:"",
+      intno: this.$props.intno,
+      userData: [],
       activePage: 1,
       page: 1,
-      Question: [],
-      Comment: [],
-      feedback: [],
+      question: '',
+      answer: '',
+      feedback: '',
       i: 0,
       content: 1,
-      isReviewSubmitted: false,
-      AIFeedback: [],
+      aifeedbk: '',
       CTFeedback: [],
+      userName: '',
+      credt:'',
+      pbadcnt:[],
+      qnaData:[],
     };
   },
   methods: {
     fetchUserData(){
-      axios.get(`${process.env.VUE_APP_BACK_END_URL}/itv/userData`)
+      axios.get(`${process.env.VUE_APP_BACK_END_URL}/itv/userData`, { params: { intno: this.intno } })
     .then(response => {
-      const { mname, resDate } = response.data;
-      this.mname = response.data.mname[0];
-      this.resDate = response.data.resDate[0];
-      console.log(response.data)
+      // const { mname, credt } = response.data;
+      // this.mname = response.data.mname[0];
+      // this.credt = response.data.credt[0];
+      this.userData = response.data;
+      this.userName = response.data[0].mname;
+      this.credt = response.data[0].credt;
+      this.aifeedbk = response.data[0].aifeedbk;
+      this.pbadcnt = response.data.pbadcnt;
     })
     },
+    formatDate(datetime) {
+      // 'T'를 기준으로 문자열을 나누고 첫 번째 부분을 반환합니다.
+      return datetime.split('T')[0];
+    },
     fetchQuestionData() {
-  axios.get(`${process.env.VUE_APP_BACK_END_URL}/itv/fetchData`)
+  axios.get(`${process.env.VUE_APP_BACK_END_URL}/itv/fetchData`, { params: { intno: this.intno } })
     .then(response => {
-      const { question, comment, feedback } = response.data;
-      this.Question = question || []; // Default to empty array if no data
-      this.Comment = comment || [];
-      this.feedback = feedback || [];
-      console.log(response.data)
+      // const { question, comment, feedback } = response.data;
+      // this.Question = question || []; // Default to empty array if no data
+      // this.Comment = comment || [];
+      // this.feedback = feedback || [];
+      this.qnaData = response.data;
+      this.question = response.data[`${this.i}`].QUESTION;
+      this.answer = response.data[`${this.i}`].ANSWER;
+      this.feedback = response.data[`${this.i}`].AIFEEDBK;
+      
+      console.log(this.qnaData);
     })
     .catch(error => {
       console.error('서버 오류:', error);
     });
 },
-fetchAIFeedback() {
-    axios.get(`${process.env.VUE_APP_BACK_END_URL}/itv/fetchAIFeedback`)
-      .then(response => {
-        // 서버에서 받은 데이터로 AIFeedback 변수 업데이트
-        this.AIFeedback = response.data;
-      })
-      .catch(error => {
-        console.error('서버 오류:', error);
-      });
-  },
-  fetchCTFeedback(){
-    axios.get(`${process.env.VUE_APP_BACK_END_URL}/itv/fetchCTFeedback`)
-      .then(response => {
-        this.CTFeedback = response.data;
-      })
-      .catch(error => {
-        console.error('서버 오류:', error);
-      });
-  },
-    scrollToTop() {
-      const container = this.$el.querySelector('.reshduty-con.scrollable-div');
-      container.scrollTo({
-        top: 0,
-        behavior: 'smooth'
-      });
-    },
+    // scrollToTop(i) {
+    //   const container = this.$el.querySelector('.reshduty-con.scrollable-div');
+    //   container.scrollTo({
+    //     top: 0,
+    //     behavior: 'smooth'
+    //   });
+    // },
     next() {
       this.pagechage(this.page + 1);
       this.activePage = this.page;
-      this.scrollToTop();
+      // this.scrollToTop();
     },
     Previous() {
       this.pagechage(this.page - 1);
       this.activePage = this.page;
-      this.scrollToTop();
+      // this.scrollToTop();
     },
     pagechage(num) {
       console.log(num);
+
       this.page = num;
       this.activePage = num;
       this.i = num - 1;
+      this.question = this.qnaData[`${num-1}`].QUESTION;
+      this.answer = this.qnaData[`${num-1}`].ANSWER;
+      this.feedback = this.qnaData[`${num-1}`].AIFEEDBK
       if (num === 8) {
         this.content = 8;
       } else {
@@ -209,9 +224,6 @@ fetchAIFeedback() {
     displayPage(pageNum) {
       return this.content === pageNum ? { display: 'block' } : { display: 'none' };
     },
-    submitReview() {
-      this.isReviewSubmitted = true;
-    },
     face() {
   const chartContainer = document.getElementById('face');
   chartContainer.style.width = '300px';
@@ -219,14 +231,13 @@ fetchAIFeedback() {
 
   var myChart = echarts.init(chartContainer);
 
-  axios.get(`${process.env.VUE_APP_BACK_END_URL}/itv/faceData`)
+  axios.get(`${process.env.VUE_APP_BACK_END_URL}/itv/faceData`, { params: { intno: this.intno } })
     .then(function(response){
       console.log(response.data); // 응답 데이터 확인
 
-      let faceData = response.data; // response.data가 faceData임을 가정
       let option = {
         title: {
-          text: faceData.chartname // 감정 점수
+          text: '감정 점수'
         },
         tooltip: {
           trigger: 'axis'
@@ -257,8 +268,8 @@ fetchAIFeedback() {
             areaStyle: {},
             data: [
               {
-                value: [faceData.values[0], faceData.values[1],faceData.values[2],faceData.values[3],faceData.values[4],],// [60, 73, 85, 40, 65]
-                name: faceData.chartname // 감정 점수
+                value: response.data,// [60, 73, 85, 40, 65]
+                name: '감정 점수'
               }
             ]
           }
@@ -272,7 +283,7 @@ fetchAIFeedback() {
 },
 
     barchart() {
-      axios.get(`${process.env.VUE_APP_BACK_END_URL}/itv/barData`)
+      axios.get(`${process.env.VUE_APP_BACK_END_URL}/itv/barData`, { params: { intno: this.intno } })
     .then(function(response){
       Highcharts.chart('barchart', {
         chart: {
@@ -404,10 +415,15 @@ fetchAIFeedback() {
     })
     },
     wordcloud() {
-      axios.get(`${process.env.VUE_APP_BACK_END_URL}/itv/wordCloud`)
+    axios.get(`${process.env.VUE_APP_BACK_END_URL}/itv/wordCloud`, { 
+      params: { intno: this.intno } 
+    })
     .then(function(response){
-      const text =response.data,
+
+      const text = response.data,
+        // 특수문자와 숫자 제거 후 단어로 분할
         lines = text.replace(/[():'?0-9]+/g, '').split(/[,\. ]+/g),
+        // 단어의 빈도를 계산
         data = lines.reduce((arr, word) => {
           let obj = Highcharts.find(arr, obj => obj.name === word);
           if (obj) {
@@ -422,6 +438,10 @@ fetchAIFeedback() {
           return arr;
         }, []);
 
+      // 빈도에 따라 내림차순으로 정렬 후 상위 100개의 단어만 선택
+      const top100 = data.sort((a, b) => b.weight - a.weight).slice(0, 90);
+
+      // Highcharts를 이용해 워드클라우드 생성
       Highcharts.chart('wordcloud1', {
         chart: {
           height: 380,
@@ -436,24 +456,20 @@ fetchAIFeedback() {
         series: [
           {
             type: 'wordcloud',
-            data,
+            data: top100,
             name: 'Occurrences'
           }
         ],
         title: {
-          text: '면접답변 빈도 check',
-          align: 'left'
-        },
-        subtitle: {
-          text: '',
-          align: 'left'
-        },
-        tooltip: {
-          headerFormat: '<span style="font-size: 16px"><b>{point.key}</b></span><br>'
+          text: 'Top 100 Wordcloud'
         }
       });
     })
-    }
+    .catch(function(error){
+      console.error('Error fetching word cloud data:', error);
+    });
+  }
+
   },
   mounted() {
     this.wordcloud();
@@ -461,8 +477,6 @@ fetchAIFeedback() {
     this.face();
     this.voiceg();
     this.fetchQuestionData();
-    this.fetchAIFeedback();
-    this.fetchCTFeedback();
     this.fetchUserData();
   }
 };
