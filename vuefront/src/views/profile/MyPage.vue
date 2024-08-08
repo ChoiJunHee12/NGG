@@ -7,18 +7,32 @@
     </div>
     <div class="user-container">
       <div class="user-profile-header">
-        <img
-          class="profile-image"
-          src="/img/MakeUp_image/남_summer_2.png"
-          :alt="myprofile.mname"
-        />
+        <div
+          class="profile-image-container"
+          @click="triggerFileInput"
+          style="margin: 0; padding: 0; position: relative"
+        >
+          <i class="bi bi-camera power-icon"></i>
+          <img
+            class="profile-image"
+            :src="`/img/upimg/${myprofile.imgname}`"
+            :alt="myprofile.imgname"
+          />
+          <input
+            type="file"
+            ref="fileInput"
+            style="display: none"
+            @change="handleFileChange"
+            accept="image/*"
+          />
+        </div>
         <div class="header-info">
           <div>
             <h1 class="name">
-              {{ myprofile.mname }}
-              <span class="gender">({{ myprofile.mgender }})</span>
+              {{ myprofile.name }}
+              <span class="gender">({{ myprofile.gendercd }})</span>
             </h1>
-            <h2 class="title">{{ myprofile.mnick }}</h2>
+            <h2 class="title">{{ myprofile.nickname }}</h2>
           </div>
           <button class="edit-user-profile-button" @click="handleEditClick">
             프로필 수정
@@ -41,27 +55,27 @@
           <div class="info-grid">
             <div class="info-item">
               <span class="info-icon">👔 지원 분야:</span>
-              <span class="info-text">{{ myprofile.applpart }}</span>
+              <span class="info-text">{{ myprofile.categcdText }}</span>
             </div>
             <div class="info-item">
               <span class="info-icon">✉️ 이메일:</span>
-              <span class="info-text">{{ myprofile.memail }}</span>
+              <span class="info-text">{{ myprofile.email }}</span>
             </div>
             <div class="info-item">
               <span class="info-icon">📞 휴대폰 번호:</span>
-              <span class="info-text">{{ myprofile.mphoneno }}</span>
+              <span class="info-text">{{ myprofile.phonenum }}</span>
             </div>
             <div class="info-item">
               <span class="info-icon">🎂 생년월일: </span>
-              <span class="info-text">{{ myprofile.mbirth }}</span>
+              <span class="info-text">{{ myprofile.birthymd }}</span>
             </div>
             <div class="info-item">
               <span class="info-icon">📍 거주지역: </span>
-              <span class="info-text">{{ myprofile.prefarea }}</span>
+              <span class="info-text">{{ myprofile.loccdText }}</span>
             </div>
             <div class="info-item">
               <span class="info-icon">🎨 퍼스널 컬러: </span>
-              <span class="info-text">{{ myprofile.season }}</span>
+              <span class="info-text">{{ myprofile.seasoncd }}</span>
             </div>
           </div>
         </div>
@@ -82,7 +96,7 @@
                 type="text"
                 id="name"
                 name="name"
-                v-model="tempProfile.mname"
+                v-model="tempProfile.name"
                 disabled
               />
             </div>
@@ -92,21 +106,17 @@
                 type="text"
                 id="nickname"
                 name="nickname"
-                v-model="tempProfile.mnick"
+                v-model="tempProfile.nickname"
               />
             </div>
             <div class="form-group">
               <label for="title">👔 지원 분야</label>
-              <select id="title" name="title" v-model="tempProfile.applpart">
-                <option value="회계/재무">회계/재무</option>
-                <option value="교육">교육</option>
-                <option value="IT/개발">IT/개발</option>
-                <option value="기획/전략">기획/전략</option>
-                <option value="유통/물류">유통/물류</option>
-                <option value="제조/생산">제조/생산</option>
-                <option value="총무/법무">총무/법무</option>
-                <option value="사무직/문서작성">사무직/문서작성</option>
-                <option value="마케팅/광고">마케팅/광고</option>
+              <select id="title" name="title" v-model="categcdString">
+                <option value="1">IT/개발</option>
+                <option value="2">교육</option>
+                <option value="3">영업/마케팅</option>
+                <option value="4">기획/전략</option>
+                <option value="5">경영</option>
               </select>
             </div>
 
@@ -116,7 +126,7 @@
                 type="email"
                 id="email"
                 name="email"
-                v-model="tempProfile.memail"
+                v-model="tempProfile.email"
               />
             </div>
             <div class="form-group">
@@ -125,7 +135,7 @@
                 type="password"
                 id="pwd"
                 name="pwd"
-                v-model="tempProfile.mpwd"
+                v-model="tempProfile.password"
               />
             </div>
             <div class="form-group">
@@ -134,7 +144,7 @@
                 type="tel"
                 id="phone"
                 name="phone"
-                v-model="tempProfile.mphoneno"
+                v-model="tempProfile.phonenum"
               />
             </div>
             <div class="form-group">
@@ -143,20 +153,20 @@
                 type="text"
                 id="birthYear"
                 name="birthYear"
-                v-model="tempProfile.mbirth"
+                v-model="tempProfile.birthymd"
                 disabled
               />
             </div>
             <div class="form-group">
               <label for="area">📍 거주 지역</label>
-              <select id="area" name="area" v-model="tempProfile.prefarea">
-                <option value="서울">서울</option>
-                <option value="경기도">경기도</option>
-                <option value="충청도">충청도</option>
-                <option value="전라도">전라도</option>
-                <option value="경상도">경상도</option>
-                <option value="강원도">강원도</option>
-                <option value="제주도">제주도</option>
+              <select id="area" name="area" v-model="loccdString">
+                <option value="1">서울</option>
+                <option value="2">경기도</option>
+                <option value="3">충청도</option>
+                <option value="4">전라도</option>
+                <option value="5">경상도</option>
+                <option value="6">강원도</option>
+                <option value="7">제주도</option>
               </select>
             </div>
             <div class="form-group">
@@ -197,35 +207,124 @@ export default {
       myprofile: {},
       myedu: {},
       tempProfile: {},
+      loccdMapping: {
+        1: "서울",
+        2: "경기도",
+        3: "충청도",
+        4: "전라도",
+        5: "경상도",
+        6: "강원도",
+        7: "제주도",
+      },
+      categcdMapping: {
+        1: "IT/개발",
+        2: "교육",
+        3: "영업/마케팅",
+        4: "기획/전략",
+        5: "경영",
+      },
+      profileImageSrc: "",
     };
   },
   mounted() {
     this.fetchMemberDetails();
-    this.fetchMemberEduDetails();
   },
+  computed: {
+    categcdString: {
+      get() {
+        return String(this.tempProfile.categcd);
+      },
+      set(value) {
+        this.tempProfile.categcd = Number(value);
+      },
+    },
+    loccdString: {
+      get() {
+        return String(this.tempProfile.loccd);
+      },
+      set(value) {
+        this.tempProfile.loccd = Number(value);
+      },
+    },
+  },
+  watch: {
+    profileImageSrc(newVal) {
+      // profileImageSrc가 변경될 때 자동으로 처리할 로직을 여기에 추가할 수 있습니다.
+      console.log(`Profile image updated to: ${newVal}`);
+    },
+  },
+
   methods: {
+    triggerFileInput() {
+      this.$refs.fileInput.click();
+    },
+    handleFileChange(event) {
+      const file = event.target.files[0];
+      if (file) {
+        this.uploadImage(file);
+      }
+    },
+    async uploadImage(file) {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("memno", this.myprofile.memno); // 회원 번호 추가
+
+      try {
+        const response = await axios.post(
+          `${process.env.VUE_APP_BACK_END_URL}/mypage/profileImage?memno=51`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+
+        if (response.status === 200) {
+          // 업로드 성공 시 이미지 소스 업데이트
+          const imgName = response.data; // 또는 response.data.imgName 등으로 조정
+          const timestamp = new Date().getTime(); // 밀리초 단위의 타임스탬프
+          this.profileImageSrc = `/img/upimg/${imgName}?t=${timestamp}`;
+          console.log(response.data);
+          this.$nextTick(() => {
+            const img = this.$el.querySelector("img");
+            if (img) {
+              img.src = img.src; // 이미지를 강제로 새로 고침
+            }
+          });
+          alert("프로필 이미지가 성공적으로 업데이트되었습니다.");
+        }
+      } catch (error) {
+        console.error("Error uploading image:", error);
+        alert("이미지 업로드 중 오류가 발생했습니다.");
+      }
+    },
     fetchMemberDetails() {
       axios
-        .get("http://localhost/mydream/mypage/profile?mnum=3")
+        .get(`${process.env.VUE_APP_BACK_END_URL}/mypage/profile?memno=51`)
         .then((response) => {
-          this.myprofile = response.data;
+          const data = response.data;
+          this.myprofile = {
+            ...data,
+            loccdText: this.convertLoccd(data.loccd),
+            categcdText: this.convertCategcd(data.categcd),
+          };
+          this.tempProfile = { ...this.myprofile };
           console.log(response.data);
         })
         .catch((error) => {
           console.error("에러발생 에러발생");
         });
     },
-    fetchMemberEduDetails() {
-      axios
-        .get("http://localhost/mydream/mypage/eduprofile?mnum=3")
-        .then((response) => {
-          this.myedu = response.data;
-          console.log(response.data);
-        })
-        .catch((error) => {
-          console.log("학력에러발생");
-        });
+
+    convertLoccd(loccd) {
+      return this.loccdMapping[loccd] || "알 수 없음";
     },
+
+    convertCategcd(categcd) {
+      return this.categcdMapping[categcd] || "알 수 없음";
+    },
+
     handleEditClick() {
       this.tempProfile = { ...this.myprofile };
       this.isModalOpen = true;
@@ -233,21 +332,28 @@ export default {
     handleCloseModal() {
       this.isModalOpen = false;
     },
+
     handleSubmit() {
+      const dataToSend = { ...this.tempProfile };
       axios
-        .put("http://localhost/mydream/mypage/profile?mnum=3", this.tempProfile)
+        .put(
+          `${process.env.VUE_APP_BACK_END_URL}/mypage/profile?memno=51`,
+          dataToSend
+        )
         .then((response) => {
           console.log("Profile updated successfully:", response.data);
           alert("프로필이 성공적으로 업데이트되었습니다.");
 
-          this.myprofile = { ...this.tempProfile };
+          this.myprofile = {
+            ...this.tempProfile,
+            loccdText: this.convertLoccd(this.tempProfile.loccd),
+            categcdText: this.convertCategcd(this.tempProfile.categcd),
+          };
         })
         .catch((error) => {
           console.error("Error updating profile:", error);
           alert("프로필 업데이트 중 오류가 발생했습니다.");
         });
-      // 여기에서 form 데이터를 제출하는 로직을 추가하세요.
-      // console.log("Profile updated:", this.profileData);
       this.isModalOpen = false;
     },
   },
@@ -326,6 +432,15 @@ export default {
   font-weight: bold;
   color: #2c3e50;
   margin: 0 0 5px 0;
+}
+#name {
+  margin-left: 0;
+}
+#nickname {
+  margin-left: 0;
+}
+#email {
+  margin-left: 0;
 }
 
 .gender {
@@ -568,6 +683,7 @@ section {
   flex: 5 0 30%;
   justify-content: flex-start;
   align-items: center;
+  width: 100%;
 }
 
 .form-group input {
@@ -620,5 +736,17 @@ section {
 
 .cancel-user-profile-button:hover {
   background-color: #8c0000;
+}
+
+.power-icon {
+  position: absolute;
+  bottom: 125px; /* 하단에서 20px 떨어진 위치 */
+  left: 185px; /* 오른쪽에서 20px 떨어진 위치 */
+  font-size: 47px; /* 아이콘 크기 조정 */
+  cursor: pointer; /* 클릭 가능한 표시 */
+}
+
+.power-icon {
+  color: #11045e !important; /* 아이콘 색상 (빨간색) */
 }
 </style>

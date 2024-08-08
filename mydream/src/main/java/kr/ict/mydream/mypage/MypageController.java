@@ -1,86 +1,92 @@
 package kr.ict.mydream.mypage;
 
-import java.util.Date;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
+import jakarta.servlet.http.HttpServletRequest;
+import kr.ict.mydream.vo.MemberVO;
 
 @RestController
 @RequestMapping("/mypage")
-public class MypageController {
+public class MyPageController {
 
-    private MemberVO member;
+    @Autowired
+    private MyPageService myPageService;
 
-    public MypageController(){
-        member = new MemberVO();
-        member.setMemid(3);
-        member.setMname("진");
-        member.setMbirth("1990-01-01");
-        member.setMphoneno("010-1234-5678");
-        member.setMemail("jin@naver.com");
-        member.setApplpart("Software Development");
-        member.setPrefarea("서울");
-        member.setEntymd("2020-05-11");
-        member.setQuitdate("2023-01-01");
-        member.setStatus("Active");
-        member.setSeason("Summer");
-        member.setMimgn("profile_image.png");
-        member.setLocid(100);
-        member.setCredt(new Date());
-        member.setUpddt(new Date());
+    private final static String filePath = Paths.get(System.getProperty("user.dir")).resolve("vuefront/public/img/upimg").toString();
 
-        //없는것
-        member.setMnick("지존홍길동");
-        member.setMgender("남자");
-        member.setMpwd("12345678");
-    }
-    
-    //http://172.30.1.64:80/mydream/mypage/profile?mnum=3 성공
-    @GetMapping("/profile")
-    public MemberVO myprofile(@RequestParam("mnum") int num){
-        if(num == 3){
-            return member;
+
+
+    public MyPageController(){
+		System.out.println("imagePath=>" + filePath);
+
+		Path directoryPath = Paths.get(filePath);
+	   
+		if (!Files.exists(directoryPath)) {
+            try {
+                Files.createDirectories(directoryPath);
+                System.out.println("디렉토리 생성: " + directoryPath);
+            } catch (Exception e) {
+                System.err.println("디렉토리 생성 실패: " + e.getMessage());
+            }
         }
-        return null;
+   }
+
+
+    //http://192.168.0.54/mydream/mypage/profile?memno=51 성공
+    @GetMapping("/profile")
+    public MemberVO myprofile(@RequestParam("memno") int memno){
+        return myPageService.mypage(memno);
     }
 
     @PutMapping("/profile")
-    public MemberVO updateProfile(@RequestParam("mnum") int num, @RequestBody MemberVO updatedMember) {
-        if (num == 3) {
-            // 기존 정보 업데이트
-            member.setMphoneno(updatedMember.getMphoneno());
-            member.setApplpart(updatedMember.getApplpart());
-            member.setPrefarea(updatedMember.getPrefarea());
-            member.setMnick(updatedMember.getMnick());
-            member.setMpwd(updatedMember.getMpwd());
-            member.setUpddt(new Date()); // 업데이트 날짜 변경
-            return member;
-        }
-        return null;
+    public void updateProfile(@RequestParam("memno") int memno, @RequestBody MemberVO vo) {
+        myPageService.updateProfile(memno, vo);
     }
 
-    @GetMapping("/eduprofile")
-    public EducationVO getMethodName(@RequestParam("mnum") int num) {
-        if(num == 3){
-            EducationVO edu = new EducationVO();
-                edu.setUniversity("서울대학교");
-                edu.setUmajor("컴퓨터공학과");
-                edu.setUgraduate("2015-01-01");
-                edu.setMaster("고려대학교 대학원");
-                edu.setMmajor("딥러닝");
-                edu.setMgraduate("2020-01-01");
-
-            return edu;
-        }
-        return null;
+    @PostMapping("/profileImage")
+public ResponseEntity<?> updateImage(@RequestParam("file") MultipartFile mf, @RequestParam("memno") int memno) {
+    if (mf == null || mf.isEmpty()) {
+        return ResponseEntity.badRequest().body("파일이 전송되지 않았습니다.");
     }
-    
 
+    String oriFn = mf.getOriginalFilename();
+    Path destinationPath = Paths.get(filePath).resolve(oriFn).normalize(); // 경로를 안전하게 조작
+    System.out.println("FullPath :" + destinationPath);
+
+    try {
+        // 파일 복사 및 덮어쓰기
+        Files.copy(mf.getInputStream(), destinationPath, StandardCopyOption.REPLACE_EXISTING);
+
+        MemberVO vo = new MemberVO();
+        vo.setMemno(memno);
+        vo.setImgname(oriFn);
+        myPageService.updateImage(vo);
+
+        return ResponseEntity.ok().body(oriFn); // 파일 이름 반환
+    } catch (IOException e) {
+        e.printStackTrace();
+        return ResponseEntity.status(500).body("이미지 업로드 중 오류가 발생했습니다.");
+    }
+}
 
 
 
 }
+
