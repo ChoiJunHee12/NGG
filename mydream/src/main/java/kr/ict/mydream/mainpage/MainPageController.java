@@ -85,7 +85,7 @@ public class MainPageController {
 
     // 컨설턴트 직무 답변 피드백
     @GetMapping("/consultantFeedback")
-    public List<ConsultevalVO> getConsultantFeedback(
+    public List<ConsultEvalVO> getConsultantFeedback(
             @RequestParam("memno") int memno,
             @RequestParam("cnsno") int cnsno,
             @RequestParam("intno") int intno,

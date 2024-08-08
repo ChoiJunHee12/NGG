@@ -36,7 +36,7 @@ public interface MainPageDao {
     List<IntDetailVO> getConsultantQuestions(Map<String, Object> params);
 
     // 컨설턴트 직무 답변 피드백
-    List<ConsultevalVO> getConsultantFeedback(Map<String, Object> params);
+    List<ConsultEvalVO> getConsultantFeedback(Map<String, Object> params);
 
     // 컨설턴트 피드백(총평)
     IntResVO getConsultantTotalFeedback(Map<String, Object> params);

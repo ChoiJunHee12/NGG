@@ -38,7 +38,7 @@ public class ItvResController {
     }
 
     @GetMapping("/fetchData")
-    public List<Map<String, String>> questionData(int intno) {
+    public List<Map<String, String>> questionData(@RequestParam(value = "intno") Integer intno) {
         List<Map<String, String>> data = itvService.questionData(intno);
         return data;
     }
