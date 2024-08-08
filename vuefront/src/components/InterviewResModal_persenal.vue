@@ -415,10 +415,15 @@ export default {
     })
     },
     wordcloud() {
-      axios.get(`${process.env.VUE_APP_BACK_END_URL}/itv/wordCloud`,{ params: { intno: this.intno } })
+    axios.get(`${process.env.VUE_APP_BACK_END_URL}/itv/wordCloud`, { 
+      params: { intno: this.intno } 
+    })
     .then(function(response){
-      const text =response.data,
+
+      const text = response.data,
+        // 특수문자와 숫자 제거 후 단어로 분할
         lines = text.replace(/[():'?0-9]+/g, '').split(/[,\. ]+/g),
+        // 단어의 빈도를 계산
         data = lines.reduce((arr, word) => {
           let obj = Highcharts.find(arr, obj => obj.name === word);
           if (obj) {
@@ -433,6 +438,10 @@ export default {
           return arr;
         }, []);
 
+      // 빈도에 따라 내림차순으로 정렬 후 상위 100개의 단어만 선택
+      const top100 = data.sort((a, b) => b.weight - a.weight).slice(0, 90);
+
+      // Highcharts를 이용해 워드클라우드 생성
       Highcharts.chart('wordcloud1', {
         chart: {
           height: 380,
@@ -447,24 +456,20 @@ export default {
         series: [
           {
             type: 'wordcloud',
-            data,
+            data: top100,
             name: 'Occurrences'
           }
         ],
         title: {
-          text: '면접답변 빈도 check',
-          align: 'left'
-        },
-        subtitle: {
-          text: '',
-          align: 'left'
-        },
-        tooltip: {
-          headerFormat: '<span style="font-size: 16px"><b>{point.key}</b></span><br>'
+          text: 'Top 100 Wordcloud'
         }
       });
     })
-    }
+    .catch(function(error){
+      console.error('Error fetching word cloud data:', error);
+    });
+  }
+
   },
   mounted() {
     this.wordcloud();
