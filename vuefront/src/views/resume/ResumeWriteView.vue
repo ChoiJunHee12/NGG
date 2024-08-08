@@ -65,7 +65,7 @@
                   type="text"
                   class="cvwrite-cv1-input"
                   placeholder="출생년도"
-                  v-model=basic.birthymd
+                  v-model="basic.birthymd"
                 />
               </td>
             </tr>
@@ -273,16 +273,17 @@
                 <textarea
                   class="auto-resize"
                   placeholder="750자 이내로 입력하세요"
-                  style="text-align: center;"
+                  style="text-align: center"
                   v-model="int.title"
-                  >
+                >
                 </textarea>
               </td>
               <td class="cvwrite-cv4-td2">
                 <textarea
                   class="auto-resize"
                   placeholder="750자 이내로 입력하세요"
-                  v-model="int.content">
+                  v-model="int.content"
+                >
                 </textarea>
               </td>
             </tr>
@@ -317,9 +318,9 @@ export default {
       basic: {},
       edu: [],
       car: [],
-      intro: [{"title": "나의 성장과정"}],
+      intro: [{ title: "나의 성장과정" }],
       memno: 1,
-      rsmno:0,
+      rsmno: 0,
     };
   },
   components: {
@@ -331,29 +332,31 @@ export default {
   },
   methods: {
     fetchData(num) {
-      if(num){
-      console.log(num);
-      axios
-        .get(`${process.env.VUE_APP_BACK_END_URL}/resume/resumeDetail?num=${num}`)
-        .then((resp) => {
-          console.log(resp.data);
-          this.rsmno = num;
-          this.basic = resp.data[0];
-          this.edu = resp.data[1];
-          this.car = resp.data[2];
-          if(resp.data[3].length !==0){
-            this.intro = resp.data[3];
-          }
-          console.log(this.basic)
-          console.log(this.edu)
-          console.log(this.car)
-          console.log(this.intro)
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-      }else{
-        console.log("이력서 작성")
+      if (num) {
+        console.log(num);
+        axios
+          .get(
+            `${process.env.VUE_APP_BACK_END_URL}/resume/resumeDetail?num=${num}`
+          )
+          .then((resp) => {
+            console.log(resp.data);
+            this.rsmno = num;
+            this.basic = resp.data[0];
+            this.edu = resp.data[1];
+            this.car = resp.data[2];
+            if (resp.data[3].length !== 0) {
+              this.intro = resp.data[3];
+            }
+            console.log(this.basic);
+            console.log(this.edu);
+            console.log(this.car);
+            console.log(this.intro);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      } else {
+        console.log("이력서 작성");
       }
     },
     complete() {
@@ -361,30 +364,43 @@ export default {
 
       if (num) {
         axios
-          .post(`${process.env.VUE_APP_BACK_END_URL}/resume/resumeUpdate?num=${num}`,
-          { 
-            "basic": this.basic, "education": this.edu, "career": this.car, "intro": this.intro, "memno": this.memno
-          },
-          {
-            headers: { "Content-Type": "application/json" },
-          })
+          .post(
+            `${process.env.VUE_APP_BACK_END_URL}/resume/resumeUpdate?num=${num}`,
+            {
+              basic: this.basic,
+              education: this.edu,
+              career: this.car,
+              intro: this.intro,
+              memno: this.memno,
+            },
+            {
+              headers: { "Content-Type": "application/json" },
+            }
+          )
           .then((res) => {
             console.log(this.basic);
             console.log(res.data);
-
           });
         this.savecom = !this.savecom;
       } else {
-        console.log(this.basic)
-        console.log(this.edu)
-        console.log(this.car)
-        console.log(this.intro)
+        console.log(this.basic);
+        console.log(this.edu);
+        console.log(this.car);
+        console.log(this.intro);
         axios
-          .post(`${process.env.VUE_APP_BACK_END_URL}/resume/resumeAdd`, 
-          { "basic": this.basic, "education": this.edu, "career": this.car, "intro": this.intro, "memno": this.memno},
-          {
-            headers: { "Content-Type": "application/json" },
-          })
+          .post(
+            `${process.env.VUE_APP_BACK_END_URL}/resume/resumeAdd`,
+            {
+              basic: this.basic,
+              education: this.edu,
+              career: this.car,
+              intro: this.intro,
+              memno: this.memno,
+            },
+            {
+              headers: { "Content-Type": "application/json" },
+            }
+          )
           .then((res) => {
             console.log(res.data);
           });
@@ -399,26 +415,34 @@ export default {
       console.log(this.cvlist2);
     },
     delcv2(i, seqno) {
-      console.log("seqno:", seqno)
-      console.log("rsmno:", this.rsmno)
+      console.log("seqno:", seqno);
+      console.log("rsmno:", this.rsmno);
       console.log(i);
-      axios.post(`${process.env.VUE_APP_BACK_END_URL}/resume/resumeDeleteEdu`, {"seqno":seqno, "rsmno":this.rsmno})
-      .then((res)=>{
-        console.log("삭제완료")
-      })
+      axios
+        .post(`${process.env.VUE_APP_BACK_END_URL}/resume/resumeDeleteEdu`, {
+          seqno: seqno,
+          rsmno: this.rsmno,
+        })
+        .then((res) => {
+          console.log("삭제완료");
+        });
       this.edu.splice(i, 1);
     },
     addcv3() {
       this.car.push({ td1: "", td2: "", td3: "", td4: "", td5: "" });
     },
     delcv3(i, seqno) {
-      console.log("seqno:", seqno)
-      console.log("rsmno:", this.rsmno)
+      console.log("seqno:", seqno);
+      console.log("rsmno:", this.rsmno);
       console.log(i);
-      axios.post(`${process.env.VUE_APP_BACK_END_URL}/resume/resumeDeleteCar`, {"seqno":seqno, "rsmno":this.rsmno})
-      .then((res)=>{
-        console.log("삭제완료")
-      })
+      axios
+        .post(`${process.env.VUE_APP_BACK_END_URL}/resume/resumeDeleteCar`, {
+          seqno: seqno,
+          rsmno: this.rsmno,
+        })
+        .then((res) => {
+          console.log("삭제완료");
+        });
       this.car.splice(i, 1);
     },
   },
