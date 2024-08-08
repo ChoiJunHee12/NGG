@@ -1,6 +1,7 @@
 .container1{
   text-align: center;
   /* width: 1280px; */
+  background-color: white;
 }
   
   .landing-img {
@@ -17,6 +18,7 @@
     height: 100%;
     position: relative;
     overflow: hidden;
+    background-color: white;
   }
   
   .video-section {
@@ -44,6 +46,11 @@
     box-shadow:3px 3px 3px #acacac ;
   }
   
+  .blockquote-con{
+    background-color: #ffffff00;
+    
+  }
+
   .image-section {
     height: 100%; /* 두 번째 섹션 높이를 화면 전체 높이로 설정 */
     position: relative; /* 부모 요소로서의 position: relative 추가 */
@@ -90,12 +97,11 @@
 
   .talk{
     text-align: left;
+    /* background-color: #bd38a710; */
   }
 
 .talk_left{
-  margin-bottom: 5%;
-  margin-left: 10%;
-  margin-right: 5%;
+  margin: 0 5% 5% 10%;;
 }
 .talk_right{
   margin-bottom: 5%;
@@ -127,7 +133,7 @@
     position: relative;
     width: 660px;
     margin-bottom: 5px;
-    padding-top: 10px;
+    padding-top: 20px;
 }
 
 .talk_left >.t_person_txt:before {
@@ -150,6 +156,7 @@
   margin-top: 20px;
   display: inline;
   margin-left: 2%;
+  /* margin-bottom: 10%; */
 }
 .talk_right >.t_person_txt:before {
   background: url(/img/Main_image/point.png) no-repeat;
@@ -208,7 +215,8 @@
   font-size: 1.7em;
   font-weight: 900;
   text-align: center;
-  /* padding: 1% 0; */
+  color: #000000;
+  padding: 0 0 10% 0;
 }
 
 .p-style blockquote{
@@ -221,7 +229,7 @@
   /*Font*/
   font-size: 2.3em;
   line-height: 1.2;
-  color: s#11045e;
+  color: #11045e;
  
   /*Box Shadow - (Optional)*/
   -moz-box-shadow: 2px 2px 15px #ccc;
@@ -242,24 +250,28 @@
   margin-left: 11%;
   font-size: 2.5em;
   font-weight: 700;
+  color: #000000;
 }
 
 .p-text{
   margin-left: 12%;
   font-size: 1.3em;
   font-weight: 700;
+  color: #000000;
 }
 
 .info-right img{
   width: 55%;
   margin-left: 25%;
   margin-top: 2%;
+  margin-bottom: 10%;
 }
 
 .info-left img{
   width: 55%;
   margin-left: 10%;
   margin-top: 2%;
+  margin-bottom: 10%;
 }
 
 .info-right{
@@ -275,6 +287,7 @@
   flex-direction: column; /* 수직 배치 */
   align-items: flex-start; /* 좌측 정렬 */
   text-align: left; /* 텍스트를 우측 정렬 */
+  background-color: #f0f6ff;
 }
 
 .p-point-end{
@@ -282,6 +295,7 @@
   margin-bottom: 3%;
   font-size: 2.5em;
   font-weight: 700;
+  color: #000000;
 }
 
 .btns{

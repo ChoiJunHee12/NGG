@@ -157,6 +157,30 @@ title.cvwrite-container{
     text-align: center;
 }
 
+.cvwrite-cv-input-half-top{
+    width: 100%;
+    height: 30%;
+    background-color: transparent;
+    border: none;
+    resize: none;
+    overflow: hidden;
+    box-sizing: border-box;
+    text-align: center;
+    padding-top: 5px;
+}
+
+.cvwrite-cv-input-half-bottom{
+    width: 100%;
+    height: 30%;
+    background-color: transparent;
+    border: none;
+    resize: none;
+    overflow: hidden;
+    box-sizing: border-box;
+    text-align: center;
+    padding-bottom: 5px;
+}
+
 
 
 .cvwrite-cv-title{

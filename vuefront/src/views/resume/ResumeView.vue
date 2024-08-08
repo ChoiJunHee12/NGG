@@ -23,7 +23,7 @@
               <th>수정 날짜</th>
             </tr>
             <!-- 이쪽 데이터받으면 for 문-->
-            <tr v-for="(item, index) in items" :key="index" class="cv-tr2">
+            <tr v-for="(item, index) in items" :key="index" class="cv-tr2" :v-if="show">
               <td>
                 <div class="cv-cvtitle" @click="updatecv(item.rsmno)">
                   {{ item.title }}
@@ -31,7 +31,7 @@
               </td>
               <td class="cvbtn-area">
                 <button class="cv-upbtn" @click="updatecv(item.rsmno)">수정</button>
-                <button class="cv-delbtn" @click="deletecv(index)">삭제</button>
+                <button class="cv-delbtn" @click="deletecv(item.rsmno)">삭제</button>
               </td>
               <td>
                   <div class="cv-update-date">{{dateFormat(item.upddt)}}</div>
@@ -47,7 +47,7 @@
       </div>
 
       <div class="cv-dwrite">
-        <router-link to="cvwrite"
+        <router-link to="resumeWrite"
           ><button class="cv-writebtn">이력서 작성</button></router-link
         >
       </div>
@@ -66,21 +66,22 @@ export default {
   created() {
     this.fetchData();
   },
+  updated() {
+    this.fetchData();
+  },
   methods: {
     fetchData(){
-      axios.post(`${process.env.VUE_APP_BACK_END_URL}/resume/resumeList`)
+      axios.post(`${process.env.VUE_APP_BACK_END_URL}/resume/resumeList`,{"memno": 1})
       .then((res)=>{
         console.log("호출 성공")
         this.items = res.data
         console.log(this.items)
-        if(this.items.rsmno.length === 0){
-          this.show = false;
+        if(res.data === null){
+          this.show = false
         }else{
-          this.show = false;
+          this.show = true
         }
-      })
-      .catch((err)=> {
-        console.log("호출 실패")
+      }).catch((err)=> {
         console.log(err)
       })
     },
@@ -88,11 +89,14 @@ export default {
       return str.split('T')[0];
     },
     updatecv(num) {
-      this.$router.push({ name: "ResumeUpdate", query: { num: num } }); //나중에 파라미터 넣어주세요
+      this.$router.push({ name: "ResumeUpdate", query: { "num": num } }); //나중에 파라미터 넣어주세요
     },
-    deletecv(num){
-        axios.get(`${process.env.VUE_APP_BACK_END_URL}/resume/resumeDelete?num=${num}`)
-        .then(this.$router.push({name: "ResumeList"}));
+    deletecv(rsmno){
+        axios.post(`${process.env.VUE_APP_BACK_END_URL}/resume/resumeDelete`, {"rsmno": rsmno})
+        .then((res)=>{
+          console.log("삭제완료")
+          this.$router.push({name: "ResumeList"})  
+          });
     }
   },
 };
