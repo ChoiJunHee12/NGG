@@ -1,12 +1,13 @@
 <template>
   <div class="landing">
       <div class="section">
+    <router-link to="login">
+    <button class="joinAndLogin2" id="join-btn2" type="button">
+      가입 / 로그인하기</button></router-link>
         <div class="video-section">
       <img src="img/Main_image/Nervous.gif" class="landing-img">
     </div>
     <div class="image-section">
-
-
 
 <div class="container1">
   <div data-aos="fade-up">
@@ -100,7 +101,10 @@ data-aos-anchor-placement="top-bottom">
   import "aos/dist/aos.css";
   export default {
     created() {
-        AOS.init();
+      AOS.init();
+    },
+    mounted() {
+      window.scrollTo(0, 0);
     },
   };
   </script>
