@@ -8,7 +8,7 @@ const routes = [
     name: "Landing",
     component: () =>
       import(/* webpackChunkName: "about" */ "../views/Landing.vue"),
-    // meta: { hideLayout: true }  // 메타 필드 추가
+    meta: { hideLayout: true }  // 메타 필드 추가
   },
 
   {

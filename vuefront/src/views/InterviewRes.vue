@@ -16,8 +16,8 @@
         <div v-for="(e, index) in attitude" :key="index" class="interviewRes-displaytwo">
           <table v-show="e !== null" class="interviewRes-table">
             <tr>
-              <td class="interviewRes-list" @click="showModal_personal">
-                <p>{{e}}</p>
+              <td class="interviewRes-list" @click="showModal_personal(e.INTNO)">
+                <p>〈인성면접〉{{e.MNAME}}님 면접결과 {{ formatDate(e.CREDT) }}</p>
               </td>
             </tr>
           </table>
@@ -35,8 +35,8 @@
         <div v-for="(e, index) in career" :key="index" class="interviewRes-displaytwo">
           <table v-show="e !== null" class="interviewRes-table">
             <tr>
-              <td class="interviewRes-list" @click="showModal_duty">
-                <p>{{e}}</p>
+              <td class="interviewRes-list" @click="showModal_duty(e.INTNO)">
+                <p>〈직무면접〉{{e.MNAME}}님 면접결과 {{ formatDate(e.CREDT) }}</p>
               </td>
             </tr>
           </table>
@@ -52,8 +52,8 @@
       </div>
     </div>
   </div>
-  <InterviewResPersenalModal v-if="popState_personal" @close="closeModal_personal"></InterviewResPersenalModal>
-  <InterviewResDutyModal v-if="popState_duty" @close="closeModal_duty"></InterviewResDutyModal>
+  <InterviewResPersenalModal v-if="popState_personal" @close="closeModal_personal" v-bind:intno="intno"></InterviewResPersenalModal>
+  <InterviewResDutyModal v-if="popState_duty" @close="closeModal_duty" v-bind:intno="intno"></InterviewResDutyModal>
   <OneToOne v-if="popState_one" @close="closeModal_one"></OneToOne>
 </template>
 
@@ -77,6 +77,8 @@ export default {
       content: 1,
       popState_personal: false,
       popState_duty: false,
+      selectedIntno: null,
+      intno:5,
     };
   },
   mounted() {
@@ -89,18 +91,23 @@ export default {
       this.page = num;
       this.content = num;
     },
-    showModal_personal() {
+    showModal_personal(intno) {
       this.popState_personal = true;
+      this.intno = intno;
+      console.log("intno넘어오나요?"+intno);
     },
     closeModal_personal() {
       this.popState_personal = false;
     },
-    showModal_duty() {
+    showModal_duty(intno) {
       this.popState_duty = true;
+      this.intno = intno;
+      console.log("intno넘어오나요?"+intno);
     },
     closeModal_duty() {
       this.popState_duty = false;
     },
+    
     async fetchAttitudeResults() {
       try {
         const response = await axios.get(`${process.env.VUE_APP_BACK_END_URL}/itv/attitude`);
@@ -118,7 +125,11 @@ export default {
       } catch (error) {
         console.error("Error fetching career results:", error);
       }
-    }
+    },
+    formatDate(datetime) {
+      // 'T'를 기준으로 문자열을 나누고 첫 번째 부분을 반환합니다.
+      return datetime.split('T')[0];
+    },
   },
 };
 </script>
