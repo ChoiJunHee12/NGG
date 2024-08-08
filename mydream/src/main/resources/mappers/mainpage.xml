@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.ict.mydream.mainpage.MainPageDao">
+
+    <!-- 회원 정보 조회 -->
+    <select id="getMemberDetail" resultType="membervo">
+        SELECT * FROM TBMEMBER WHERE MEMNO = #{memno}
+    </select>
+
+    <!-- 컨설턴트 정보 조회 -->
+    <select id="getConsultantDetail" resultType="consultvo">
+        SELECT * FROM TBCONSULT WHERE CNSNO = #{cnsno}
+    </select>
+
+    <!-- 회원-컨설턴트 매핑 정보 조회 -->
+    <select id="getMemberConsultantMapping" resultType="memberconsultvo">
+        SELECT * FROM TBMEMBERCONSULT WHERE MEMNO = #{memno}
+    </select>
+
+    <!-- 최신 감정 데이터 조회 -->
+    <select id="getLatestEmotionDetails" resultType="intdetailvo">
+        SELECT intno, qno, ecntgood, ecntsoso, ecntbad
+        FROM TBINTDETAIL
+        WHERE intno = #{intno}
+        AND upddt = (SELECT MAX(upddt) FROM TBINTDETAIL WHERE intno = #{intno})
+    </select>
+
+    <!-- 최신 음성 데이터 조회 -->
+    <select id="getLatestVoiceDetails" resultType="intdetailvo">
+        SELECT intno, qno, vhertz, vamplit, vempty
+        FROM TBINTDETAIL
+        WHERE intno = #{intno}
+        AND upddt = (SELECT MAX(upddt) FROM TBINTDETAIL WHERE intno = #{intno})
+    </select>
+
+    <!-- 최신 자세 데이터 조회 -->
+    <select id="getLatestPostureDetails" resultType="intdetailvo">
+        SELECT intno, qno, pbadcnt
+        FROM TBINTDETAIL
+        WHERE intno = #{intno}
+        AND upddt = (SELECT MAX(upddt) FROM TBINTDETAIL WHERE intno = #{intno})
+    </select>
+
+    <!-- 최신 컨설턴트 평가 점수 조회 -->
+    <select id="getLatestConsultantScore" resultType="intresvo">
+        SELECT * 
+        FROM TBINTRES
+        WHERE intno = #{intno}
+        AND upddt = (SELECT MAX(upddt) FROM TBINTRES WHERE intno = #{intno})
+    </select>
+
+    <!-- 회원 일정 조회 -->
+    <select id="getSchedulesByMember" resultType="scedulevo">
+        SELECT * FROM TBSCEDULE WHERE memno = #{memno}
+    </select>   
+
+    <!-- 컨설턴트 직무 질문&답변 STT -->
+    <select id="getConsultantQuestions" parameterType="map" resultType="intdetailvo">
+        SELECT *
+        FROM TBINTDETAIL
+        WHERE intno = #{intno}
+        AND qno IN
+        <foreach item="item" index="index" collection="qnos" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <!-- 컨설턴트 직무 답변 피드백-->
+    <select id="getConsultantFeedback" parameterType="map" resultType="consultevalvo">
+        SELECT *
+        FROM TBCONSULTEVAL
+        WHERE memno = #{memno}
+        AND cnsno = #{cnsno}
+        AND intno = #{intno}
+        AND qno IN
+        <foreach item="item" index="index" collection="qnos" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <!-- ResultMap 정의 -->
+    <resultMap id="IntResVOResultMap" type="intresvo">
+        <!-- cnsfeedbk를 IntResVO의 필드로 매핑 -->
+        <result property="cnsfeedbk" column="cnsfeedbk" />
+    </resultMap>
+    <!-- 컨설턴트 피드백(총평) -->
+    <select id="getConsultantTotalFeedback" parameterType="map" resultMap="IntResVOResultMap">
+        SELECT cnsfeedbk 
+        FROM TBINTRES 
+        WHERE memno = #{memno} AND intno = #{intno}
+    </select>
+
+</mapper>

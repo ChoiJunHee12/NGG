@@ -11,9 +11,9 @@ import java.util.Date;
 @Alias("memberconsultvo")
 public class MemberConsultVO {
 
-    private int cnsno;
-    private int memno;
-    private String useyn;
-    private Date credt;
-    private Date upddt;
+    private int cnsno; // 회원번호(FK)
+    private int memno; // 컨설턴트번호(FK)
+    private String useyn; // 사용여부
+    private Date credt; // 최초등록일자
+    private Date upddt; // 최초수정일자
 }
