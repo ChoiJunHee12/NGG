@@ -21,8 +21,10 @@
         </div>
 
 
-        <div class="res-subtitle3 col-1"><div class="res-subtitlecon3">종합 평가</div></div>
-        <hr>
+        <div class="res-subtitle3 col-1">
+          <div class="res-subtitlecon3">종합 평가</div>
+        </div>
+
         <div class="resduty-qcon10">
           <div class="reshduty-totalcom">
             <div class="resduty-analyze6-con">
@@ -33,8 +35,10 @@
 
 
         </div>
-        <div class="res-subtitle3"><div class="res-subtitlecon3">표정 분석 / 자세 분석</div></div>
-        <hr>
+        <div class="res-subtitle3">
+          <div class="res-subtitlecon3">표정 분석 / 자세 분석</div>
+        </div>
+
         <div class="res-qcon5">
             <div class="res-face"> 
                 <div id="face" style="width: 400px;height:400px;"></div>
@@ -84,14 +88,14 @@
         <div class="resh-qcon">
             <div class="res-subtitle3 col-1"><div class="res-subtitlecon3">
 
-                Q{{ i+1 }}. {{ qnaData[i] }}</div>
+                Q{{ i+1 }}. {{ question}}</div>
         </div>
     </div>
         <div class="resh-qcon4">
             <div class="resh-qcontent1">
                 <div class="resh-subtitle1 row">
                     <div class="resh-subtitle2 col-1">면접 대답</div>
-                    <div class="resh-qcontent2">{{this.Comment[i]}}</div>
+                    <div class="resh-qcontent2">{{ answer }}</div>
                 </div>
             </div>
         </div>
@@ -99,7 +103,7 @@
             <div class="resh-qcontent1">
                 <div class="resh-subtitle1 row">
                     <div class="resh-subtitle2 col-1">피드백</div>
-                    <div class="resh-qcontent2">{{feedback[i]}}</div>
+                    <div class="resh-qcontent2">{{feedback}}</div>
                 </div>
             </div>
         </div>
@@ -136,9 +140,9 @@ export default {
       userData: [],
       activePage: 1,
       page: 1,
-      Question: [],
-      Comment: [],
-      feedback: [],
+      question: '',
+      answer: '',
+      feedback: '',
       i: 0,
       content: 1,
       aifeedbk: '',
@@ -175,34 +179,42 @@ export default {
       // this.Comment = comment || [];
       // this.feedback = feedback || [];
       this.qnaData = response.data;
-      console.log(response.data)
+      this.question = response.data[`${this.i}`].QUESTION;
+      this.answer = response.data[`${this.i}`].ANSWER;
+      this.feedback = response.data[`${this.i}`].AIFEEDBK;
+      
+      console.log(this.qnaData);
     })
     .catch(error => {
       console.error('서버 오류:', error);
     });
 },
-    scrollToTop() {
-      const container = this.$el.querySelector('.reshduty-con.scrollable-div');
-      container.scrollTo({
-        top: 0,
-        behavior: 'smooth'
-      });
-    },
+    // scrollToTop(i) {
+    //   const container = this.$el.querySelector('.reshduty-con.scrollable-div');
+    //   container.scrollTo({
+    //     top: 0,
+    //     behavior: 'smooth'
+    //   });
+    // },
     next() {
       this.pagechage(this.page + 1);
       this.activePage = this.page;
-      this.scrollToTop();
+      // this.scrollToTop();
     },
     Previous() {
       this.pagechage(this.page - 1);
       this.activePage = this.page;
-      this.scrollToTop();
+      // this.scrollToTop();
     },
     pagechage(num) {
       console.log(num);
+
       this.page = num;
       this.activePage = num;
       this.i = num - 1;
+      this.question = this.qnaData[`${num-1}`].QUESTION;
+      this.answer = this.qnaData[`${num-1}`].ANSWER;
+      this.feedback = this.qnaData[`${num-1}`].AIFEEDBK
       if (num === 8) {
         this.content = 8;
       } else {
@@ -223,10 +235,9 @@ export default {
     .then(function(response){
       console.log(response.data); // 응답 데이터 확인
 
-      let faceData = response.data; // response.data가 faceData임을 가정
       let option = {
         title: {
-          text: faceData.chartname // 감정 점수
+          text: '감정 점수'
         },
         tooltip: {
           trigger: 'axis'
@@ -257,8 +268,8 @@ export default {
             areaStyle: {},
             data: [
               {
-                value: [faceData.values[0], faceData.values[1],faceData.values[2],faceData.values[3],faceData.values[4],],// [60, 73, 85, 40, 65]
-                name: faceData.chartname // 감정 점수
+                value: response.data,// [60, 73, 85, 40, 65]
+                name: '감정 점수'
               }
             ]
           }

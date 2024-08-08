@@ -1,20 +1,24 @@
 <template>
   <div id="app">
     <Header
-    v-show="!$route.meta.hideLayout"
+      v-show="!$route.meta.hideLayout"
       @toggle-sidebar="toggleSidebar"
       :class="{'main-header': true, 'sidebar-open': isSidebarVisible}"
     />
     <i 
-    v-show="!$route.meta.hideLayout"
-    class="bi bi-list fixed-menu-icon" @click="toggleSidebar"></i>
+      v-show="!$route.meta.hideLayout"
+      class="bi bi-list fixed-menu-icon"
+      @click="toggleSidebar">
+    </i>
     <Sidebar 
-    v-show="!$route.meta.hideLayout"
-    :isVisible="isSidebarVisible" />
+      v-show="!$route.meta.hideLayout"
+      :isVisible="isSidebarVisible" />
     <main :class="{'main-content': true, 'sidebar-open': isSidebarVisible}">
       <router-view :isSidebarVisible="isSidebarVisible" :setSidebarVisibility="setSidebarVisibility"/>
     </main>
-    <i class="bi bi-caret-up scroll-to-top" @click="scrollToTop"><p style="display:inline; font-size:20px; font-style: normal; ">TOP</p></i>
+    <i class="bi bi-caret-up scroll-to-top" @click="scrollToTop">
+      <p style="display:inline; font-size:20px; font-style: normal;">TOP</p>
+    </i>
     <Footer/>
   </div>
 </template>
@@ -28,8 +32,13 @@ export default {
   components: { Header, Footer, Sidebar },
   data() {
     return {
-      isSidebarVisible: true,
+      isSidebarVisible: !this.$route.meta.hideLayout,
     };
+  },
+  watch: {
+    '$route'(to, from) {
+      this.isSidebarVisible = !to.meta.hideLayout;
+    }
   },
   methods: {
     toggleSidebar() {
@@ -63,8 +72,6 @@ html, body {
   background-size: cover;
 }
 
-
-
 .header-visible, .sidebar-visible, .footer-visible {
   position: relative; /* Ensure lower z-index than .landing */
   z-index: 10;
@@ -73,5 +80,4 @@ html, body {
 .landing-hidden {
   margin-top: 0; /* Adjust layout if necessary */
 }
-
 </style>

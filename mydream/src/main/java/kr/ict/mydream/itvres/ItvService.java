@@ -1,11 +1,10 @@
 package kr.ict.mydream.itvres;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import kr.ict.mydream.dto.ItvDTO;
 
@@ -25,7 +24,6 @@ public class ItvService {
     }
 
     public List<ItvDTO> detail(int intno) {
-        System.out.println("intno:" + intno);
         return itvDao.detail(intno);
     }
 
@@ -43,5 +41,9 @@ public class ItvService {
 
     public List<Map<String, String>> questionData(int intno) {
         return itvDao.questionData(intno);
+    }
+
+    public List<String> ctFeedbackList(int intno) {
+        return itvDao.ctFeedbackList(intno);
     }
 }

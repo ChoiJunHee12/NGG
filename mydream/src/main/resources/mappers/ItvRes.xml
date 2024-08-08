@@ -9,16 +9,12 @@
     </select>
 
     <select id="detail" parameterType="int" resultType="kr.ict.mydream.dto.ItvDTO">
-    
-        SELECT m.name AS mname, a.credt AS credt, a.cnsfeedbk AS cnsfeedbk, a.aifeedbk AS aifeedbk, d.question AS question, a.intno as intno
-        FROM tbmember M 
-        JOIN tbintres a ON m.memno = a.memno 
-        JOIN tbintdetail d ON a.intno = d.intno 
-        WHERE a.intno = #{intno}
+        SELECT m.name AS mname, a.credt AS credt, a.cnsfeedbk AS cnsfeedbk, a.aifeedbk AS aifeedbk, d.question AS question, a.intno as intno, d.qno as qno
+        FROM tbmember M JOIN tbintres a ON m.memno = a.memno JOIN tbintdetail d ON a.intno = d.intno WHERE a.intno = #{intno}
     </select>
 
-    <select id="faceData" parameterType="int" resultType="int">
-        SELECT pbadcnt FROM tbintdetail WHERE intno = #{intno}
+    <select id="faceData" parameterType="int" resultType="Integer">
+        SELECT escore FROM TBINTDETAIL WHERE INTNO = #{intno}
     </select>
 
     <select id="getBarData" parameterType="int" resultType="int">
@@ -30,6 +26,11 @@
     </select>
 
     <select id="questionData" parameterType="int" resultType="java.util.Map">
-        SELECT question , DBMS_LOB.SUBSTR(answer, 4000, 1) AS answer, aifeedbk FROM tbintdetail WHERE intno = #{intno}
+        SELECT question , to_char(answer) AS answer, to_char(aifeedbk) as aifeedbk FROM tbintdetail WHERE intno = #{intno}
     </select>
+
+    <select id="ctFeedbackList" parameterType="int" resultType="String">
+        SELECT TO_CHAR(c.qcnsfeedbk) AS qcnsfeedbk FROM tbintdetail d JOIN tbconsulteval c ON d.intno = c.intno AND d.qno = c.qno WHERE d.intno = #{intno}
+    </select>
+
 </mapper>

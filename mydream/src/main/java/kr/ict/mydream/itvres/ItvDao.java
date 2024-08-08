@@ -23,4 +23,6 @@ public interface ItvDao {
 
     public List<Map<String, String>> questionData(int intno);
 
+    public List<String> ctFeedbackList(int intno);
+
 }

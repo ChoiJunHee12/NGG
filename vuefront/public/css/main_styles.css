@@ -21,6 +21,23 @@
   
   .video-section {
     height: 100%; /* 첫 번째 섹션 높이를 화면 전체 높이로 설정 */
+    position: relative;
+  }
+  .joinAndLogin2{
+    display: flex;
+    position: absolute;
+    width: fit-content;
+    left: 85%;
+    top: 0.5%;
+    padding: 0.5% 1%;
+    text-align: center;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+    color: rgb(255, 255, 255);
+    background-color: #dbdbdbe8;
+    border: 0px #00000000;
+    font-size: 2em;
+    font-weight: 700;
   }
   
   .image-section {
