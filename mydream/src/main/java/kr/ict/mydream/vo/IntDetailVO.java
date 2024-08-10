@@ -10,8 +10,8 @@ import java.util.Date;
 @Setter
 @Alias("intdetailvo")
 public class IntDetailVO {
-    private int intno; // 면접번호(PK1)
-    private int qno; // 질문번호(PK2)
+    private int intno; // 면접번호(FK)
+    private int qno; // 질문번호(PK)
     private int aiqno; // AI질문번호
     private int cnsqno; // 컨설턴트질문번호
     private String question; // 질문제옥

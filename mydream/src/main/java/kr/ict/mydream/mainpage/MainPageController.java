@@ -25,22 +25,23 @@ public class MainPageController {
 
     // 스트레스율 조회
     @GetMapping("/stressRate")
-    public ResponseEntity<Float> getStressRate(@RequestParam("intno") int intno) {
-        float stressRate = mainPageService.calculateStressRate(intno);
+    public ResponseEntity<Float> getStressRate(@RequestParam("intno") int intno, @RequestParam("memno") int memno) {
+        float stressRate = mainPageService.calculateStressRate(intno, memno);
         return ResponseEntity.ok(stressRate);
     }
 
     // 음성 점수 조회
     @GetMapping("/voiceRate")
-    public ResponseEntity<Float> getVoiceRate(@RequestParam("intno") int intno) {
-        float voiceRate = mainPageService.calculateVoiceRate(intno);
+    public ResponseEntity<Float> getVoiceRate(@RequestParam("intno") int intno, @RequestParam("memno") int memno) {
+        float voiceRate = mainPageService.calculateVoiceRate(intno, memno);
         return ResponseEntity.ok(voiceRate);
     }
 
     // 자세 불량 점수 조회
     @GetMapping("/postureBadCountRate")
-    public ResponseEntity<Float> getPostureBadCountRate(@RequestParam("intno") int intno) {
-        float postureBadCountRate = mainPageService.calculatePostureBadCountRate(intno);
+    public ResponseEntity<Float> getPostureBadCountRate(@RequestParam("intno") int intno,
+            @RequestParam("memno") int memno) {
+        float postureBadCountRate = mainPageService.calculatePostureBadCountRate(intno, memno);
         return ResponseEntity.ok(postureBadCountRate);
     }
 
@@ -51,18 +52,11 @@ public class MainPageController {
         return consultantScore != null ? ResponseEntity.ok(consultantScore) : ResponseEntity.notFound().build();
     }
 
-    // 컨설턴트 정보 조회
-    @GetMapping("/consultantDetail")
-    public ResponseEntity<ConsultVO> getConsultantDetail(@RequestParam("cnsno") int cnsno) {
-        ConsultVO consultant = mainPageService.getConsultantDetail(cnsno);
-        return consultant != null ? ResponseEntity.ok(consultant) : ResponseEntity.notFound().build();
-    }
-
-    // 회원-컨설턴트 매핑 정보 조회
-    @GetMapping("/memberConsultantMapping")
-    public ResponseEntity<MemberConsultVO> getMemberConsultantMapping(@RequestParam("memno") int memno) {
-        MemberConsultVO mapping = mainPageService.getMemberConsultantMapping(memno);
-        return mapping != null ? ResponseEntity.ok(mapping) : ResponseEntity.notFound().build();
+    // 회원-컨설턴트 매핑 및 컨설턴트 정보 조회
+    @GetMapping("/memberConsultantDetail")
+    public ResponseEntity<MemberConsultVO> getMemberConsultantDetail(@RequestParam("memno") int memno) {
+        MemberConsultVO detail = mainPageService.getMemberConsultantDetail(memno);
+        return detail != null ? ResponseEntity.ok(detail) : ResponseEntity.notFound().build();
     }
 
     // 회원 일정 조회
