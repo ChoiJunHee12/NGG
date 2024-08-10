@@ -23,7 +23,7 @@ public class MainPageService {
         // 회원-컨설턴트 매핑 및 컨설턴트 정보 조회
         public MemberConsultVO getMemberConsultantDetail(int memno) {
                 MemberConsultVO mapping = mainPageDao.getMemberConsultantDetail(memno);
-                return mapping; // 매핑된 컨설턴트 정보가 포함된 객체 반환
+                return mapping;
         }
 
         // 스트레스율 계산
@@ -34,7 +34,7 @@ public class MainPageService {
 
                 List<IntDetailVO> latestDetails = mainPageDao.getLatestEmotionDetails(params);
                 if (latestDetails.isEmpty()) {
-                        return 0; // 데이터가 없는 경우 0점 반환
+                        return 0;
                 }
 
                 float totalGood = 0, totalSoso = 0, totalBad = 0, totalCount = 0;
@@ -127,9 +127,15 @@ public class MainPageService {
                 params.put("memno", memno);
                 params.put("intno", intno);
 
-                // IntResVO 객체를 반환받아 cnsfeedbk 필드 값을 추출
                 IntResVO result = mainPageDao.getConsultantTotalFeedback(params);
-                return result != null ? result.getCnsfeedbk() : null; // null 체크
+                return result != null ? result.getCnsfeedbk() : null;
         }
+
+        // 최근 5개의 인성면접 데이터 (감정, 자세 분석)
+        public List<IntDetailVO> getEmotionAverages(int memno) {
+                return mainPageDao.getEmotionAverages(memno);
+        }
+
+        // 최근 5개의 인성면접 데이터 종합요약
 
 }

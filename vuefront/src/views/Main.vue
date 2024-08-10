@@ -130,18 +130,19 @@
                     text-align: center;
                     font-weight: bold;
                     color: #007bff;
+                    margin-left: 5px;
                   "
                 >
                   D-{{ schedule.dday }}
                 </div>
                 <div>
-                  <div style="font-weight: bold">
+                  <div style="font-weight: bold; margin-left: 20px">
                     {{ schedule.title }}
                     <span
                       style="
                         font-size: 0.9em;
                         color: #6c757d;
-                        margin-left: 10px;
+                        margin-left: 30px;
                       "
                       >{{ schedule.content }}</span
                     >
@@ -365,7 +366,6 @@ export default {
       feedback1: "",
       feedback2: "",
     });
-
     const consultantTotalFeedback = ref("");
     const loading = ref(false);
     const error = ref(null);
@@ -639,29 +639,38 @@ export default {
         : "개선이 필요함";
     });
 
-    onMounted(async () => {
-      const memno = 10; // 예시 memno 값
-      const intno = 10; // 예시 intno 값
-      const cnsno = 1001; // 예시 cnsno 값
-      await fetchMemberData(memno);
-      await fetchStressRate(intno, memno);
-      await fetchVoiceRate(intno, memno);
-      await fetchPostureBadCountRate(intno, memno);
-      await fetchConsultantScore(intno);
-      await fetchMemberSchedules(memno);
-      await fetchConsultantQuestions(intno, [6, 7]);
-      await fetchConsultantFeedback(memno, cnsno, intno, [6, 7]);
-      await fetchConsultantTotalFeedback(memno, intno);
-      await fetchConsultantDetail(memno);
+    // 버블차트 시작
+    const emotionData = ref([]);
+    const fetchEmotionAverage = async (memno) => {
+      try {
+        const response = await axios.get(
+          `http://localhost/mydream/mainpage/emotionAverage?memno=${memno}`
+        );
 
-      // 프로그레스 바 초기화
-      const progressBars = document.querySelectorAll(".progress-bar");
-      progressBars.forEach((bar) => {
-        const value = bar.getAttribute("data-value");
-        bar.style.width = `${value}%`;
-      });
+        // 응답 데이터를 날짜별로 긍정, 부정, 중립으로 매핑
+        const mappedData = response.data.map((dataItem) => ({
+          date: new Date(dataItem.credt).toLocaleDateString("en-US", {
+            month: "2-digit",
+            day: "2-digit",
+          }), // 날짜 형식 변환 (mm/dd)
+          positive: dataItem.ecntgood,
+          neutral: dataItem.ecntsoso,
+          negative: dataItem.ecntbad,
+        }));
 
-      // 버블차트 시작
+        emotionData.value = mappedData; // 상태에 저장
+        updateBubbleChart(); // 차트 업데이트
+      } catch (error) {
+        console.error("Error fetching emotion data:", error);
+      }
+    };
+
+    const updateBubbleChart = () => {
+      // 긍정 감정의 최대값을 기준으로 원의 크기 조정
+      const maxPositiveValue = Math.max(
+        ...emotionData.value.map((item) => item.positive)
+      );
+
       Highcharts.chart("chart-1", {
         chart: {
           type: "packedbubble",
@@ -681,10 +690,10 @@ export default {
         },
         plotOptions: {
           packedbubble: {
-            minSize: "50%",
-            maxSize: "100%",
+            minSize: "20%", // 최소 크기 설정 (조정됨)
+            maxSize: "60%", // 최대 크기 설정 (조정됨)
             zMin: 0,
-            zMax: 1000,
+            zMax: maxPositiveValue, // 긍정 감정의 최대값을 기준으로 설정
             layoutAlgorithm: {
               gravitationalConstant: 0.05,
               splitSeries: true,
@@ -708,118 +717,125 @@ export default {
             },
           },
         },
-        series: [
-          {
-            name: "8/5",
-            data: [
-              { name: "긍정", value: 60 },
-              { name: "부정", value: 50 },
-              { name: "중립", value: 13 },
-            ],
-          },
-          {
-            name: "8/6",
-            data: [
-              { name: "긍정", value: 3 },
-              { name: "부정", value: 7 },
-              { name: "중립", value: 0 },
-            ],
-          },
-          {
-            name: "8/7",
-            data: [
-              { name: "긍정", value: 50 },
-              { name: "부정", value: 13 },
-              { name: "중립", value: 17 },
-            ],
-          },
-          {
-            name: "8/8",
-            data: [
-              { name: "긍정", value: 80 },
-              { name: "부정", value: 30 },
-              { name: "중립", value: 10 },
-            ],
-          },
-          {
-            name: "8/9",
-            data: [
-              { name: "긍정", value: 30 },
-              { name: "부정", value: 30 },
-              { name: "중립", value: 40 },
-            ],
-          },
-        ],
+        series: emotionData.value.map((dataItem) => ({
+          name: dataItem.date,
+          data: [
+            {
+              name: "긍정",
+              value: dataItem.positive,
+              color: "#4a90e2", // 긍정 감정의 색상 설정
+              marker: {
+                radius: Math.max(
+                  (dataItem.positive / maxPositiveValue) * 30 + 5,
+                  5
+                ), // 원의 최소 크기와 최대 크기 조정
+              },
+            },
+            {
+              name: "부정",
+              value: dataItem.negative,
+              color: "#e94f4f", // 부정 감정의 색상 설정
+              marker: {
+                radius: Math.max(
+                  (dataItem.negative / maxPositiveValue) * 30 + 5,
+                  5
+                ), // 원의 최소 크기와 최대 크기 조정
+              },
+            },
+            {
+              name: "중립",
+              value: dataItem.neutral,
+              color: "#f7e04e", // 중립 감정의 색상 설정
+              marker: {
+                radius: Math.max(
+                  (dataItem.neutral / maxPositiveValue) * 30 + 5,
+                  5
+                ), // 원의 최소 크기와 최대 크기 조정
+              },
+            },
+          ],
+        })),
       });
-      // 버블차트 끝
+    };
+
+    // 버블차트 끝
+
+    onMounted(async () => {
+      const memno = 10; // 예시 memno 값
+      const intno = 10; // 예시 intno 값
+      const cnsno = 1001; // 예시 cnsno 값
+      await fetchMemberData(memno);
+      await fetchStressRate(intno, memno);
+      await fetchVoiceRate(intno, memno);
+      await fetchPostureBadCountRate(intno, memno);
+      await fetchConsultantScore(intno);
+      await fetchMemberSchedules(memno);
+      await fetchConsultantQuestions(intno, [6, 7]);
+      await fetchConsultantFeedback(memno, cnsno, intno, [6, 7]);
+      await fetchConsultantTotalFeedback(memno, intno);
+      await fetchConsultantDetail(memno);
+      await fetchEmotionAverage(memno);
+
+      // 프로그레스 바 초기화
+      const progressBars = document.querySelectorAll(".progress-bar");
+      progressBars.forEach((bar) => {
+        const value = bar.getAttribute("data-value");
+        bar.style.width = `${value}%`;
+      });
 
       // 라인차트 시작
       Highcharts.chart("chart-2", {
         title: {
           text: "",
-          align: "left",
         },
-
         subtitle: {
           text: "최근 5회 인성면접 결과",
           align: "left",
         },
-
+        xAxis: {
+          categories: ["8/5", "8/6", "8/7", "8/8", "8/9"],
+        },
         yAxis: {
           title: {
             text: "음성 점수",
           },
         },
-
-        xAxis: {
-          categories: ["8/5", "8/6", "8/7", "8/8", "8/9"],
-        },
-
-        legend: {
-          layout: "vertical",
-          align: "right",
-          verticalAlign: "middle",
-        },
         series: [
           {
             name: "Q1",
+            type: "spline",
             data: [10, 20, 30, 40, 50],
           },
           {
             name: "Q2",
+            type: "spline",
             data: [20, 10, 10, 10, 10],
           },
           {
             name: "Q3",
+            type: "spline",
             data: [30, 20, 20, 20, 20],
           },
           {
             name: "Q4",
+            type: "spline",
             data: [40, 30, 30, 30, 30],
           },
           {
             name: "Q5",
+            type: "spline",
             data: [50, 40, 40, 40, 40],
           },
         ],
-
-        responsive: {
-          rules: [
-            {
-              condition: {
-                maxWidth: 500,
-              },
-              chartOptions: {
-                legend: {
-                  layout: "horizontal",
-                  align: "center",
-                  verticalAlign: "bottom",
-                },
-              },
+        plotOptions: {
+          spline: {
+            marker: {
+              enabled: true,
             },
-          ],
+          },
         },
       });
+
       // 라인차트 끝
       // 바 차트 시작
       const chart = Highcharts.chart("chart-3", {
@@ -831,7 +847,7 @@ export default {
           text: "최근 5회 인성면접 결과",
           align: "left",
         },
-        colors: ["#16d4e6", "#0dd9db", "#03dfd0", "#00e4c5", "#00e9ba"],
+        colors: ["#a0d6e1"],
         xAxis: {
           categories: ["8/5", "8/6", "8/7", "8/8", "8/9"],
         },
@@ -865,6 +881,7 @@ export default {
           text: "최근 5회 인성면접 결과",
           align: "left",
         },
+        colors: ["#FF6F61", "#8b8be0", "#88D8B0", "#f8b77d", "#FFABAB"],
         yAxis: {
           title: {
             text: "점수",
@@ -880,6 +897,11 @@ export default {
           column: {
             borderRadius: "25%",
           },
+        },
+        legend: {
+          align: "right",
+          verticalAlign: "middle",
+          layout: "vertical",
         },
         series: [
           {

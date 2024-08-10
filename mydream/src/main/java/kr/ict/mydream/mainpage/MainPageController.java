@@ -8,6 +8,7 @@ import kr.ict.mydream.vo.*;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/mainpage")
@@ -23,21 +24,21 @@ public class MainPageController {
         return ResponseEntity.ok(member);
     }
 
-    // 스트레스율 조회
+    // 스트레스율 조회(최근 면접 데이터 인성&직무)
     @GetMapping("/stressRate")
     public ResponseEntity<Float> getStressRate(@RequestParam("intno") int intno, @RequestParam("memno") int memno) {
         float stressRate = mainPageService.calculateStressRate(intno, memno);
         return ResponseEntity.ok(stressRate);
     }
 
-    // 음성 점수 조회
+    // 음성 점수 조회(최근 면접 데이터 인성&직무)
     @GetMapping("/voiceRate")
     public ResponseEntity<Float> getVoiceRate(@RequestParam("intno") int intno, @RequestParam("memno") int memno) {
         float voiceRate = mainPageService.calculateVoiceRate(intno, memno);
         return ResponseEntity.ok(voiceRate);
     }
 
-    // 자세 불량 점수 조회
+    // 자세 불량 점수 조회(최근 면접 데이터 인성&직무)
     @GetMapping("/postureBadCountRate")
     public ResponseEntity<Float> getPostureBadCountRate(@RequestParam("intno") int intno,
             @RequestParam("memno") int memno) {
@@ -94,6 +95,12 @@ public class MainPageController {
     @GetMapping("/consultantTotalFeedback")
     public String getConsultantTotalFeedback(@RequestParam("memno") int memno, @RequestParam("intno") int intno) {
         return mainPageService.getConsultantTotalFeedback(memno, intno);
+    }
+
+    // 최근 5개의 인성면접 데이터 (감정)
+    @GetMapping("/emotionAverage")
+    public List<IntDetailVO> getEmotionAverages(@RequestParam("memno") int memno) {
+        return mainPageService.getEmotionAverages(memno);
     }
 
 }

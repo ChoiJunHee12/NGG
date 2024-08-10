@@ -34,24 +34,10 @@
     </resultMap>
     <select id="getMemberConsultantDetail" resultMap="memberConsultDetailMap">
         SELECT 
-            mc.MEMNO,
-            mc.CNSNO,
-            mc.USEYN,
-            mc.CREDT,
-            mc.UPDDT,
-            c.NAME,
-            c.GENDERCD,
-            c.CATEGCD,
-            c.EMAIL,
-            c.PHONENUM,
-            c.BIRTHYMD,
-            c.INTRODUCE,
-            c.QUITYMD,
-            c.IMGNAME,
-            c.CNSCAREER,
-            c.CNSPROJECT,
-            c.CREDT as consultCredt,
-            c.UPDDT as consultUpddt
+            mc.MEMNO, mc.CNSNO, mc.USEYN, mc.CREDT, mc.UPDDT, 
+            c.NAME, c.GENDERCD, c.CATEGCD, c.EMAIL, c.PHONENUM, c.BIRTHYMD,
+            c.INTRODUCE, c.QUITYMD, c.IMGNAME, c.CNSCAREER, c.CNSPROJECT,
+            c.CREDT as consultCredt, c.UPDDT as consultUpddt
         FROM 
             TBMEMBERCONSULT mc
         JOIN 
@@ -138,5 +124,71 @@
         FROM TBINTRES 
         WHERE memno = #{memno} AND intno = #{intno}
     </select>
+
+    <!-- 최근 5개의 인성면접 데이터 (감정) -->
+    <select id="getEmotionAverages" parameterType="int" resultType="intdetailvo">
+        <![CDATA[
+            SELECT 
+                d.intno,
+                AVG(d.ecntgood) AS ecntgood,
+                AVG(d.ecntsoso) AS ecntsoso,   
+                AVG(d.ecntbad) AS ecntbad,
+                MAX(d.credt) AS credt,
+                MAX(d.upddt) AS upddt     
+            FROM TBINTDETAIL d
+            JOIN (
+                SELECT intno, memno
+                FROM (
+                    SELECT 
+                        intno,
+                        memno,
+                        ROW_NUMBER() OVER (PARTITION BY memno ORDER BY credt DESC) AS rn
+                    FROM TBINTRES
+                    WHERE memno = #{memno}
+                ) r
+                WHERE r.rn <= 5  
+            ) recent ON d.intno = recent.intno
+            WHERE d.qno BETWEEN 1 AND 5
+            GROUP BY d.intno
+            ORDER BY d.intno
+        ]]>
+    </select>
+
+    <!-- 최근 5개의 인성면접 데이터 종합요약 -->
+    <select id="getInterviewDetails" parameterType="int" resultType="IntDetailVO">
+       <![CDATA[
+        SELECT
+            d.intno,
+            d.qno,
+            AVG(d.ecntgood) AS avg_ecntgood,
+            AVG(d.ecntsoso) AS avg_ecntsoso,
+            AVG(d.ecntbad) AS avg_ecntbad,
+            AVG(d.pbadcnt) AS avg_pbadcnt,
+            AVG(d.vhertz) AS avg_vhertz,
+            AVG(d.vamplit) AS avg_vamplit,
+            AVG(d.vempty) AS avg_vempty,
+            MAX(d.credt) AS max_credt,
+            MAX(d.upddt) AS max_upddt
+        FROM TBINTDETAIL d
+        JOIN (
+            SELECT intno
+            FROM (
+                SELECT
+                    intno,
+                    memno,
+                    ROW_NUMBER() OVER (PARTITION BY memno ORDER BY credt DESC) AS rn
+                FROM TBINTRES
+                WHERE memno = #{memno}
+            ) r
+            WHERE r.rn <= 5
+        ) recent ON d.intno = recent.intno
+        WHERE d.qno BETWEEN 1 AND 5
+        GROUP BY d.intno, d.qno
+        ORDER BY d.intno, d.qno;
+        ]]>
+    </select>
+
+
+
 
 </mapper>

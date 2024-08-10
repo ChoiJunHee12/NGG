@@ -14,7 +14,7 @@ public class IntDetailVO {
     private int qno; // 질문번호(PK)
     private int aiqno; // AI질문번호
     private int cnsqno; // 컨설턴트질문번호
-    private String question; // 질문제옥
+    private String question; // 질문제목
     private String answer; // 질문답변 STT
     private float ecntgood; // 감정긍정count
     private float ecntsoso; // 감정중립count
