@@ -1,6 +1,8 @@
 package kr.ict.mydream.vo;
 
 import java.util.Date;
+import java.util.List;
+
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.ibatis.type.Alias;
@@ -24,4 +26,7 @@ public class ConsultVO {
     private Date credt; // 최초등록일자
     private Date upddt; // 최종수정일자
 
+    private String category; // 카테고리
+
+    private List<CnsCareerVO> cnscareerVO; // 약력 VO
 }

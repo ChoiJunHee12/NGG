@@ -66,9 +66,6 @@ export default {
   created() {
     this.fetchData();
   },
-  updated() {
-    this.fetchData();
-  },
   methods: {
     fetchData(){
       axios.post(`${process.env.VUE_APP_BACK_END_URL}/resume/resumeList`,{"memno": 1})
@@ -92,10 +89,10 @@ export default {
       this.$router.push({ name: "ResumeUpdate", query: { "num": num } }); //나중에 파라미터 넣어주세요
     },
     deletecv(rsmno){
-        axios.post(`${process.env.VUE_APP_BACK_END_URL}/resume/resumeDelete`, {"rsmno": rsmno})
+        axios.post(`${process.env.VUE_APP_BACK_END_URL}/resume/resumeDelete`, {"rsmno": rsmno, "seqno": null})
         .then((res)=>{
           console.log("삭제완료")
-          this.$router.push({name: "ResumeList"})  
+          this.fetchData();
           });
     }
   },

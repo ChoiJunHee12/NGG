@@ -134,7 +134,7 @@ public class MainPageService {
         }
 
         // 컨설턴트 직무 질문&답변 피드백
-        public List<ConsultEvalVO> getConsultantFeedback(int memno, int cnsno, int intno, List<Integer> qnos) {
+        public List<ConsultevalVO> getConsultantFeedback(int memno, int cnsno, int intno, List<Integer> qnos) {
                 Map<String, Object> params = new HashMap<>();
                 params.put("memno", memno);
                 params.put("cnsno", cnsno);
