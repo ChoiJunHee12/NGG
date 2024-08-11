@@ -11,13 +11,13 @@
         select * from tbresume where rsmno=#{num}
     </select>
     <select id="resumeDetailEdu" parameterType="int" resultType="educationvo">
-        select * from tbeducation where rsmno=#{num}
+        select * from tbeducation where rsmno=#{num} order by seqno asc
     </select>
     <select id="resumeDetailCar" parameterType="int" resultType="careervo">
-        select * from tbcareer where rsmno=#{num}
+        select * from tbcareer where rsmno=#{num} order by seqno asc
     </select>
     <select id="resumeDetailSelf" parameterType="int" resultType="selfintrovo">
-        select * from tbselfintro where rsmno=#{num}
+        select * from tbselfintro where rsmno=#{num} order by seqno asc
     </select>
     <!-- 이력서 추가 -->
     <insert id="resumeAdd" parameterType="resumevo">
@@ -59,21 +59,28 @@
     </update>
     <!-- 이력서 삭제 -->
     <delete id="resumeDeleteEdu" parameterType="map">
-        DELETE FROM tbeducation WHERE rsmno=#{rsmno} AND seqno=#{seqno}
+        DELETE FROM tbeducation WHERE rsmno=#{rsmno}
+        <if test="seqno != null">
+        AND seqno=#{seqno}
+        </if>
     </delete>
     <delete id="resumeDeleteCar" parameterType="map">
-        DELETE FROM tbcareer WHERE rsmno=#{rsmno} AND seqno=#{seqno}
+        DELETE FROM tbcareer WHERE rsmno=#{rsmno}
+        <if test="seqno != null">
+        AND seqno=#{seqno}
+        </if>
     </delete>
-    <delete id="resumeDelete" parameterType="int">
+    <delete id="resumeDeleteSelf" parameterType="map">
+        DELETE FROM tbselfintro WHERE rsmno=#{rsmno}
+        <if test="seqno != null">
+        AND seqno=#{seqno}
+        </if>
+    </delete>
+    <delete id="resumeDelete" parameterType="map">
         DELETE FROM tbresume where rsmno=#{rsmno}
     </delete>
-    <delete id="resumeDelEdu" parameterType="int">
-        DELETE FROM tbeducation where rsmno=#{rsmno}
-    </delete>
-    <delete id="resumeDelCar" parameterType="int">
-        DELETE FROM tbcareer WHERE rsmno=#{rsmno}
-    </delete>
-    <delete id="resumeDelSelf" parameterType="int">
-        DELETE FROM tbselfintro WHERE rsmno=#{rsmno}
-    </delete>
+    <!-- 면접사진 추가 -->
+    <update id="resumeImgUp" parameterType="map">
+ 		update tbresume set imgname = #{imgname} where rsmno=#{rsmno} and memno=#{memno}
+ 	</update>
 </mapper>

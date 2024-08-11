@@ -17,34 +17,39 @@
             
             <div v-for="(project, index) in filteredProjects" :key="index" class="toggleDiv row-fluid single-project" :id="'slidingDiv' + index" v-show="activeProjectIndex === index">
               <div class="span consultantImage">
-                <img :src="project.image" :alt="'project ' + (index + 1)" />
+                <img :src="imgpath(project.imgname)" :alt="'project ' + (index + 1)" />
               </div>
               <div class="span6">
                 <div class="project-description">
                   <div class="project-title clearfix">
-                    <h2>{{ project.title }}&nbsp;{{ project.name }}</h2>
+                    <h2>{{ project.category }}&nbsp;{{ project.name }}</h2>
                     <span class="show_hide close" @click="hideProject">
                       X
                     </span>
                   </div>
                   <div class="project-info">
                     <div><span>Name : &nbsp;</span>{{ project.name }}</div>
-                    <div><span>Location : &nbsp;</span>{{ project.loc }}</div>
-                    <div><span>Information : &nbsp;</span>{{ project.information }}</div>
+                    <div><span>introduce : &nbsp;</span>{{ project.introduce }}</div>
                     <div><span>Email : &nbsp;</span><a :href="project.email">{{ project.email }}</a></div>
                     <div><span> [ 약력 ] </span></div>
                   <ul>
-                  <li class="project-profile" v-for="(desc, descIndex) in project.description" :key="descIndex">
-                        {{ desc }}
+                  <li class="project-profile" v-for="(desc, descIndex) in project.cnscareerVO" :key="descIndex">
+                       [{{desc.careerdiv}}] &nbsp; {{ desc.term }} &nbsp; {{desc.content}} &nbsp; {{desc.detail}}
                       </li>
                       
                     </ul>
-                    <button
+                    <button v-if="this.use.CNT == 0"
                   class="application-btn"
                   id=""
                   type="button"
-                  @click="application"
+                  @click="application(project.cnsno)"
                 >신청</button>
+                <button v-if="this.use.CNSNO == project.cnsno"
+                  class="application-btn"
+                  id=""
+                  type="button"
+                  @click="cancle"
+                >취소</button>
                   </div>
                 </div>
               </div>
@@ -53,45 +58,33 @@
               <li class="filter" :class="{ active: currentFilter === 'all' }" @click="setFilter('all')">
                 <a href="#noAction">All</a>
               </li>
-              <li class="filter" :class="{ active: currentFilter === 'web' }" @click="setFilter('web')">
+              <li class="filter" :class="{ active: currentFilter === 'IT/개발' }" @click="setFilter('IT/개발')">
+                <a href="#noAction">It/개발</a>
+              </li>
+              <li class="filter" :class="{ active: currentFilter === '회계/재무' }" @click="setFilter('회계/재무')">
                 <a href="#noAction">회계/재무</a>
               </li>
-              <li class="filter" :class="{ active: currentFilter === 'photo' }" @click="setFilter('photo')">
+              <li class="filter" :class="{ active: currentFilter === '교육' }" @click="setFilter('교육')">
                 <a href="#noAction">교육</a>
-              </li>
-              <li class="filter" :class="{ active: currentFilter === 'identity' }" @click="setFilter('identity')">
-                <a href="#noAction">It/개발</a>
-              </li>
-              <li class="filter" :class="{ active: currentFilter === '' }" @click="setFilter('identity')">
-                <a href="#noAction">It/개발</a>
-              </li>
-              <li class="filter" :class="{ active: currentFilter === '' }" @click="setFilter('identity')">
-                <a href="#noAction">It/개발</a>
-              </li>
-              <li class="filter" :class="{ active: currentFilter === '' }" @click="setFilter('identity')">
-                <a href="#noAction">It/개발</a>
-              </li>
-              <li class="filter" :class="{ active: currentFilter === '' }" @click="setFilter('identity')">
-                <a href="#noAction">It/개발</a>
               </li>
             </ul>
             <ul id="portfolio-grid" class="thumbnails row">
-              <li v-for="(project, index) in filteredProjects" :key="index" :class="['span4', 'mix', project.category.toLowerCase()]">
+              <li v-for="(project, index) in filteredProjects" :key="index" :class="['span4', 'mix', project.category]">
                 <div class="thumbnail">
-                  <img :src="project.image" :alt="'project ' + (index + 1)">
+                  <img :src="imgpath(project.imgname)" :alt="'project ' + (index + 1)">
                   <div class="mask">
                     <button class="more show_hide" @click="showProject(index)">
                       + more..
                     </button>
                   </div>
                   <div class="caption">
-                    <h3>{{ project.title }}{{ project.name }}</h3>
-                    <p>{{ truncateText(project.information, 60) }}</p>
-                    <ul class="profile-list"> -{{project.name}} 약력 -
-                      <li v-for="(desc, descIndex) in project.description.slice(0, 3)" :key="descIndex">
-                        {{ desc }}
+                    <h3 style="font-size:20px;">{{ project.category }}{{ project.name }}</h3>
+                    <p style="font-size:15px;">{{ truncateText(project.introduce, 60) }}</p>
+                    <ul class="profile-list" style="font-size:20px;"> -{{project.name}} 약력 -
+                      <li v-for="(desc, descIndex) in project.cnscareerVO" :key="descIndex" style="font-size:15px;">
+                        {{desc.content}}
                       </li>
-                      <li v-if="project.description.length > 3">...</li>
+                      <li v-if="project.introduce.length > 3">...</li>
                     </ul>
                   </div>
                 </div>
@@ -101,114 +94,23 @@
         
       </div>
     </div>
-
   </template>
-  
-  
-  
+
   <script>
   import AOS from 'aos';
   import "aos/dist/aos.css";
+  import axios from 'axios';
   export default {
     created() {
         AOS.init();
+        this.fetchData();
     },
     data() {
       return {
+        memno: 3,
+        use: [],
         currentFilter: 'all',
-        projects: [
-        {
-            image: 'img/ConsultantInfo_image/ct1.png',
-            title: '[회계/재무]',
-            name: '김드림',
-            loc: '서울',
-            information: '전문성있는 컨설턴트가 당신의 꿈을 응원합니다.',
-            email: 'http://examplecomp.com',
-            description: [ '드림대학교 졸업', '드림대학원 졸업', '드림기업 회계담당인데길면어떻게됨 더길어서 넘치면 어떻게 되는지 보는 예시임', '꿈의기업 회계팀장', '내가꿈 회계 전문 컨설턴트'],
-            category: 'web'
-          },
-          {
-            image: 'img/ConsultantInfo_image/ct2.png',
-            title: '[교육]',
-            name: '이드림',
-            loc: '경주',
-            information: '이드림이라면 믿고 맡길 수 있습니다!',
-            email: 'http://examplecomp.com',
-            description: ['나의대학교 졸업', '꿈의대학원 졸업','드림학원 강사', '꿈의학원 선임강사', '내가꿈 교육 전문 컨설턴트'],
-            category: 'photo'
-          },
-          {
-            image: 'img/ConsultantInfo_image/ct3.png',
-            title: '[IT/개발]',
-            name: '공드림',
-            loc: '경기',
-            information: '꼼꼼한 멘토링, 탄탄한 취업길',
-            email: 'http://examplecomp.com',
-            description: ['꿈의대학교 졸업', '뫄뫄대학원 졸업','드림기업 개발팀', '꿈의기업 개발팀', '내가꿈 IT 전문 컨설턴트'],
-            category: 'identity'
-          },
-          {
-            image: 'img/ConsultantInfo_image/ct4.png',
-            title: '[회계/재무]',
-            name: '박드림',
-            loc: '전남',
-            information: '당신의 가치를 키워주는 멘토',
-            email: 'http://examplecomp.com',
-            description: ['드림대학교 졸업', '드림대학원 졸업','드림기업 회계담당', '꿈의기업 회계팀장', '내가꿈 회계 전문 컨설턴트'],
-            category: 'web'
-          },
-          {
-            image: 'img/ConsultantInfo_image/ct5.png',
-            title: '[교육]',
-            name: '최드림',
-            loc: '제주',
-            information: '함께 꿈을 꾸며 커리어를 쌓을 수 있게 돕습니다.',
-            email: 'http://examplecomp.com',
-            description: ['나의대학교 졸업', '꿈의대학원 졸업','드림학원 강사', '꿈의학원 선임강사', '내가꿈 교육 전문 컨설턴트'],
-            category: 'photo'
-          },
-          {
-            image: 'img/ConsultantInfo_image/ct6.png',
-            title: '[IT/개발]',
-            name: '나드림',
-            loc: '충북',
-            information: '등대지기처럼 당신의 꿈을 향한 길을 밝게 비추는 나드림 컨설턴트',
-            email: 'http://examplecomp.com',
-            description: ['꿈의대학교 졸업', '뫄뫄대학원 졸업','드림기업 개발팀', '꿈의기업 개발팀', '내가꿈 IT 전문 컨설턴트'],
-            category: 'identity'
-          },
-          {
-            image: 'img/ConsultantInfo_image/ct7.png',
-            title: '[회계/재무]',
-            name: '하드림',
-            loc: '경기',
-            information: '면접의 모든것, 하드림이 낱낱히 파헤쳐드립니다.',
-            email: 'http://examplecomp.com',
-            description: [ '드림대학교 졸업', '드림대학원 졸업', '드림기업 회계담당', '꿈의기업 회계팀장', '내가꿈 회계 전문 컨설턴트'],
-            category: 'web'
-          },
-          {
-            image: 'img/ConsultantInfo_image/ct8.png',
-            title: '[교육]',
-            name: '장드림',
-            loc: '서울',
-            information: '당신의 장점을 더욱 키울 수 있는 컨설턴트와 함께 하셔야합니다.',
-            email: 'http://examplecomp.com',
-            description: ['나의대학교 졸업', '꿈의대학원 졸업', '드림학원 강사', '꿈의학원 선임강사', '내가꿈 교육 전문 컨설턴트'],
-            category: 'photo'
-          },
-          {
-            image: 'img/ConsultantInfo_image/ct9.png',
-            title: '[IT/개발]',
-            name: '전드림',
-            loc: '대전',
-            information: '목표지점까지 페이스메이커가 되어드리겠습니다.',
-            email: 'http://examplecomp.com',
-            description: ['꿈의대학교 졸업', '뫄뫄대학원 졸업','드림기업 개발팀', '꿈의기업 개발팀', '내가꿈 IT 전문 컨설턴트'],
-            category: 'identity'
-          },
-          // 나머지 프로젝트 데이터...
-        ],
+        projects: [],
         activeProjectIndex: null,
       };
     },
@@ -217,10 +119,26 @@
       if (this.currentFilter === 'all') {
         return this.projects;
       }
-      return this.projects.filter(project => project.category.toLowerCase() === this.currentFilter);
+      return this.projects.filter(project => project.category === this.currentFilter);
     }
   },
   methods: {
+  fetchData(){
+    axios.post(`${process.env.VUE_APP_BACK_END_URL}/consultantInfo/consultantList`)
+    .then((res)=>{
+      this.projects = res.data
+      console.log(res.data)
+      console.log("현재 회원:", this.memno);
+    },
+    axios.post(`${process.env.VUE_APP_BACK_END_URL}/consultantInfo/consultantUse`, {"memno" : this.memno})
+    .then((res) => {
+      this.use = res.data;
+      console.log(res.data);
+      this.activeProjectIndex = res.data.CNSNO - 1;
+      console.log(this.activeProjectIndex)
+    })
+    )
+  },
   setFilter(filter) {
     this.currentFilter = filter;
     this.hideProject();
@@ -240,8 +158,25 @@
   truncateText(text, maxLength) {
     return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
   },
-  application(){
-    alert("컨설턴트가 배정되었습니다. 이제 AI 모의면접을 보면 컨설턴트의 코칭을 받을 수 있습니다.")
+  application(cnsno){
+    axios.post(`${process.env.VUE_APP_BACK_END_URL}/consultantInfo/consultantAppl`, {"memno": this.memno, "cnsno": cnsno}, 
+    {headers: {"Content-Type": "application/json"}
+    }).then(()=>{
+      console.log("면접자 :", this.memno, "=>", "컨설턴트", cnsno);
+      alert("컨설턴트가 배정되었습니다. 이제 AI 모의면접을 보면 컨설턴트의 코칭을 받을 수 있습니다.");
+      window.location.reload();
+    })
+  },
+  cancle(){
+    axios.post(`${process.env.VUE_APP_BACK_END_URL}/consultantInfo/consultantCancle`, {"memno" : this.memno})
+    .then(()=>{
+      console.log("취소 완료");
+      alert("컨설턴트가 취소되었습니다. 이제 다른 컨설턴트를 신청 할 수 있습니다.");
+      window.location.reload();
+    })
+  },
+  imgpath(imgname){
+    return `/img/ConsultantInfo_image/${imgname}`
   }
 }
 }

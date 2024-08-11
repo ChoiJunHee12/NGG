@@ -47,9 +47,19 @@
           <div class="cvwrite-cv1-title">인적사항</div>
           <table class="cvwrite-cv1-table">
             <tr class="cvwrite-cv1-tr">
+              
               <td rowspan="4" class="cvwrite-cv1-td1">
-                프로필 사진 넣어주세요.
+                <label for="inputImg" style="cursor:pointer;width:100%; height:100%;">
+                  <img :src="imageSrc" style = "width:100%; height:100%;">
+                </label>
+              <input
+                type="file"
+                id="inputImg"
+                style="display: none"
+                @change="upprofile"
+              />
               </td>
+              
               <td class="cvwrite-cv1-td2">성명</td>
               <td>
                 <input
@@ -260,19 +270,21 @@
         <div class="cvwrite-cv4">
           <div class="cvwrite-cv-title">
             <div class="cvwrite-cv4-title">자기 소개서</div>
+            <button class="cvwrite-add-button" @click="addcv4()">추가</button>
           </div>
 
           <table class="cvwrite-cv4-table">
             <tr class="cvwrite-cv4-tr">
               <th class="cvwrite-cv4-th1">질문</th>
               <th class="cvwrite-cv4-th2">내용</th>
+              <th class="cvwrite-cv3-th6">삭제</th>
             </tr>
             <tr v-for="(int, index) in intro" :key="index">
               <!-- 여기서 데이터 받을시 for문 -->
               <td class="cvwrite-cv4-td1">
                 <textarea
                   class="auto-resize"
-                  placeholder="750자 이내로 입력하세요"
+                  placeholder="질문을 입력하세요"
                   style="text-align: center;"
                   v-model="int.title"
                   >
@@ -285,6 +297,11 @@
                   v-model="int.content">
                 </textarea>
               </td>
+              <td class="cvwrite-cv3-td6">
+                <button class="cvwrite-delbtn" @click="delcv4(index, int.seqno)">
+                  삭제
+                </button>
+              </td>
             </tr>
           </table>
         </div>
@@ -293,20 +310,18 @@
             ><button class="cvwrite-remove">이전으로</button></router-link
           >
           <!-- 저장버튼이 눌리면 모달이 켜지는데 axios요청 완료된 후에 켜지게 만들어 주시면 됩니다-->
-          <button class="cvwrite-save" @click="complete()">저장</button>
+          <button class="cvwrite-save" @click="complete($event)">저장</button>
         </div>
       </div>
-      <CVsave
-        v-if="savecom"
-        @close="complete()"
-        v-bind:mData="this.modalData"
+      <resumeSave
+        v-show="savecom"
       />
     </div>
   </div>
 </template>
 
 <script>
-import CVsave from "../../components/ResumeSave.vue";
+import resumeSave from "../../components/ResumeSave.vue";
 import axios from "axios";
 export default {
   data() {
@@ -317,13 +332,15 @@ export default {
       basic: {},
       edu: [],
       car: [],
-      intro: [{"title": "나의 성장과정"}],
+      intro: [],
       memno: 1,
       rsmno:0,
+      imageSrc: '/img/resumePhoto/default.png',
+      selectedFile: null,
     };
   },
   components: {
-    CVsave,
+    resumeSave,
   },
   created() {
     const num = this.$route.query.num; // URL 파라미터 접근
@@ -341,13 +358,13 @@ export default {
           this.basic = resp.data[0];
           this.edu = resp.data[1];
           this.car = resp.data[2];
-          if(resp.data[3].length !==0){
-            this.intro = resp.data[3];
-          }
+          this.intro = resp.data[3];
+          this.imageSrc = "/img/resumePhoto/"+this.basic.imgname;
           console.log(this.basic)
           console.log(this.edu)
           console.log(this.car)
           console.log(this.intro)
+          console.log(this.imageSrc)
         })
         .catch((err) => {
           console.log(err);
@@ -358,8 +375,7 @@ export default {
     },
     complete() {
       const num = this.$route.query.num; // URL 파라미터 접근
-
-      if (num) {
+      if (num !=null) {
         axios
           .post(`${process.env.VUE_APP_BACK_END_URL}/resume/resumeUpdate?num=${num}`,
           { 
@@ -368,59 +384,117 @@ export default {
           {
             headers: { "Content-Type": "application/json" },
           })
-          .then((res) => {
-            console.log(this.basic);
-            console.log(res.data);
-
-          });
-        this.savecom = !this.savecom;
+            
+          // 사진 추가
+          if(this.selectedFile != null){
+            const formData = new FormData();
+            formData.append('file', this.selectedFile);
+            formData.append('rsmno', this.rsmno);
+            formData.append('memno', this.memno);
+            console.log(formData);
+            console.log(typeof(formData));
+            axios.post(`${process.env.VUE_APP_BACK_END_URL}/resume/resumeImgUp`, formData, {headers : {'Content-Type' : 'multipart/form-data'}})
+            .then(()=>{
+              this.savecom = !this.savecom;
+            })
+            } else {
+              console.log("사진 없음")
+              this.savecom = !this.savecom;
+            }
       } else {
-        console.log(this.basic)
-        console.log(this.edu)
-        console.log(this.car)
-        console.log(this.intro)
-        axios
+          axios
           .post(`${process.env.VUE_APP_BACK_END_URL}/resume/resumeAdd`, 
           { "basic": this.basic, "education": this.edu, "career": this.car, "intro": this.intro, "memno": this.memno},
           {
             headers: { "Content-Type": "application/json" },
-          })
-          .then((res) => {
-            console.log(res.data);
+          }).then((res) => {
+            console.log("반환값", res.data);
+            this.rsmno = res.data;
+
+            // 사진 추가
+            if(this.selectedFile != null){
+              const formData = new FormData();
+              formData.append('file', this.selectedFile);
+              formData.append('rsmno', this.rsmno);
+              formData.append('memno', this.memno);
+              console.log(formData);
+              console.log(typeof(formData));
+              axios.post(`${process.env.VUE_APP_BACK_END_URL}/resume/resumeImgUp`, formData, {headers : {'Content-Type' : 'multipart/form-data'}})
+              } else {
+                console.log("사진 없음")
+              }
           });
-        this.savecom = !this.savecom;
-      }
+           this.savecom = !this.savecom;
+        }
     },
     uploadchange() {
       this.upload_text = "진행중";
     },
+    upprofile(event){
+      event.preventDefault();
+      const file = event.target.files[0];
+      console.log(file)
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          this.imageSrc = e.target.result;
+        };
+        reader.readAsDataURL(file);
+        this.selectedFile = file;
+      }
+    },
     addcv2() {
-      this.edu.push({ td1: "", td2: "", td3: "", td4: "", td5: "" });
+      this.edu.push({ td1: ""});
       console.log(this.cvlist2);
     },
     delcv2(i, seqno) {
       console.log("seqno:", seqno)
       console.log("rsmno:", this.rsmno)
       console.log(i);
-      axios.post(`${process.env.VUE_APP_BACK_END_URL}/resume/resumeDeleteEdu`, {"seqno":seqno, "rsmno":this.rsmno})
+      if(seqno){
+        axios.post(`${process.env.VUE_APP_BACK_END_URL}/resume/resumeDeleteEdu`, {"seqno":seqno, "rsmno":this.rsmno})
       .then((res)=>{
         console.log("삭제완료")
       })
       this.edu.splice(i, 1);
+      } else {
+        this.edu.splice(i, 1);
+      }
     },
     addcv3() {
-      this.car.push({ td1: "", td2: "", td3: "", td4: "", td5: "" });
-    },
+      this.car.push({ td1: ""});
+    },  
     delcv3(i, seqno) {
       console.log("seqno:", seqno)
       console.log("rsmno:", this.rsmno)
       console.log(i);
-      axios.post(`${process.env.VUE_APP_BACK_END_URL}/resume/resumeDeleteCar`, {"seqno":seqno, "rsmno":this.rsmno})
+      if(seqno){
+        axios.post(`${process.env.VUE_APP_BACK_END_URL}/resume/resumeDeleteCar`, {"seqno":seqno, "rsmno":this.rsmno})
       .then((res)=>{
         console.log("삭제완료")
       })
       this.car.splice(i, 1);
+      } else {
+        this.car.splice(i, 1);
+      }
     },
+    addcv4() {
+      this.intro.push({ td1: "", td2: ""});
+    },
+    delcv4(i, seqno) {
+      console.log("seqno:", seqno)
+      console.log("rsmno:", this.rsmno)
+      console.log(i);
+       if(seqno){
+      axios.post(`${process.env.VUE_APP_BACK_END_URL}/resume/resumeDeleteSelf`, {"seqno":seqno, "rsmno":this.rsmno})
+      .then((res)=>{
+        console.log("삭제완료")
+      })
+      this.intro.splice(i, 1);
+    } else {
+      this.intro.splice(i, 1);
+    }
   },
+  }
 };
 </script>

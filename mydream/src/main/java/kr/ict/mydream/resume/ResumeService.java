@@ -56,8 +56,8 @@ public class ResumeService {
         return resumeDao.resumeUpload(vo);
     }
 
-    public ResumeVO resumeImgUp(ResumeVO vo) {
-        return resumeDao.resumeImgUp(vo);
+    public void resumeImgUp(Map<String, Object> data) {
+        resumeDao.resumeImgUp(data);
     }
 
     public void resumeUpdate(Map<String, Object> basic) {
@@ -76,7 +76,7 @@ public class ResumeService {
         resumeDao.resumeUpdateSelf(self);
     }
 
-    public void resumeDelete(int rsmno) {
+    public void resumeDelete(Map<String, Integer> rsmno) {
         resumeDao.resumeDelete(rsmno);
     }
 
@@ -98,5 +98,9 @@ public class ResumeService {
 
     public void resumeDeleteCar(Map<String, Integer> num) {
         resumeDao.resumeDeleteCar(num);
+    }
+
+    public void resumeDeleteSelf(Map<String, Integer> num) {
+        resumeDao.resumeDeleteSelf(num);
     }
 }
