@@ -97,10 +97,11 @@ public class MainPageController {
         return mainPageService.getConsultantTotalFeedback(memno, intno);
     }
 
-    // 최근 5개의 인성면접 데이터 (감정)
-    @GetMapping("/emotionAverage")
-    public List<IntDetailVO> getEmotionAverages(@RequestParam("memno") int memno) {
-        return mainPageService.getEmotionAverages(memno);
+    // 최근 5개의 인성면접 데이터
+    @GetMapping("/recentInterviewScores")
+    public ResponseEntity<Map<String, Object>> getRecentInterviewScores(@RequestParam("memno") int memno) {
+        Map<String, Object> scores = mainPageService.calculateRecentInterviewScores(memno);
+        return ResponseEntity.ok(scores);
     }
 
 }

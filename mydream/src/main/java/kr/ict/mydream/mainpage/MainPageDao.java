@@ -38,9 +38,7 @@ public interface MainPageDao {
     // 컨설턴트 피드백(총평)
     IntResVO getConsultantTotalFeedback(Map<String, Object> params);
 
-    // 최근 5개의 인성면접 데이터 (감정 평균 수치만)
-    List<IntDetailVO> getEmotionAverages(int memno);
-
-    // 최근 5개의 인성면접 데이터 종합요약
+    // 최근 5개의 인성면접 데이터
+    List<IntDetailVO> getInterviewDetails(int memno);
 
 }

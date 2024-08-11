@@ -639,37 +639,65 @@ export default {
         : "개선이 필요함";
     });
 
-    // 버블차트 시작
-    const emotionData = ref([]);
-    const fetchEmotionAverage = async (memno) => {
+    // 버블차트, 스플라인차트, 바차트, 멀티바차트 시작
+    const recentScores = ref([]);
+    const fetchRecentInterviewScores = async (memno) => {
       try {
         const response = await axios.get(
-          `http://localhost/mydream/mainpage/emotionAverage?memno=${memno}`
+          `${process.env.VUE_APP_BACK_END_URL}/mainpage/recentInterviewScores?memno=${memno}`
         );
-
-        // 응답 데이터를 날짜별로 긍정, 부정, 중립으로 매핑
-        const mappedData = response.data.map((dataItem) => ({
-          date: new Date(dataItem.credt).toLocaleDateString("en-US", {
-            month: "2-digit",
-            day: "2-digit",
-          }), // 날짜 형식 변환 (mm/dd)
-          positive: dataItem.ecntgood,
-          neutral: dataItem.ecntsoso,
-          negative: dataItem.ecntbad,
-        }));
-
-        emotionData.value = mappedData; // 상태에 저장
-        updateBubbleChart(); // 차트 업데이트
+        // console.log(response.data);
+        recentScores.value = response.data;
+        updateEmotionBubbleChart(recentScores.value);
+        updateVoiceLineChart(recentScores.value);
+        updatePostureChart(recentScores.value);
+        updateMultiBarChart(recentScores.value);
       } catch (error) {
-        console.error("Error fetching emotion data:", error);
+        console.error("Error fetching recent interview scores:", error);
+        return null;
       }
     };
 
-    const updateBubbleChart = () => {
-      // 긍정 감정의 최대값을 기준으로 원의 크기 조정
-      const maxPositiveValue = Math.max(
-        ...emotionData.value.map((item) => item.positive)
+    // 날짜 형식 변환 함수
+    const formatDate = (dateString) => {
+      const date = new Date(dateString);
+      return `${(date.getMonth() + 1).toString().padStart(2, "0")}/${date
+        .getDate()
+        .toString()
+        .padStart(2, "0")}`;
+    };
+
+    // 버블차트
+    // 큰 원 안에 날짜별로 질문들이 묶인 packedbubble 차트
+    const updateEmotionBubbleChart = (data) => {
+      // 날짜와 그에 해당하는 데이터를 함께 정렬
+      const sortedDates = data.dates
+        .map((date, index) => ({
+          date,
+          index,
+        }))
+        .sort((a, b) => new Date(a.date) - new Date(b.date));
+
+      // 감정 점수 중 최대값을 계산
+      const maxEmotionScore = Math.max(
+        ...Object.values(data.questionEmotionScores)
+          .flat()
+          .map((item) => item.score)
       );
+
+      // 정렬된 날짜를 기반으로 series 생성
+      const series = sortedDates.map(({ date, index }) => ({
+        name: formatDate(date), // 날짜를 큰 원의 이름으로 사용
+        data: Object.keys(data.questionEmotionScores).map(
+          (question, questionIndex) => ({
+            name: `Q${questionIndex + 1}`, // Q1, Q2, Q3, Q4, Q5로 이름 설정
+            value: data.questionEmotionScores[question][index].score,
+            good: data.questionEmotionScores[question][index].good,
+            soso: data.questionEmotionScores[question][index].soso,
+            bad: data.questionEmotionScores[question][index].bad,
+          })
+        ),
+      }));
 
       Highcharts.chart("chart-1", {
         chart: {
@@ -681,19 +709,23 @@ export default {
           align: "left",
         },
         subtitle: {
-          text: "최근 5회 인성면접 결과",
+          text: "최근 5회 인성면접 기준",
           align: "left",
         },
         tooltip: {
           useHTML: true,
-          pointFormat: "<b>{point.name}:</b> {point.value}",
+          pointFormat: `<b>{point.name}</b><br/>
+                    점수: {point.value}<br/>
+                    Good: {point.good}<br/>
+                    Soso: {point.soso}<br/>
+                    Bad: {point.bad}`,
         },
         plotOptions: {
           packedbubble: {
-            minSize: "20%", // 최소 크기 설정 (조정됨)
-            maxSize: "60%", // 최대 크기 설정 (조정됨)
+            minSize: "20%",
+            maxSize: "60%",
             zMin: 0,
-            zMax: maxPositiveValue, // 긍정 감정의 최대값을 기준으로 설정
+            zMax: maxEmotionScore, // 감정 점수의 최대값을 기준으로 설정
             layoutAlgorithm: {
               gravitationalConstant: 0.05,
               splitSeries: true,
@@ -704,11 +736,6 @@ export default {
             dataLabels: {
               enabled: true,
               format: "{point.name}",
-              filter: {
-                property: "y",
-                operator: ">",
-                value: 250,
-              },
               style: {
                 color: "black",
                 textOutline: "none",
@@ -717,48 +744,185 @@ export default {
             },
           },
         },
-        series: emotionData.value.map((dataItem) => ({
-          name: dataItem.date,
+        series: series,
+      });
+    };
+    // 버블차트 끝
+    // 스플라인차트 시작
+    const updateVoiceLineChart = (data) => {
+      const sortedDates = data.dates
+        .map((date, index) => ({
+          date,
+          index,
+        }))
+        .sort((a, b) => new Date(a.date) - new Date(b.date));
+
+      const series = Object.keys(data.questionVoiceScores).map((question) => {
+        return {
+          name: question,
+          data: sortedDates.map(
+            ({ index }) => data.questionVoiceScores[question][index]
+          ),
+        };
+      });
+
+      Highcharts.chart("chart-2", {
+        chart: {
+          type: "spline",
+        },
+        title: {
+          text: " ",
+          align: "center",
+        },
+        subtitle: {
+          text: "최근 5회 인성면접 기준",
+          align: "left",
+        },
+        xAxis: {
+          categories: sortedDates.map(({ date }) => formatDate(date)),
+          title: {
+            text: "날짜",
+          },
+        },
+        yAxis: {
+          title: {
+            text: "음성 점수",
+          },
+          max: 100,
+        },
+        tooltip: {
+          formatter: function () {
+            return `<b>${this.series.name}</b><br/>
+                날짜: ${this.x}<br/>
+                점수: ${this.y}`;
+          },
+        },
+        plotOptions: {
+          spline: {
+            marker: {
+              enabled: true,
+              radius: 4,
+            },
+          },
+        },
+        series: series,
+      });
+    };
+    // 스플라인 차트 끝
+    // 바차트 시작
+    const updatePostureChart = (scores) => {
+      // 날짜를 기준으로 데이터 정렬
+      const sortedData = scores.dates
+        .map((date, index) => ({
+          date,
+          postureScore: scores.postureScores[index],
+        }))
+        .sort((a, b) => new Date(a.date) - new Date(b.date));
+
+      Highcharts.chart("chart-3", {
+        chart: {
+          type: "column",
+        },
+        title: {
+          text: "",
+        },
+        subtitle: {
+          text: "최근 5회 인성면접 기준",
+          align: "left",
+        },
+        colors: ["#a0d6e1"], // 기존 차트의 색상 사용
+        xAxis: {
+          categories: sortedData.map((item) => formatDate(item.date)),
+          title: {
+            text: "",
+          },
+        },
+        yAxis: {
+          title: {
+            text: "자세 점수",
+          },
+          max: 100,
+        },
+        credits: {
+          enabled: false,
+        },
+        plotOptions: {
+          column: {
+            borderRadius: 5,
+          },
+        },
+        series: [
+          {
+            name: "",
+            showInLegend: false,
+            data: sortedData.map((item) => item.postureScore),
+          },
+        ],
+        tooltip: {
+          formatter: function () {
+            return `<b>${this.x}</b><br/>자세 점수: <b>${this.y}</b>`;
+          },
+        },
+      });
+    };
+    // 바차트 끝
+    // 멀티바차트 시작
+    const updateMultiBarChart = (scores) => {
+      // 날짜를 기준으로 데이터 정렬
+      const sortedData = scores.dates
+        .map((date, index) => ({
+          date,
+          stressRate: scores.stressRates[index],
+          voiceScore: scores.voiceScores[index],
+          postureScore: scores.postureScores[index],
+        }))
+        .sort((a, b) => new Date(a.date) - new Date(b.date));
+
+      Highcharts.chart("chart-4", {
+        chart: {
+          type: "column",
+        },
+        title: {
+          text: "",
+        },
+        subtitle: {
+          text: "최근 5회 인성면접 기준",
+          align: "left",
+        },
+        colors: ["#FF6F61", "#8b8be0", "#88D8B0", "#f8b77d", "#FFABAB"],
+        yAxis: {
+          title: {
+            text: "점수",
+          },
+          max: 100,
+        },
+        xAxis: {
+          categories: ["감정", "음성", "자세"],
+        },
+        credits: {
+          enabled: false,
+        },
+        plotOptions: {
+          column: {
+            borderRadius: "25%",
+          },
+        },
+        legend: {
+          align: "right",
+          verticalAlign: "middle",
+          layout: "vertical",
+        },
+        series: sortedData.map((item) => ({
+          name: formatDate(item.date),
           data: [
-            {
-              name: "긍정",
-              value: dataItem.positive,
-              color: "#4a90e2", // 긍정 감정의 색상 설정
-              marker: {
-                radius: Math.max(
-                  (dataItem.positive / maxPositiveValue) * 30 + 5,
-                  5
-                ), // 원의 최소 크기와 최대 크기 조정
-              },
-            },
-            {
-              name: "부정",
-              value: dataItem.negative,
-              color: "#e94f4f", // 부정 감정의 색상 설정
-              marker: {
-                radius: Math.max(
-                  (dataItem.negative / maxPositiveValue) * 30 + 5,
-                  5
-                ), // 원의 최소 크기와 최대 크기 조정
-              },
-            },
-            {
-              name: "중립",
-              value: dataItem.neutral,
-              color: "#f7e04e", // 중립 감정의 색상 설정
-              marker: {
-                radius: Math.max(
-                  (dataItem.neutral / maxPositiveValue) * 30 + 5,
-                  5
-                ), // 원의 최소 크기와 최대 크기 조정
-              },
-            },
+            100 - item.stressRate, // 스트레스율을 감정 점수로 변환
+            item.voiceScore,
+            item.postureScore,
           ],
         })),
       });
     };
-
-    // 버블차트 끝
+    // 전체 차트 끝
 
     onMounted(async () => {
       const memno = 10; // 예시 memno 값
@@ -774,7 +938,7 @@ export default {
       await fetchConsultantFeedback(memno, cnsno, intno, [6, 7]);
       await fetchConsultantTotalFeedback(memno, intno);
       await fetchConsultantDetail(memno);
-      await fetchEmotionAverage(memno);
+      await fetchRecentInterviewScores(memno);
 
       // 프로그레스 바 초기화
       const progressBars = document.querySelectorAll(".progress-bar");
@@ -782,152 +946,6 @@ export default {
         const value = bar.getAttribute("data-value");
         bar.style.width = `${value}%`;
       });
-
-      // 라인차트 시작
-      Highcharts.chart("chart-2", {
-        title: {
-          text: "",
-        },
-        subtitle: {
-          text: "최근 5회 인성면접 결과",
-          align: "left",
-        },
-        xAxis: {
-          categories: ["8/5", "8/6", "8/7", "8/8", "8/9"],
-        },
-        yAxis: {
-          title: {
-            text: "음성 점수",
-          },
-        },
-        series: [
-          {
-            name: "Q1",
-            type: "spline",
-            data: [10, 20, 30, 40, 50],
-          },
-          {
-            name: "Q2",
-            type: "spline",
-            data: [20, 10, 10, 10, 10],
-          },
-          {
-            name: "Q3",
-            type: "spline",
-            data: [30, 20, 20, 20, 20],
-          },
-          {
-            name: "Q4",
-            type: "spline",
-            data: [40, 30, 30, 30, 30],
-          },
-          {
-            name: "Q5",
-            type: "spline",
-            data: [50, 40, 40, 40, 40],
-          },
-        ],
-        plotOptions: {
-          spline: {
-            marker: {
-              enabled: true,
-            },
-          },
-        },
-      });
-
-      // 라인차트 끝
-      // 바 차트 시작
-      const chart = Highcharts.chart("chart-3", {
-        title: {
-          text: "",
-          align: "left",
-        },
-        subtitle: {
-          text: "최근 5회 인성면접 결과",
-          align: "left",
-        },
-        colors: ["#a0d6e1"],
-        xAxis: {
-          categories: ["8/5", "8/6", "8/7", "8/8", "8/9"],
-        },
-        yAxis: {
-          title: {
-            text: "자세 점수",
-          },
-        },
-        series: [
-          {
-            type: "column",
-            name: "Unemployed",
-            borderRadius: 5,
-            colorByPoint: true,
-            data: [38, 38, 38, 38, 38],
-            showInLegend: false,
-          },
-        ],
-      });
-      // 바 차트 끝
-
-      // 멀티 바 차트 시작
-      Highcharts.chart("chart-4", {
-        chart: {
-          type: "column",
-        },
-        title: {
-          text: "",
-        },
-        subtitle: {
-          text: "최근 5회 인성면접 결과",
-          align: "left",
-        },
-        colors: ["#FF6F61", "#8b8be0", "#88D8B0", "#f8b77d", "#FFABAB"],
-        yAxis: {
-          title: {
-            text: "점수",
-          },
-        },
-        xAxis: {
-          categories: ["감성", "음성", "자세"],
-        },
-        credits: {
-          enabled: false,
-        },
-        plotOptions: {
-          column: {
-            borderRadius: "25%",
-          },
-        },
-        legend: {
-          align: "right",
-          verticalAlign: "middle",
-          layout: "vertical",
-        },
-        series: [
-          {
-            name: "8/5",
-            data: [2, 2, 2],
-          },
-          {
-            name: "8/6",
-            data: [3, 3, 3],
-          },
-          {
-            name: "8/7",
-            data: [4, 4, 4],
-          },
-          {
-            name: "8/8",
-            data: [4, 4, 4],
-          },
-          {
-            name: "8/9",
-            data: [4, 4, 4],
-          },
-        ],
-      });
-
-      // 멀티 바 차트 끝
     });
 
     // 탭 활성화
@@ -959,6 +977,7 @@ export default {
       goToConsultantChat,
       profileImageUrl,
       ConsultantImageUrl,
+      recentScores,
     };
   },
 };
