@@ -8,38 +8,72 @@
         SELECT * FROM TBMEMBER WHERE MEMNO = #{memno}
     </select>
 
-    <!-- 컨설턴트 정보 조회 -->
-    <select id="getConsultantDetail" resultType="consultvo">
-        SELECT * FROM TBCONSULT WHERE CNSNO = #{cnsno}
-    </select>
-
-    <!-- 회원-컨설턴트 매핑 정보 조회 -->
-    <select id="getMemberConsultantMapping" resultType="memberconsultvo">
-        SELECT * FROM TBMEMBERCONSULT WHERE MEMNO = #{memno}
-    </select>
+    <!-- 회원-컨설턴트 매핑 및 컨설턴트 정보 조회 -->
+    <resultMap id="memberConsultDetailMap" type="memberconsultvo">
+        <id property="memno" column="MEMNO"/>
+        <result property="cnsno" column="CNSNO"/>
+        <result property="useyn" column="USEYN"/>
+        <result property="credt" column="CREDT"/>
+        <result property="upddt" column="UPDDT"/>
+        <association property="consultant" javaType="consultvo">
+            <id property="cnsno" column="CNSNO"/>
+            <result property="name" column="NAME"/>
+            <result property="gendercd" column="GENDERCD"/>
+            <result property="categcd" column="CATEGCD"/>
+            <result property="email" column="EMAIL"/>
+            <result property="phonenum" column="PHONENUM"/>
+            <result property="birthymd" column="BIRTHYMD"/>
+            <result property="introduce" column="INTRODUCE"/>
+            <result property="quitymd" column="QUITYMD"/>
+            <result property="imgname" column="IMGNAME"/>
+            <result property="cnscareer" column="CNSCAREER"/>
+            <result property="cnsproject" column="CNSPROJECT"/>
+            <result property="credt" column="consultCredt"/>
+            <result property="upddt" column="consultUpddt"/>
+        </association>
+    </resultMap>
+    <select id="getMemberConsultantDetail" resultMap="memberConsultDetailMap">
+        SELECT 
+            mc.MEMNO, mc.CNSNO, mc.USEYN, mc.CREDT, mc.UPDDT, 
+            c.NAME, c.GENDERCD, c.CATEGCD, c.EMAIL, c.PHONENUM, c.BIRTHYMD,
+            c.INTRODUCE, c.QUITYMD, c.IMGNAME, c.CNSCAREER, c.CNSPROJECT,
+            c.CREDT as consultCredt, c.UPDDT as consultUpddt
+        FROM 
+            TBMEMBERCONSULT mc
+        JOIN 
+            TBCONSULT c ON mc.CNSNO = c.CNSNO
+        WHERE 
+            mc.MEMNO = #{memno}
+    </select>    
 
     <!-- 최신 감정 데이터 조회 -->
-    <select id="getLatestEmotionDetails" resultType="intdetailvo">
-        SELECT intno, qno, ecntgood, ecntsoso, ecntbad
-        FROM TBINTDETAIL
-        WHERE intno = #{intno}
-        AND upddt = (SELECT MAX(upddt) FROM TBINTDETAIL WHERE intno = #{intno})
+    <select id="getLatestEmotionDetails" parameterType="map" resultType="intdetailvo">
+        SELECT d.intno, d.qno, d.ecntgood, d.ecntsoso, d.ecntbad
+        FROM TBINTDETAIL d
+        JOIN TBINTRES r ON d.intno = r.intno
+        WHERE d.intno = #{intno}
+        AND r.memno = #{memno}
+        AND d.upddt = (SELECT MAX(upddt) FROM TBINTDETAIL WHERE intno = #{intno})
     </select>
 
     <!-- 최신 음성 데이터 조회 -->
-    <select id="getLatestVoiceDetails" resultType="intdetailvo">
-        SELECT intno, qno, vhertz, vamplit, vempty
-        FROM TBINTDETAIL
-        WHERE intno = #{intno}
-        AND upddt = (SELECT MAX(upddt) FROM TBINTDETAIL WHERE intno = #{intno})
+    <select id="getLatestVoiceDetails" parameterType="map" resultType="intdetailvo">
+        SELECT d.intno, d.qno, d.vhertz, d.vamplit, d.vempty
+        FROM TBINTDETAIL d
+        JOIN TBINTRES r ON d.intno = r.intno
+        WHERE d.intno = #{intno}
+        AND r.memno = #{memno}
+        AND d.upddt = (SELECT MAX(upddt) FROM TBINTDETAIL WHERE intno = #{intno})
     </select>
 
     <!-- 최신 자세 데이터 조회 -->
-    <select id="getLatestPostureDetails" resultType="intdetailvo">
-        SELECT intno, qno, pbadcnt
-        FROM TBINTDETAIL
-        WHERE intno = #{intno}
-        AND upddt = (SELECT MAX(upddt) FROM TBINTDETAIL WHERE intno = #{intno})
+    <select id="getLatestPostureDetails" parameterType="map" resultType="intdetailvo">
+        SELECT d.intno, d.qno, d.pbadcnt
+        FROM TBINTDETAIL d
+        JOIN TBINTRES r ON d.intno = r.intno
+        WHERE d.intno = #{intno}
+        AND r.memno = #{memno}
+        AND d.upddt = (SELECT MAX(upddt) FROM TBINTDETAIL WHERE intno = #{intno})
     </select>
 
     <!-- 최신 컨설턴트 평가 점수 조회 -->
@@ -53,7 +87,7 @@
     <!-- 회원 일정 조회 -->
     <select id="getSchedulesByMember" resultType="scedulevo">
         SELECT * FROM TBSCEDULE WHERE memno = #{memno}
-    </select>   
+    </select> 
 
     <!-- 컨설턴트 직무 질문&답변 STT -->
     <select id="getConsultantQuestions" parameterType="map" resultType="intdetailvo">
@@ -91,4 +125,36 @@
         WHERE memno = #{memno} AND intno = #{intno}
     </select>
 
+    <!-- 최근 5개의 인성면접 데이터-->
+    <select id="getInterviewDetails" parameterType="int" resultType="IntDetailVO">
+    <![CDATA[
+    SELECT 
+        d.intno, 
+        d.qno, 
+        AVG(d.ecntgood) AS ecntgood, 
+        AVG(d.ecntsoso) AS ecntsoso, 
+        AVG(d.ecntbad) AS ecntbad, 
+        AVG(d.pbadcnt) AS pbadcnt,
+        AVG(d.vhertz) AS vhertz, 
+        AVG(d.vamplit) AS vamplit, 
+        AVG(d.vempty) AS vempty, 
+        MAX(d.credt) AS credt,
+        MAX(d.upddt) AS upddt  
+    FROM TBINTDETAIL d
+    JOIN (
+        SELECT intno
+        FROM (
+            SELECT 
+                intno,
+                ROW_NUMBER() OVER (PARTITION BY memno ORDER BY credt DESC) AS rn
+            FROM TBINTRES
+            WHERE memno = #{memno}
+        ) r
+        WHERE r.rn <= 5
+    ) recent ON d.intno = recent.intno
+    WHERE d.qno BETWEEN 1 AND 5
+    GROUP BY d.intno, d.qno
+    ORDER BY d.intno, d.qno
+    ]]>
+    </select>
 </mapper>

@@ -1,4 +1,5 @@
 <template>
+<<<<<<< HEAD
       <div class="ProfileTitle">
       <blockquote class="blockquote-profile">
         <b> <p>내 정보</p></b>
@@ -7,6 +8,13 @@
     
     <div class="mains-header-top">
       <p class="mains-header-title">ONLINE AI INTERVIEW REPORT</p>
+=======
+  <div class="container">
+    <div class="mainpage-title">
+      <blockquote class="mainpage-profile">
+        <b> <p>ONLINE AI INTERVIEW REPORT</p></b>
+      </blockquote>
+>>>>>>> origin/develop
     </div>
     <div class="mains-header-container">
       <div class="mains-headers-left">
@@ -15,9 +23,10 @@
             style="display: flex; justify-content: center; align-items: center"
           >
             <img
-              :src="memberData.imgname"
+              :src="profileImageUrl"
               class="center-img"
               alt="Profile Image"
+              @error="handleImageError"
             />
           </div>
           <div>
@@ -132,18 +141,19 @@
                     text-align: center;
                     font-weight: bold;
                     color: #007bff;
+                    margin-left: 5px;
                   "
                 >
                   D-{{ schedule.dday }}
                 </div>
                 <div>
-                  <div style="font-weight: bold">
+                  <div style="font-weight: bold; margin-left: 20px">
                     {{ schedule.title }}
                     <span
                       style="
                         font-size: 0.9em;
                         color: #6c757d;
-                        margin-left: 10px;
+                        margin-left: 30px;
                       "
                       >{{ schedule.content }}</span
                     >
@@ -152,9 +162,11 @@
               </div>
             </div>
           </div>
+          <!-- 컨설턴트 정보 -->
           <div class="mains-headers-right-bottom">
             <div class="main-con-head">My Consultant</div>
             <div
+              v-if="consultantDetail && consultantDetail.consultant"
               style="
                 display: flex;
                 align-items: center;
@@ -162,22 +174,37 @@
               "
             >
               <img
-                :src="consultantDetail.imgname"
+                :src="ConsultantImageUrl"
                 class="center-img2"
                 alt="Consultant Image"
+                @error="handleImageError"
               />
-              <div class="main-con-name">
-                {{ consultantDetail.name }} 컨설턴트
-                <p style="font-size: 0.8em; color: #6c757d; margin-left: 10px">
-                  <img src="/img/consul2.svg" class="cons-svg" />{{
-                    consultantDetail.categcd
-                  }}
-                  &nbsp;전문
+              <div class="main-con-name" @click="goToConsultantChat">
+                {{ consultantDetail.consultant.name }} 컨설턴트
+                <div class="chat">➕</div>
+                <p
+                  style="
+                    width: 100px;
+                    position: absolute;
+                    margin-left: -30px;
+                    margin-top: -14px;
+                    font-size: 1.9rem;
+                  "
+                >
+                  🪪
                 </p>
-                <div></div>
+                <p style="font-size: 0.8em; color: #6c757d; margin-left: 40px">
+                  {{ consultantDetail.consultant.categcd }} 전문
+                </p>
               </div>
             </div>
+            <div v-else>
+              <button @click="goToConsultantInfo" class="apply-button">
+                컨설턴트 신청하러 가기
+              </button>
+            </div>
           </div>
+          <!-- 컨설턴트 정보 -->
         </div>
       </div>
     </div>
@@ -199,25 +226,21 @@
         <div class="mains-floor-1">
           <div class="box2">
             <p class="box-text">감정 분석 결과</p>
-            <hr class="box-line" />
-            <div id="chart-1" style="height: 300px"></div>
+            <div id="chart-1" style="margin-top: -10px"></div>
           </div>
           <div class="box5">
             <p class="box-text">음성 분석 결과</p>
-            <hr class="box-line" />
-            <div id="chart-2" style="height: 300px"></div>
+            <div id="chart-2" style="margin-top: -15px"></div>
           </div>
         </div>
         <div class="mains-floor-2">
           <div class="box3">
             <p class="box-text">자세 분석 결과</p>
-            <hr class="box-line" />
-            <div id="chart-3" style="height: 300px"></div>
+            <div id="chart-3" style="margin-top: -10px"></div>
           </div>
           <div class="box6">
-            <p class="box-text">컨설턴트 평가 결과</p>
-            <hr class="box-line" />
-            <div id="chart-4" style="height: 300px"></div>
+            <p class="box-text">감성, 음성, 자세 요약</p>
+            <div id="chart-4" style="margin-top: -10px"></div>
           </div>
         </div>
       </div>
@@ -305,26 +328,23 @@
         </p>
       </div>
     </div>
-
-    <div>
-      <p
-        style="
-          margin-top: 40px;
-          font-size: 1.3rem;
-          font-weight: bold;
-          margin-left: 1180px;
-        "
-      ></p>
-    </div>
   </div>
   </div>
 </template>
 
 <script>
 import { ref, onMounted, computed } from "vue";
+import { useRouter } from "vue-router";
 import axios from "axios";
+import Highcharts from "highcharts";
+import HighchartsMore from "highcharts/highcharts-more";
+
+HighchartsMore(Highcharts);
 
 export default {
+  props: {
+    activeSection: String,
+  },
   setup() {
     const memberData = ref({});
     const categoryMap = {
@@ -334,7 +354,6 @@ export default {
       4: "기획/전략",
       5: "경영",
     };
-
     const locationMap = {
       1: "서울",
       2: "경기도",
@@ -350,7 +369,6 @@ export default {
       jobquestion2: "",
       jobanswer2: "",
     });
-    const consultantDetail = ref({});
     const stressRate = ref(0);
     const voiceRate = ref(0);
     const postureBadCountRate = ref(0);
@@ -361,8 +379,27 @@ export default {
       feedback2: "",
     });
     const consultantTotalFeedback = ref("");
+    const loading = ref(false);
+    const error = ref(null);
+    const consultantDetail = ref(null);
+    const router = useRouter();
 
-    // 데이터 변환 함수(회원 정보 희망분야, 거주지역)
+    // 이미지 로드 실패 시 대체 이미지 설정
+    const handleImageError = (event) => {
+      event.target.src = "/img/MainPage_image/noimg.png";
+    };
+
+    // 회원에게 매칭된 컨설턴트 없을 때, 컨설턴트 신청 페이지로 이동
+    const goToConsultantInfo = () => {
+      router.push("/ConsultantInfo");
+    };
+
+    // 컨설턴트 1대1 상담으로 가기
+    const goToConsultantChat = () => {
+      router.push("/OneToOne");
+    };
+
+    // 회원 데이터 변환 함수(희망직무, 거주지역)
     const transformMemberData = (data) => {
       if (data) {
         return {
@@ -374,6 +411,14 @@ export default {
       return null;
     };
 
+    // 회원사진 가져오기
+    const profileImageUrl = computed(() => {
+      if (memberData.value && memberData.value.imgname) {
+        return `/img/upimg/${memberData.value.imgname}`;
+      }
+      return "/img/MainPage_image/noimg.png"; // 기본 이미지 경로
+    });
+
     // 회원정보 가져오기
     const fetchMemberData = async (memno) => {
       try {
@@ -381,16 +426,16 @@ export default {
           `${process.env.VUE_APP_BACK_END_URL}/mainpage/memberDetail?memno=${memno}`
         );
         memberData.value = transformMemberData(response.data);
-        console.log(memberData.value);
       } catch (error) {
         console.error("Error fetching member data:", error);
       }
     };
+
     // 스트레스율
-    const fetchStressRate = async (intno) => {
+    const fetchStressRate = async (intno, memno) => {
       try {
         const response = await axios.get(
-          `${process.env.VUE_APP_BACK_END_URL}/mainpage/stressRate?intno=${intno}`
+          `${process.env.VUE_APP_BACK_END_URL}/mainpage/stressRate?intno=${intno}&memno=${memno}`
         );
         stressRate.value = response.data;
       } catch (error) {
@@ -398,10 +443,10 @@ export default {
       }
     };
     // 음성분석
-    const fetchVoiceRate = async (intno) => {
+    const fetchVoiceRate = async (intno, memno) => {
       try {
         const response = await axios.get(
-          `${process.env.VUE_APP_BACK_END_URL}/mainpage/voiceRate?intno=${intno}`
+          `${process.env.VUE_APP_BACK_END_URL}/mainpage/voiceRate?intno=${intno}&memno=${memno}`
         );
         voiceRate.value = response.data;
       } catch (error) {
@@ -409,10 +454,10 @@ export default {
       }
     };
     // 자세분석
-    const fetchPostureBadCountRate = async (intno) => {
+    const fetchPostureBadCountRate = async (intno, memno) => {
       try {
         const response = await axios.get(
-          `${process.env.VUE_APP_BACK_END_URL}/mainpage/postureBadCountRate?intno=${intno}`
+          `${process.env.VUE_APP_BACK_END_URL}/mainpage/postureBadCountRate?intno=${intno}&memno=${memno}`
         );
         postureBadCountRate.value = response.data;
       } catch (error) {
@@ -430,29 +475,48 @@ export default {
         console.error("Error fetching consultant score:", error);
       }
     };
-    // 컨설턴트 정보
-    const fetchConsultantDetail = async (cnsno) => {
+
+    // 회원에게 매칭된 컨설턴트 정보 가져오기
+    const fetchConsultantDetail = async (memno) => {
       try {
         const response = await axios.get(
-          `${process.env.VUE_APP_BACK_END_URL}/mainpage/consultantDetail?cnsno=${cnsno}`
+          `${process.env.VUE_APP_BACK_END_URL}/mainpage/memberConsultantDetail?memno=${memno}`
         );
-        consultantDetail.value = response.data;
+        const transformedData = transformConsultantData(
+          response.data || { consultant: null }
+        );
+        consultantDetail.value = transformedData;
       } catch (error) {
         console.error("Error fetching consultant detail:", error);
+        consultantDetail.value = { consultant: null }; // 오류 발생 시 안전한 기본값 설정
       }
     };
-    // 컨설턴트-회원 매칭정보
-    const fetchMemberConsultantMapping = async (memno) => {
-      try {
-        const response = await axios.get(
-          `${process.env.VUE_APP_BACK_END_URL}/mainpage/memberConsultantMapping?memno=${memno}`
-        );
-        const cnsno = response.data.cnsno;
-        fetchConsultantDetail(cnsno);
-      } catch (error) {
-        console.error("Error fetching member-consultant mapping:", error);
+    // 컨설턴트 사진 URL 가져오기
+    const ConsultantImageUrl = computed(() => {
+      if (
+        consultantDetail.value &&
+        consultantDetail.value.consultant &&
+        consultantDetail.value.consultant.imgname
+      ) {
+        return `/img/upimg/${consultantDetail.value.consultant.imgname}`;
       }
+      return "/img/MainPage_image/noimg.png"; // 기본 이미지 경로
+    });
+
+    // 컨설턴트 데이터 변환 함수(전문분야)
+    const transformConsultantData = (data) => {
+      if (data && data.consultant) {
+        return {
+          ...data,
+          consultant: {
+            ...data.consultant,
+            categcd: categoryMap[data.consultant.categcd] || "알 수 없음",
+          },
+        };
+      }
+      return data; // 변환할 수 없는 경우 원본 데이터 반환
     };
+
     // 회원일정
     const fetchMemberSchedules = async (memno) => {
       try {
@@ -587,20 +651,306 @@ export default {
         : "개선이 필요함";
     });
 
+    // 버블차트, 스플라인차트, 바차트, 멀티바차트 시작
+    const recentScores = ref([]);
+    const fetchRecentInterviewScores = async (memno) => {
+      try {
+        const response = await axios.get(
+          `${process.env.VUE_APP_BACK_END_URL}/mainpage/recentInterviewScores?memno=${memno}`
+        );
+        // console.log(response.data);
+        recentScores.value = response.data;
+        updateEmotionBubbleChart(recentScores.value);
+        updateVoiceLineChart(recentScores.value);
+        updatePostureChart(recentScores.value);
+        updateMultiBarChart(recentScores.value);
+      } catch (error) {
+        console.error("Error fetching recent interview scores:", error);
+        return null;
+      }
+    };
+
+    // 날짜 형식 변환 함수
+    const formatDate = (dateString) => {
+      const date = new Date(dateString);
+      return `${(date.getMonth() + 1).toString().padStart(2, "0")}/${date
+        .getDate()
+        .toString()
+        .padStart(2, "0")}`;
+    };
+
+    // 버블차트
+    // 큰 원 안에 날짜별로 질문들이 묶인 packedbubble 차트
+    const updateEmotionBubbleChart = (data) => {
+      // 날짜와 그에 해당하는 데이터를 함께 정렬
+      const sortedDates = data.dates
+        .map((date, index) => ({
+          date,
+          index,
+        }))
+        .sort((a, b) => new Date(a.date) - new Date(b.date));
+
+      // 감정 점수 중 최대값을 계산
+      const maxEmotionScore = Math.max(
+        ...Object.values(data.questionEmotionScores)
+          .flat()
+          .map((item) => item.score)
+      );
+
+      // 정렬된 날짜를 기반으로 series 생성
+      const series = sortedDates.map(({ date, index }) => ({
+        name: formatDate(date), // 날짜를 큰 원의 이름으로 사용
+        data: Object.keys(data.questionEmotionScores).map(
+          (question, questionIndex) => ({
+            name: `Q${questionIndex + 1}`, // Q1, Q2, Q3, Q4, Q5로 이름 설정
+            value: data.questionEmotionScores[question][index].score,
+            good: data.questionEmotionScores[question][index].good,
+            soso: data.questionEmotionScores[question][index].soso,
+            bad: data.questionEmotionScores[question][index].bad,
+          })
+        ),
+      }));
+
+      Highcharts.chart("chart-1", {
+        chart: {
+          type: "packedbubble",
+          height: "65%",
+        },
+        title: {
+          text: "",
+          align: "left",
+        },
+        subtitle: {
+          text: "최근 5회 인성면접 기준",
+          align: "left",
+        },
+        tooltip: {
+          useHTML: true,
+          pointFormat: `<b>{point.name}</b><br/>
+                    점수: {point.value}<br/>
+                    Good: {point.good}<br/>
+                    Soso: {point.soso}<br/>
+                    Bad: {point.bad}`,
+        },
+        plotOptions: {
+          packedbubble: {
+            minSize: "20%",
+            maxSize: "60%",
+            zMin: 0,
+            zMax: maxEmotionScore, // 감정 점수의 최대값을 기준으로 설정
+            layoutAlgorithm: {
+              gravitationalConstant: 0.05,
+              splitSeries: true,
+              seriesInteraction: false,
+              dragBetweenSeries: true,
+              parentNodeLimit: true,
+            },
+            dataLabels: {
+              enabled: true,
+              format: "{point.name}",
+              style: {
+                color: "black",
+                textOutline: "none",
+                fontWeight: "normal",
+              },
+            },
+          },
+        },
+        series: series,
+      });
+    };
+    // 버블차트 끝
+    // 스플라인차트 시작
+    const updateVoiceLineChart = (data) => {
+      const sortedDates = data.dates
+        .map((date, index) => ({
+          date,
+          index,
+        }))
+        .sort((a, b) => new Date(a.date) - new Date(b.date));
+
+      const series = Object.keys(data.questionVoiceScores).map((question) => {
+        return {
+          name: question,
+          data: sortedDates.map(
+            ({ index }) => data.questionVoiceScores[question][index]
+          ),
+        };
+      });
+
+      Highcharts.chart("chart-2", {
+        chart: {
+          type: "spline",
+        },
+        title: {
+          text: " ",
+          align: "center",
+        },
+        subtitle: {
+          text: "최근 5회 인성면접 기준",
+          align: "left",
+        },
+        xAxis: {
+          categories: sortedDates.map(({ date }) => formatDate(date)),
+          title: {
+            text: "날짜",
+          },
+        },
+        yAxis: {
+          title: {
+            text: "음성 점수",
+          },
+          max: 100,
+        },
+        tooltip: {
+          formatter: function () {
+            return `<b>${this.series.name}</b><br/>
+                날짜: ${this.x}<br/>
+                점수: ${this.y}`;
+          },
+        },
+        plotOptions: {
+          spline: {
+            marker: {
+              enabled: true,
+              radius: 4,
+            },
+          },
+        },
+        series: series,
+      });
+    };
+    // 스플라인 차트 끝
+    // 바차트 시작
+    const updatePostureChart = (scores) => {
+      // 날짜를 기준으로 데이터 정렬
+      const sortedData = scores.dates
+        .map((date, index) => ({
+          date,
+          postureScore: scores.postureScores[index],
+        }))
+        .sort((a, b) => new Date(a.date) - new Date(b.date));
+
+      Highcharts.chart("chart-3", {
+        chart: {
+          type: "column",
+        },
+        title: {
+          text: "",
+        },
+        subtitle: {
+          text: "최근 5회 인성면접 기준",
+          align: "left",
+        },
+        colors: ["#a0d6e1"], // 기존 차트의 색상 사용
+        xAxis: {
+          categories: sortedData.map((item) => formatDate(item.date)),
+          title: {
+            text: "",
+          },
+        },
+        yAxis: {
+          title: {
+            text: "자세 점수",
+          },
+          max: 100,
+        },
+        credits: {
+          enabled: false,
+        },
+        plotOptions: {
+          column: {
+            borderRadius: 5,
+          },
+        },
+        series: [
+          {
+            name: "",
+            showInLegend: false,
+            data: sortedData.map((item) => item.postureScore),
+          },
+        ],
+        tooltip: {
+          formatter: function () {
+            return `<b>${this.x}</b><br/>자세 점수: <b>${this.y}</b>`;
+          },
+        },
+      });
+    };
+    // 바차트 끝
+    // 멀티바차트 시작
+    const updateMultiBarChart = (scores) => {
+      // 날짜를 기준으로 데이터 정렬
+      const sortedData = scores.dates
+        .map((date, index) => ({
+          date,
+          stressRate: scores.stressRates[index],
+          voiceScore: scores.voiceScores[index],
+          postureScore: scores.postureScores[index],
+        }))
+        .sort((a, b) => new Date(a.date) - new Date(b.date));
+
+      Highcharts.chart("chart-4", {
+        chart: {
+          type: "column",
+        },
+        title: {
+          text: "",
+        },
+        subtitle: {
+          text: "최근 5회 인성면접 기준",
+          align: "left",
+        },
+        colors: ["#FF6F61", "#8b8be0", "#88D8B0", "#f8b77d", "#FFABAB"],
+        yAxis: {
+          title: {
+            text: "점수",
+          },
+          max: 100,
+        },
+        xAxis: {
+          categories: ["감정", "음성", "자세"],
+        },
+        credits: {
+          enabled: false,
+        },
+        plotOptions: {
+          column: {
+            borderRadius: "25%",
+          },
+        },
+        legend: {
+          align: "right",
+          verticalAlign: "middle",
+          layout: "vertical",
+        },
+        series: sortedData.map((item) => ({
+          name: formatDate(item.date),
+          data: [
+            100 - item.stressRate, // 스트레스율을 감정 점수로 변환
+            item.voiceScore,
+            item.postureScore,
+          ],
+        })),
+      });
+    };
+    // 전체 차트 끝
+
     onMounted(async () => {
       const memno = 10; // 예시 memno 값
       const intno = 10; // 예시 intno 값
       const cnsno = 1001; // 예시 cnsno 값
       await fetchMemberData(memno);
-      await fetchStressRate(intno);
-      await fetchVoiceRate(intno);
-      await fetchPostureBadCountRate(intno);
+      await fetchStressRate(intno, memno);
+      await fetchVoiceRate(intno, memno);
+      await fetchPostureBadCountRate(intno, memno);
       await fetchConsultantScore(intno);
-      await fetchMemberConsultantMapping(memno);
       await fetchMemberSchedules(memno);
       await fetchConsultantQuestions(intno, [6, 7]);
       await fetchConsultantFeedback(memno, cnsno, intno, [6, 7]);
       await fetchConsultantTotalFeedback(memno, intno);
+      await fetchConsultantDetail(memno);
+      await fetchRecentInterviewScores(memno);
 
       // 프로그레스 바 초기화
       const progressBars = document.querySelectorAll(".progress-bar");
@@ -610,6 +960,7 @@ export default {
       });
     });
 
+    // 탭 활성화
     const activateSection = (sectionId, event) => {
       event.preventDefault();
       activeSection.value = sectionId;
@@ -618,7 +969,6 @@ export default {
     return {
       memberData,
       interviewReport,
-      consultantDetail,
       stressRate,
       voiceRate,
       postureBadCountRate,
@@ -631,10 +981,16 @@ export default {
       keywordConsultantMsg,
       consultantfeedback,
       consultantTotalFeedback,
+      loading,
+      error,
+      consultantDetail,
+      handleImageError,
+      goToConsultantInfo,
+      goToConsultantChat,
+      profileImageUrl,
+      ConsultantImageUrl,
+      recentScores,
     };
   },
 };
 </script>
-
-<style>
-</style>

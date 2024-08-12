@@ -4,9 +4,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Paths;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import jakarta.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -16,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import kr.ict.mydream.vo.CareerVO;
 import kr.ict.mydream.vo.EducationVO;
@@ -31,6 +42,9 @@ public class ResumeController {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    private final static String filePath = Paths.get(System.getProperty("user.dir"))
+            .resolve("vuefront/public/img/resumePhoto").toString();
 
     @PostMapping("/resumeList")
     public ResponseEntity<?> resumeList(Model model, @RequestBody Map<String, Integer> num) {
@@ -51,7 +65,7 @@ public class ResumeController {
     }
 
     @PostMapping("/resumeAdd")
-    public void resumeAdd(@RequestBody Map<String, Object> data) {
+    public ResponseEntity<?> resumeAdd(@RequestBody Map<String, Object> data) {
         ResumeVO resumeVO = new ResumeVO();
         EducationVO educationVO = new EducationVO();
         CareerVO careerVO = new CareerVO();
@@ -61,38 +75,34 @@ public class ResumeController {
         resumeVO = objectMapper.convertValue(data.get("basic"), ResumeVO.class);
         resumeVO.setMemno((int) data.get("memno"));
         resumeService.resumeAdd(resumeVO);
+        System.out.println("인적 저장 완료");
+        int rsmno = resumeVO.getRsmno();
 
         // 학력사항 저장
-        int rsmno = resumeVO.getRsmno();
         List<Map<String, Object>> education = (List<Map<String, Object>>) data.get("education");
+        System.out.println(education);
         List<Map<String, Object>> education_res = new ArrayList<Map<String, Object>>();
         for (Map<String, Object> e : education) {
             Map<String, Object> res = new HashMap<>(e);
             res.put("rsmno", rsmno);
             res.remove("td1");
-            res.remove("td2");
-            res.remove("td3");
-            res.remove("td4");
-            res.remove("td5");
             education_res.add(res);
         }
         for (Map<String, Object> e : education_res) {
             int seqno = (int) educationVO.getSeqno();
             e.put("seqno", seqno);
+            System.out.println(e);
             resumeService.resumeAddEdu(e);
         }
 
         // 경력 저장
         List<Map<String, Object>> career = (List<Map<String, Object>>) data.get("career");
+        System.out.println(career);
         List<Map<String, Object>> career_res = new ArrayList<Map<String, Object>>();
         for (Map<String, Object> e : career) {
             Map<String, Object> res = new HashMap<>(e);
             res.put("rsmno", rsmno);
             res.remove("td1");
-            res.remove("td2");
-            res.remove("td3");
-            res.remove("td4");
-            res.remove("td5");
             career_res.add(res);
         }
         for (Map<String, Object> e : career_res) {
@@ -103,10 +113,12 @@ public class ResumeController {
 
         // 자소서 저장
         List<Map<String, Object>> selfintro = (List<Map<String, Object>>) data.get("intro");
+        System.out.println(selfintro);
         List<Map<String, Object>> selfintro_res = new ArrayList<Map<String, Object>>();
         for (Map<String, Object> e : selfintro) {
             Map<String, Object> res = new HashMap<>(e);
             res.put("rsmno", rsmno);
+            res.remove("td1");
             selfintro_res.add(res);
         }
         for (Map<String, Object> e : selfintro_res) {
@@ -114,6 +126,32 @@ public class ResumeController {
             e.put("seqno", seqno);
             resumeService.resumeAddSelf(e);
             System.out.println("완료");
+        }
+
+        System.out.println(rsmno);
+        return ResponseEntity.ok().body(rsmno);
+    }
+
+    @PostMapping("/resumeImgUp")
+    public void resumeImgUp(@RequestParam("file") MultipartFile mf, @RequestParam Map<String, Object> data,
+            HttpServletRequest request) {
+
+        if (mf == null || mf.isEmpty()) {
+            System.out.println("파일이 없음");
+        }
+        UUID uuid = UUID.randomUUID();
+        String newFn = uuid.toString();
+        StringBuffer path = new StringBuffer();
+        path.append(filePath).append("\\");
+        path.append(newFn);
+        System.out.println("FullPath :" + path);
+        File f = new File(path.toString());
+        try {
+            mf.transferTo(f);
+            data.put("imgname", newFn);
+            resumeService.resumeImgUp(data);
+        } catch (IllegalStateException | IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -146,10 +184,6 @@ public class ResumeController {
                     education_add.put("rsmno", rsmno);
                     education_add.put("seqno", seqno);
                     education_add.remove("td1");
-                    education_add.remove("td2");
-                    education_add.remove("td3");
-                    education_add.remove("td4");
-                    education_add.remove("td5");
                     System.out.println(education_add);
 
                     resumeService.resumeAddEdu(education_add);
@@ -172,10 +206,6 @@ public class ResumeController {
                     career_add.put("rsmno", rsmno);
                     career_add.put("seqno", seqno);
                     career_add.remove("td1");
-                    career_add.remove("td2");
-                    career_add.remove("td3");
-                    career_add.remove("td4");
-                    career_add.remove("td5");
                     System.out.println(career_add);
 
                     resumeService.resumeAddCar(career_add);
@@ -187,37 +217,35 @@ public class ResumeController {
         }
 
         // 자소서 수정
-        {
+        if (((List<Map<String, Object>>) data.get("intro")).size() != 0) {
             List<Map<String, Object>> selfintro = (List<Map<String, Object>>) data.get("intro");
             for (Map<String, Object> e : selfintro) {
-                if (e.containsKey("content")) {
-                    if (e.get("seqno") != null) {
-                        resumeService.resumeUpdataSelf(e);
-                    } else {
-                        Map<String, Object> selfintro_add = new HashMap<>(e);
-                        int seqno = (int) careerVO.getSeqno();
-                        selfintro_add.put("rsmno", rsmno);
-                        selfintro_add.put("seqno", seqno);
-                        System.out.println(selfintro_add);
-
-                        resumeService.resumeAddSelf(selfintro_add);
-                        System.out.println("자소서 수정");
-                    }
+                if (e.get("seqno") != null) {
+                    resumeService.resumeUpdataSelf(e);
                 } else {
-                    System.out.println("자소서 변동사항 없음");
+                    Map<String, Object> selfintro_add = new HashMap<>(e);
+                    int seqno = (int) careerVO.getSeqno();
+                    selfintro_add.put("rsmno", rsmno);
+                    selfintro_add.put("seqno", seqno);
+                    selfintro_add.remove("td1");
+                    System.out.println(selfintro_add);
+
+                    resumeService.resumeAddSelf(selfintro_add);
+                    System.out.println("자소서 수정");
                 }
             }
+        } else {
+            System.out.println("자소서 변동사항 없음");
         }
     }
 
     @Transactional
     @PostMapping("/resumeDelete")
     public void resumeDelete(@RequestBody Map<String, Integer> data) {
-        int rsmno = data.get("rsmno");
-        resumeService.resumeDelEdu(rsmno);
-        resumeService.resumeDelCar(rsmno);
-        resumeService.resumeDelSelf(rsmno);
-        resumeService.resumeDelete(rsmno);
+        resumeService.resumeDeleteEdu(data);
+        resumeService.resumeDeleteCar(data);
+        resumeService.resumeDeleteSelf(data);
+        resumeService.resumeDelete(data);
     }
 
     @PostMapping("/resumeDeleteEdu")
@@ -232,5 +260,12 @@ public class ResumeController {
         System.out.println("seqno:" + data.get("seqno"));
         System.out.println("rsmno:" + data.get("rsmno"));
         resumeService.resumeDeleteCar(data);
+    }
+
+    @PostMapping("/resumeDeleteSelf")
+    public void resumeDeleteSelf(@RequestBody Map<String, Integer> data) {
+        System.out.println("seqno:" + data.get("seqno"));
+        System.out.println("rsmno:" + data.get("rsmno"));
+        resumeService.resumeDeleteSelf(data);
     }
 }

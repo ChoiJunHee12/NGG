@@ -13,7 +13,6 @@
 </template>
 <script>
 export default {
-    props:['mData'],
     methods:{
         cvlist(){
             this.$router.push('/ResumeList')
