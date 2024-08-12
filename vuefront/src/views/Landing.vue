@@ -1,19 +1,22 @@
 <template>
   <div class="landing">
       <div class="section">
+    <router-link to="login">
+    <button class="joinAndLogin2" id="join-btn2" type="button">
+      가입 / 로그인하기</button></router-link>
         <div class="video-section">
       <img src="img/Main_image/Nervous.gif" class="landing-img">
     </div>
     <div class="image-section">
 
-
-
 <div class="container1">
+  <div class="blockquote-con">
   <div data-aos="fade-up">
   <blockquote class="blockquote-main"><b>
     <p>어린 시절 소중히 간직해온 <span class="highlight">나의 꿈</span></p>
     <p>소중한 꿈을 이루기 위한 한걸음을 <span class="highlight">내가 꿈</span>과 함께 내딛으세요</p></b>
   </blockquote>
+</div>
 </div>
   <div class="talk">
 <div class="talk_left" data-aos="fade-right" data-aos-easing="linear"
@@ -100,7 +103,10 @@ data-aos-anchor-placement="top-bottom">
   import "aos/dist/aos.css";
   export default {
     created() {
-        AOS.init();
+      AOS.init();
+    },
+    mounted() {
+      window.scrollTo(0, 0);
     },
   };
   </script>

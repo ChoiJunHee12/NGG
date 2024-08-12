@@ -83,6 +83,7 @@ title.cvwrite-container{
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
+
 .cvwrite-input-file-button:hover{
     width: 135px;
     padding: 9px 37px;
@@ -92,6 +93,24 @@ title.cvwrite-container{
     color: #11045e;
 
 }
+
+.cvwrite-input-file-button-img {
+    width: 130px;
+    padding: 12px 40px;
+    margin-top: 15px;
+    margin-bottom: 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    height: 50px;
+    font-size: 1.1rem;
+    background-color:  #1241A4;
+    color: #fff;
+    transition: background-color 0.5s, color 0.5s;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
 .cvwrite-cv-table{
     
     width:100%;
@@ -157,6 +176,30 @@ title.cvwrite-container{
     text-align: center;
 }
 
+.cvwrite-cv-input-half-top{
+    width: 100%;
+    height: 30%;
+    background-color: transparent;
+    border: none;
+    resize: none;
+    overflow: hidden;
+    box-sizing: border-box;
+    text-align: center;
+    padding-top: 5px;
+}
+
+.cvwrite-cv-input-half-bottom{
+    width: 100%;
+    height: 30%;
+    background-color: transparent;
+    border: none;
+    resize: none;
+    overflow: hidden;
+    box-sizing: border-box;
+    text-align: center;
+    padding-bottom: 5px;
+}
+
 
 
 .cvwrite-cv-title{
@@ -187,6 +230,16 @@ title.cvwrite-container{
     font-weight: bold;
     margin-right: 60px;
     margin-top: 24px;
+}
+.cvwrite-add-button-img {
+    padding: 10px 20px;
+    background-color: #1241A4;
+    border: none;
+    border-radius: 4px;
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+    margin-top: 15px;
 }
 .cvwrite-cv2-title{
     align-items: left;
@@ -378,4 +431,28 @@ title.cvwrite-container{
 .cvwrite-save {
     background-color: #1241A4;
     margin-right: 40px;
+}
+
+.cvwrite-cv-input-half-top{
+    width: 100%;
+    height: 30%;
+    background-color: transparent;
+    border: none;
+    resize: none;
+    overflow: hidden;
+    box-sizing: border-box;
+    text-align: center;
+    padding-top: 5px;
+}
+
+.cvwrite-cv-input-half-bottom{
+    width: 100%;
+    height: 30%;
+    background-color: transparent;
+    border: none;
+    resize: none;
+    overflow: hidden;
+    box-sizing: border-box;
+    text-align: center;
+    padding-bottom: 5px;
 }

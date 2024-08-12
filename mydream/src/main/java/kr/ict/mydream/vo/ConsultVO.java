@@ -11,7 +11,7 @@ import org.apache.ibatis.type.Alias;
 @Setter
 @Alias("consultvo")
 public class ConsultVO {
-    private int cnsno; // 컨설턴트 번호
+    private int cnsno; // 컨설턴트 번호(PK)
     private String name; // 컨설턴트 성명
     private String gendercd; // 컨설턴트 성별
     private String categcd; // 전문분야
@@ -25,7 +25,7 @@ public class ConsultVO {
     private String cnsproject; // 프로젝트수행
     private Date credt; // 최초등록일자
     private Date upddt; // 최종수정일자
-
-    List<CnsCareerVO> cnsCareerVO;
+    private String category; // 카테고리
+    private List<CnsCareerVO> cnscareerVO; // 약력 VO
 
 }

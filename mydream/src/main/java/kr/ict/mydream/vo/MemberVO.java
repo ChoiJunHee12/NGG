@@ -26,4 +26,5 @@ public class MemberVO {
     private String imgname;
     private Date credt;
     private Date upddt;
+    private String rolecd;
 }

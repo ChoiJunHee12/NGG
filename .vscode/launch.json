@@ -18,6 +18,4 @@
             "envFile": "${workspaceFolder}/.env"
         }
     ]
-
 }
-
