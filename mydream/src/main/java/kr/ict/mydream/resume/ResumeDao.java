@@ -30,9 +30,9 @@ public interface ResumeDao {
 
     public void resumeAddSelf(Map<String, Object> self); // 이력서 추가(자소서)
 
-    public ResumeVO resumeUpload(ResumeVO vo); // 이력서 업로드
+    public void resumeImgUp(Map<String, Object> data); // 이력서 사진 추가
 
-    public ResumeVO resumeImgUp(ResumeVO vo); // 이력서 사진 추가
+    public ResumeVO resumeUpload(ResumeVO vo); // 이력서 업로드
 
     public void resumeUpdate(Map<String, Object> basic); // 이력서 수정
 
@@ -42,7 +42,7 @@ public interface ResumeDao {
 
     public void resumeUpdateSelf(Map<String, Object> self); // 이력서 수정(자소서)
 
-    public void resumeDelete(int rsmno); // 이력서 삭제
+    public void resumeDelete(Map<String, Integer> rsmno); // 이력서 삭제
 
     public void resumeDelEdu(int rsmno);
 
@@ -53,4 +53,7 @@ public interface ResumeDao {
     public void resumeDeleteEdu(Map<String, Integer> num); // 이력서 삭제(학력)
 
     public void resumeDeleteCar(Map<String, Integer> num); // 이력서 삭제(경력)
+
+    public void resumeDeleteSelf(Map<String, Integer> num); // 이력서 삭제(자소서)
+
 }
