@@ -9,7 +9,7 @@ import org.apache.ibatis.type.Alias;
 @Getter
 @Setter
 @Alias("consultevalvo")
-public class ConsultevalVO {
+public class ConsultEvalVO {
 
     private int intno;
     private int qno;
