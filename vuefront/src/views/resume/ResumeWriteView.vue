@@ -74,8 +74,9 @@
                 <input
                   type="text"
                   class="cvwrite-cv1-input"
-                  placeholder="출생년도"
+                  placeholder="YYYYMMDD"
                   v-model=basic.birthymd
+                  maxlength="8"
                 />
               </td>
             </tr>

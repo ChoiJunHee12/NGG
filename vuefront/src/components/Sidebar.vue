@@ -27,8 +27,8 @@
         <router-link to="/InterviewRes" class="main-router"
           ><p class="bar-p">면접결과</p></router-link
         >
-        <router-link to="/OneToOne" class="main-router"
-          ><p class="bar-p">컨설턴트 1:1 상담</p></router-link
+        <router-link to="/MyConsultantProfile" class="main-router"
+          ><p class="bar-p">나의 컨설턴트</p></router-link
         >
         <router-link to="/Calendar" class="main-router"
           ><p class="bar-p">일정관리</p></router-link

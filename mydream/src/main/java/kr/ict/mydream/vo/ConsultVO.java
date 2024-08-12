@@ -25,8 +25,7 @@ public class ConsultVO {
     private String cnsproject; // 프로젝트수행
     private Date credt; // 최초등록일자
     private Date upddt; // 최종수정일자
-
     private String category; // 카테고리
-
     private List<CnsCareerVO> cnscareerVO; // 약력 VO
+
 }

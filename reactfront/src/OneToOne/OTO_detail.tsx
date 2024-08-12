@@ -1,15 +1,121 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './OTO_detail.css';
 
+import axios from 'axios';
+
 interface Message {
-  type: 'user' | 'consultant';
+  chatdiv: string;
+  name: string;
   profileImage: string;
-  text: string;
-  time: string;
+  content: string;
+  chatdt: string;
 }
 
 const OTO_detail: React.FC = () => {
-  const getCurrentDateTime = (): string => {
+  const [ws, setWs] = useState<WebSocket | null>(null);
+  const [newMessage, setNewMessage] = useState('');
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [roomnum, setRoomnum] = useState<number | null>(null);
+  const [memno] = useState("2");
+  const [UIMG, setUIMG] = useState('default.png');
+  const [CIMG, setCIMG] = useState('default.png');
+  const chatContainerRef = useRef<HTMLDivElement>(null);
+  const [memno2] = useState(1);
+  const [chtno] = useState(31);
+
+
+  
+
+  const chattype = (type: string) => (type === '1' ? 'user' : 'consultant');
+
+  const chatdetail = async () => {
+    const memnoData = new FormData();
+    memnoData.append('memno', memno.toString());
+    try {
+      const res = await axios.post(`${process.env.REACT_APP_BACK_END_URL}/chat/detail`, memnoData, {
+        headers: { 'Content-Type': 'application/json' }
+      });
+      setMessages(res.data);
+      await chatprofile(memnoData);
+      scrollToEnd();
+    } catch (error) {
+      console.error('Error fetching chat details:', error);
+    }
+  };
+
+  const chatprofile = async (memnoData: FormData) => {
+    try {
+      const res = await axios.post(`${process.env.REACT_APP_BACK_END_URL}/chat/chatpro`, memnoData, {
+        headers: { 'Content-Type': 'application/json' }
+      });
+      setUIMG(res.data.UIMG);
+      setCIMG(res.data.CIMG);
+      setMessages((prevMessages) =>
+        prevMessages.map((message) => ({
+          ...message,
+          name: message.chatdiv === '1' ? 'user' : 'consulte',
+          profileImage: message.chatdiv === '1' ? `/img/upimg/${res.data.UIMG}` : `/img/upimg/${res.data.CIMG}`
+        }))
+      );
+    } catch (error) {
+      console.error('Error fetching chat profile:', error);
+    }
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = ('0' + (date.getMonth() + 1)).slice(-2);
+    const day = ('0' + date.getDate()).slice(-2);
+    const hours = ('0' + date.getHours()).slice(-2);
+    const minutes = ('0' + date.getMinutes()).slice(-2);
+
+    return `${year}-${month}-${day} ${hours}:${minutes}`;
+  };
+
+    const connect = () => {
+      const chatmsg = `${memno}_${memno2}`;
+      
+      const socket = new WebSocket(`${process.env.REACT_APP_BACK_END_URL}/ws/chat`,`1-1`);
+      socket.onmessage = (event) => onMessage(event);
+      socket.onopen = () => onOpen();
+      socket.onerror = (error) => onError(error);
+      socket.onclose = () => onClose();
+      setWs(socket);
+      //chatdetail();
+    };
+
+  const sendMessage = () => {
+    if (newMessage.trim() !== '') {
+      const messageObject = {
+        chtno: roomnum,
+        content: newMessage,
+        chatdiv: '2'
+      };
+      ws?.send(JSON.stringify(messageObject));
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        { chatdiv: '2', name: 'consultant', profileImage: `/img/upimg/${CIMG}`, content: newMessage, chatdt: getCurrentDateTime() }
+      ]);
+      setNewMessage('');
+      scrollToEnd();
+    }
+  };
+
+  const onMessage = (event: MessageEvent) => {
+    if (!roomnum) {
+      setRoomnum(parseInt(event.data, 10));
+      return;
+    }
+    const message: Message = JSON.parse(event.data);
+    setMessages((prevMessages) => [
+      ...prevMessages,
+      { chatdiv: '1', name: 'user', profileImage: `/img/upimg/${UIMG}`, content: message.content, chatdt: getCurrentDateTime() }
+    ]);
+    scrollToEnd();
+  };
+
+  const getCurrentDateTime = () => {
     const now = new Date();
     const day = now.getDate().toString().padStart(2, '0');
     const month = (now.getMonth() + 1).toString().padStart(2, '0');
@@ -19,31 +125,31 @@ const OTO_detail: React.FC = () => {
     return `${year}-${month}-${day} ${hours}:${minutes}`;
   };
 
-  const [newMessage, setNewMessage] = useState('');
-  const [messages, setMessages] = useState<Message[]>([
-    { type: 'consultant', profileImage: '/img/OneToOne_img/noimage.png', text: '안녕하세요, 어떻게 도와드릴까요?', time: getCurrentDateTime() },
-    { type: 'user', profileImage: '/img/OneToOne_img/noimage.png', text: '안녕하세요, 상담을 받고 싶습니다.', time: getCurrentDateTime() },
-    { type: 'user', profileImage: '/img/OneToOne_img/noimage.png', text: '제가 궁금한 점이 있습니다.', time: getCurrentDateTime() },
-    { type: 'consultant', profileImage: '/img/OneToOne_img/noimage.png', text: '그게 무엇인가요?', time: getCurrentDateTime() },
-  ]);
-  const chatContainerRef = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    scrollToEnd();
-  }, [messages]);
-
-  const sendMessage = () => {
-    if (newMessage.trim() !== '') {
-      setMessages([...messages, { type: 'consultant', profileImage: '/img/OneToOne_img/noimage.png', text: newMessage, time: getCurrentDateTime() }]);
-      setNewMessage('');
-    }
-  };
-
   const scrollToEnd = () => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
     }
   };
+
+  const onOpen = () => {
+    console.log('Connected to the WebSocket server.');
+  };
+
+  const onError = (error: Event) => {
+    console.error('WebSocket error:', error);
+  };
+
+  const onClose = () => {
+    console.log('Disconnected from the WebSocket server.');
+  };
+
+  useEffect(() => {
+    connect();
+    return () => {
+      ws?.close();
+    };
+  }, []);
+
 
   return (
     <div className="container">
@@ -69,14 +175,14 @@ const OTO_detail: React.FC = () => {
     </div>
         <div className="chat-container scrollable-div" ref={chatContainerRef}>
           {messages.map((message, index) => (
-            <div key={index} className={`chat-message ${message.type}`}>
-              <img src={message.profileImage} alt={message.type} className="profile-image" />
+            <div key={index} className={`chat-message `+chattype(message.chatdiv)}>
+              <img src={message.profileImage} alt={message.name} className="profile-image" />
               <div className="message-info">
-                <div className={`message-text ${message.type}`}>
-                  {message.text}
+                <div className={`message-text `+chattype(message.chatdiv)}>
+                  {message.content}
                 </div>
-                <div className={`message-time ${message.type}`}>
-                  {message.time}
+                <div className={'message-time '+chattype(message.chatdiv)}>
+                  {formatDate(message.chatdt)}
                 </div>
               </div>
             </div>
