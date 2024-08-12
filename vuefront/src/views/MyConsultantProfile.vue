@@ -29,7 +29,7 @@
                     <div class="conpro-info-con2">
                         <div><span> [ 약력 ] </span></div>
                         <ul >
-                            <li v-for="(vo, descIndex) in Consultant.cnsCareerVO" :key="descIndex">
+                            <li v-for="(vo, descIndex) in Consultant.cnscareerVO" :key="descIndex">
                                 {{ vo.content }} ({{ vo.detail }})
                             </li>
                         </ul>
