@@ -169,7 +169,6 @@ export default {
       // isReviewSubmitted: false,
       // AIFeedback: [],
       intno: this.$props.intno,
-      userData: [],
       activePage: 1,
       page: 1,
       question : '',
@@ -195,7 +194,6 @@ export default {
       // this.mname = response.data.mname[0];
       // this.resDate = response.data.resDate[0];
       // console.log(response.data)
-      this.userData = response.data;
       this.userName = response.data[0].mname;
       this.credt = response.data[0].credt;
       this.efeed1 = response.data[0].efeed1;

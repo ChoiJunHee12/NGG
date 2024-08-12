@@ -390,12 +390,7 @@
             <div class="info-input-container">
               <span class="label-area">
                 <label for="loccd" class="join-label chooseRadio"
-<<<<<<< HEAD
-                  >✔️ 거주 지역</label
-=======
-                  >✔️ 거주지역</label
->>>>>>> origin/develop
-                >
+                  >✔️ 거주지역</label>                >
               </span>
               <div class="job-input-area">
                 <input

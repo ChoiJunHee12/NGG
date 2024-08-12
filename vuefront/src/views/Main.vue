@@ -1,20 +1,11 @@
 <template>
-<<<<<<< HEAD
-      <div class="ProfileTitle">
-      <blockquote class="blockquote-profile">
-        <b> <p>내 정보</p></b>
-      </blockquote>
-  <div class="mains-containers">
-    
-    <div class="mains-header-top">
-      <p class="mains-header-title">ONLINE AI INTERVIEW REPORT</p>
-=======
+
   <div class="container">
     <div class="mainpage-title">
       <blockquote class="mainpage-profile">
         <b> <p>ONLINE AI INTERVIEW REPORT</p></b>
       </blockquote>
->>>>>>> origin/develop
+
     </div>
     <div class="mains-header-container">
       <div class="mains-headers-left">
@@ -328,7 +319,6 @@
         </p>
       </div>
     </div>
-  </div>
   </div>
 </template>
 
