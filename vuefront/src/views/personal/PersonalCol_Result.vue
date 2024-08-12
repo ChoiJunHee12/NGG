@@ -30,7 +30,6 @@
         </div>
         <div class="personal-btn-grp">
           <button class="btn btn-next personal-btn" @click="movepage" style="width: 240px;">가상 MakeUp</button>
-          <button class="btn btn-next personal-btn" @click="cuttingImage" style="width: 240px;">테스트</button>
         </div>
     </div>
 </template>
@@ -51,7 +50,7 @@ export default {
         // useRoute 훅을 사용하여 현재 라우트 객체를 가져옵니다.
     const route = useRoute();
 return {
-    season : parseFloat(route.query.season),
+    season : route.query.season,
     spring : parseFloat(route.query.spring),
     summer : parseFloat(route.query.summer),
     autumn : parseFloat(route.query.autumn),
@@ -82,27 +81,31 @@ return {
         displayPage(pageNum) {
             return this.activePage === pageNum ? { display: 'block' } : { display: 'none' };
         },
-        cuttingImage(){
+        async cuttingImage(){
             const cuttingImageformData = new FormData();
             cuttingImageformData.append('imgfile', this.dataURItoBlob(this.befimg), this.befimgn);
             for (let [key, value] of cuttingImageformData.entries()) {
                 console.log(key, ':', value);
                 }
-            axios.post(`${process.env.VUE_APP_DJANGO_APP_BACK_END_URL}personalcol/cuttingImage`, cuttingImageformData, {
+            const response =await axios.post(`${process.env.VUE_APP_DJANGO_APP_BACK_END_URL}personalcol/cuttingImage`, cuttingImageformData, {
                 headers: { 'Content-Type': 'multipart/form-data' },
                 responseType: 'blob'  // blob으로 응답받기 위해 설정
-            })
-            .then(response => {
+            });
+            
 
-                const reader = new FileReader();
-                reader.onloadend = function() {
-                    const base64data = reader.result;
-                    localStorage.setItem('uploadedImage', base64data);
+            const reader = new FileReader();
+            reader.onloadend = function() {
+                const base64data = reader.result;
+                localStorage.setItem('uploadedImage', base64data);
+                
+                // 이미지 로드 및 표시
+            };
+                
+            await reader.readAsDataURL(response.data);
+                
+            
 
-                    // 이미지 로드 및 표시
-                };
-                reader.readAsDataURL(response.data);
-                })
+            
 
             },
 
@@ -113,10 +116,10 @@ return {
             let bestTone="Total"
             let toneTotal=0
             if((this.spring+this.autumn)>(this.summer+this.winter)){
-                bestTone= "웜톤 Total";
+                bestTone= "웜톤";
                 toneTotal = this.spring+this.autumn
             }else{
-                bestTone= "쿨톤 Total";
+                bestTone= "쿨톤";
                 toneTotal = this.summer+this.winter
             }
             console.log(bestTone)
@@ -135,7 +138,7 @@ return {
                             if (!customLabel) {
                                 customLabel = chart.options.chart.custom.label =
                                     chart.renderer.label(
-                                        bestTone+'<br/>' +
+                                        bestTone+' Total'+'<br/>' +
                                         '<strong>'+toneTotal+'%</strong><br/>'
                                     )
                                     .css({
@@ -165,7 +168,7 @@ return {
                     }
                 },
                 title: {
-                    text: '가을 웜톤'
+                    text: this.season+' '+bestTone
                 },
                 subtitle: {
                     text: '퍼스널컬러 비율'
@@ -217,11 +220,14 @@ return {
             });
         },
         movepage() {
-            this.$router.push('/personal_MakeUp')
+            
+            //this.$router.push('/personal_MakeUp');
+            console.log(this.season);
+            this.$router.push({name:"PersonalCol_MakeUp",query:{season:this.season}});
         }
     },
     mounted() {
-        
+        this.cuttingImage();
         if (this.activePage === 1) {
             this.highchart();
         }

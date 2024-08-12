@@ -189,7 +189,7 @@ export default {
     async convertTextToSpeech() {
         try {
           const response = await axios.post(
-            'http://192.168.0.26:8000/tts/text_to_speech/',
+            `${process.env.VUE_APP_DJANGO_APP_BACK_END_URL}/tts/text_to_speech/`,
             { text: this.question },
             { responseType: 'blob' }
           );

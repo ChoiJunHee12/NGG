@@ -36,12 +36,21 @@
                 <img :src="getMakeupImage(index)" class="personal-target-img" @click="afterMakeup(getMakeupImage(index))">
             </swiper-slide>
             <div class="swiper-pagination-custom"></div> <!-- Pagination을 위한 요소 -->
+            
             </swiper>
+            
         </div>
+        <MUsave
+        v-if="savecom"
+        @close="closeModal_personal"
+        v-bind:mData="this.modalData" 
+      />
     </div>
+    
 </template>
 
 <script>
+import { useRoute } from 'vue-router';
 import { Navigation, Pagination, A11y } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/vue';
 import 'swiper/css';
@@ -49,6 +58,7 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import { Popover } from 'bootstrap'; // Bootstrap에서 Popover 가져오기
 import axios from "axios";
+import MUsave from "../../components/MakeUpSave.vue";
 export default {
     data() {
         return {
@@ -56,14 +66,26 @@ export default {
             croppedImageSrc: localStorage.getItem('croppedImage'),
             modules: [Navigation, Pagination, A11y],
             season: 'summer', 
-            mgender: '여', 
+            mgender: '남', 
             imgpath: '/img/before_image/',
             beforeImage: localStorage.getItem('uploadedImage'),
             afterImage: localStorage.getItem('uploadedImage'),
             loadingImage: '/img/MakeUp_image/loading.gif',
-            
+            savecom: false,
+            memno:1,
         }
     },
+    setup(){
+        // 하이차트에 들어갈 값
+        // useRoute 훅을 사용하여 현재 라우트 객체를 가져옵니다.
+    const route = useRoute();
+    console.log(route.query)
+return {
+    season : route.query.season,
+
+};
+    },
+    
     computed: {
         translatedSeason() {
             const seasonMap = {
@@ -76,21 +98,36 @@ export default {
         },
         translatedGender() {
             const genderMap = {
-                '남': '남자',
-                '여': '여자'
+                '남성': '남자',
+                '여성': '여자'
             };
             return genderMap[this.mgender] || this.mgender;
         }
     },
     methods: {
+        genderset(){
+            const num = new FormData;
+            num.append('memno',this.memno)
+            axios.post(`${process.env.VUE_APP_BACK_END_URL}/personal/genget`, num, { headers: { 'Content-Type': 'application/json' } })
+            .then(res => {
+                console.log('gender : '+res.data);
+                this.mgender =res.data;
+            })
+        },
+        closeModal_personal(){
+            this.savecom =!this.savecom
+        },
         getMakeupImage(index) {      
-            const season = this.season;
-            const mgender = this.mgender;
-            return `/img/MakeUp_image/${mgender}_${season}_${index}.png`;
+            const genderMap = {
+                '남성': '남',
+                '여성': '여'
+            };
+
+            return `/img/MakeUp_image/${genderMap[this.mgender]}_${this.season}_${index}.png`;
         },
         async proupdate(){
             try {
-            const afimgn = 'makeup_'
+            const afimgn = '.jpg'
             const afterImage = await this.loadImageAsBase64(this.afterImage);
             const formData = new FormData();
             formData.append('afterimage', this.dataURItoBlob(afterImage), afimgn);
@@ -101,7 +138,24 @@ export default {
             });
             console.log(response.data)
             const springformData = new FormData();
-            springformData.append('imgfile', response.data, this.afimgn);
+            console.log(afimgn);
+            springformData.append('imgfile', response.data, afimgn);
+            const usernum = new FormData();
+            usernum.append('memno',this.memno);
+            await axios.post(`${process.env.VUE_APP_BACK_END_URL}/personal/makeUpImgSave`, springformData, { headers: { 'Content-Type': 'multipart/form-data' } })
+            .then(res => {
+                console.log('imgname : '+res.data)
+                usernum.append('imgname : ',res.data);
+                axios.post(`${process.env.VUE_APP_BACK_END_URL}/personal/makeUpImgupdate`,usernum,{
+                    headers: {'Content-Type': 'application/json' }
+                }).then((res)=> {
+                    console.log(this.savecom);
+                    this.savecom = !this.savecom;
+                })
+
+            })
+            ;
+
             }catch (error) {
                 console.error('Error updating history:', error);
             }
@@ -155,6 +209,7 @@ export default {
     },
     mounted() {
         // Bootstrap Popover 초기화
+        this.genderset();
         const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]');
         popoverTriggerList.forEach((popoverTriggerEl) => {
         new Popover(popoverTriggerEl);
@@ -163,6 +218,8 @@ export default {
     components: {
         Swiper,
         SwiperSlide,
+        MUsave,
+        
     },
     
 };

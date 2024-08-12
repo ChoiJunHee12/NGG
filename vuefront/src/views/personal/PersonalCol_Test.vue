@@ -215,7 +215,7 @@ export default {
     triggerFileInput() {
       this.$refs.fileInput.click(); // 파일 업로드 input 클릭
     },
-    uploadImage(event) {      
+    async uploadImage(event) {      
       
       const file = event.target.files[0];
       if (file) {
@@ -229,10 +229,10 @@ export default {
         };
         reader.readAsDataURL(file);
 
-        this.formData = new FormData();
-        this.formData.append('imgfile', file);
+        const formData = new FormData();
+        formData.append('imgfile', file);
 
-        axios.post(`${process.env.VUE_APP_DJANGO_APP_BACK_END_URL}personalcol/detect_mask`, this.formData, {
+        axios.post(`${process.env.VUE_APP_DJANGO_APP_BACK_END_URL}personalcol/detect_mask`, formData, {
           headers: { 'Content-Type': 'multipart/form-data' },
         }).then((response) => {
           
@@ -252,14 +252,18 @@ export default {
           }
           console.log('전송완료!');
 
-          axios.post(`${process.env.VUE_APP_DJANGO_APP_BACK_END_URL}personalcol/seasontone`,this.formData, {
+          axios.post(`${process.env.VUE_APP_DJANGO_APP_BACK_END_URL}personalcol/seasontone`,formData, {
           headers: { 'Content-Type': 'multipart/form-data' },
-        }).then((response) =>{
-            this.season=response.data.season
-            this.spring=response.data.Spring.toFixed(2);
-            this.summer=response.data.Summer.toFixed(2);
-            this.autumn=response.data.Autumn.toFixed(2);
-            this.winter=response.data.Winter.toFixed(2);
+        }).then((res) =>{
+        console.log(res.data)
+            this.season=res.data.season
+            this.spring=res.data.Spring.toFixed(2);
+            this.summer=res.data.Summer.toFixed(2);
+            this.autumn=res.data.Autumn.toFixed(2);
+            this.winter=res.data.Winter.toFixed(2);
+            
+            
+            
         }).catch((error) => {
           console.error('장고 서버로 컬러 요청 실패:', error);
           alert('이미지 전송 중 오류가 발생했습니다.');
@@ -276,13 +280,32 @@ export default {
         alert('이미지를 선택해 주세요.');
       }
     },
-    movepage(){
+    getSeasonNumber(season) {
+    if (season === 'Spring') {
+        return 1;
+    } else if (season === 'Summer') {
+        return 2;
+    } else if (season === 'Autumn') {
+        return 3;
+    } else if (season === 'Winter') {
+        return 4;
+    } else {
+        return -1; // 알 수 없는 계절 값에 대한 기본 반환 값
+    }
+    },
+    async movepage(){    
+      const updateform = new FormData();
+      updateform.append('memno',3);
+      updateform.append('seasoncd',this.getSeasonNumber(this.season));
+      console.log("계절은"+this.season)
+      await axios.post(`${process.env.VUE_APP_BACK_END_URL}/personal/seasonUpdate`, updateform, { headers: {'Content-Type': 'application/json' } });
       const list ={season:this.season,
         spring:this.spring,summer:this.summer,autumn:this.autumn,winter:this.winter};
       console.log(list)
+     
       this.$router.push({name:"PersonalCol_Result",query:list
             });
-    }
+    },
     
 
   },

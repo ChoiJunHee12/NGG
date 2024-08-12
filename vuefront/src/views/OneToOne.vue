@@ -14,14 +14,14 @@
         </div>   
         <div class="OTO-con">
             <div class="chat-container scrollable-div" ref="chatContainer">
-                <div v-for="(message, index) in messages" :key="index" :class="['chat-message', message.type]">
-                    <img :src="message.profileImage" :alt="message.type" class="chat-profile-image" >
+                <div v-for="(message, index) in messages" :key="index" :class="['chat-message', chattype(message.chatdiv)]">
+                    <img :src="message.profileImage" :alt="message.name" class="chat-profile-image" >
                     <div class="message-info">
-                        <div :class="['message-text', message.type]">
-                            {{ message.text }}
+                        <div :class="['message-text', chattype(message.chatdiv)]">
+                            {{ message.content }}
                         </div>
-                        <div :class="['message-time', message.type]">
-                            {{ message.time }}
+                        <div :class="['message-time', chattype(message.chatdiv)]">
+                            {{ formatDate(message.chatdt) }}
                         </div>
                     </div>
                 </div>
@@ -36,81 +36,147 @@
 
 
 <script>
+import axios from "axios";
+
 export default {
-    data() {
-        return {
-            ws: null, // 웹소켓을 위한 변수
-            newMessage: '',
-            messages: [
-                { type: 'consultant', profileImage: '/img/noimage.png', text: '안녕하세요, 어떻게 도와드릴까요?', time: this.getCurrentDateTime() },
-                { type: 'user', profileImage: '/img/noimage.png', text: '안녕하세요, 상담을 받고 싶습니다.', time: this.getCurrentDateTime() },
-                { type: 'user', profileImage: '/img/noimage.png', text: '제가 궁금한 점이 있습니다.', time: this.getCurrentDateTime() },
-                { type: 'consultant', profileImage: '/img/noimage.png', text: '그게 무엇인가요?', time: this.getCurrentDateTime() },
-            ],
-            roomnum: null,
-            token:null,
-        };
-    },
-    methods: {
-        connect() { //웹소켓 연결 시도
-            this.token = "your_token_value_here";
-            this.ws = new WebSocket('ws://localhost/mydream/ws/chat',this.token); // 서버 URL에 맞게 수정 필요
-            this.ws.onmessage = (event) => {
-            this.onMessage(event);
-            };
-            this.ws.onopen = () => this.onOpen();
-            this.ws.onerror = (error) => this.onError(error);
-            this.ws.onclose = () => this.onClose();
-        },
-        sendMessage() {
-            if (this.newMessage.trim() !== '') {
-                this.messages.push({ type: 'user', profileImage: '/img/noimage.png', text: this.newMessage, time: this.getCurrentDateTime()});
-                this.ws.send(this.newMessage);
-                
-                this.newMessage = '';
-                this.$nextTick(() => {
-                    this.scrollToEnd();
-                });
-                
-            };
-        },
-        onMessage(event) {
-            console.log('Message received: ', event.data);
-            const message = {
-                text: event.data,
-                id: Date.now()
-            };
-            console.log(message.text)
-            this.messages.push({type: 'consultant',profileImage: '/img/noimage.png', text: message.text, time: this.getCurrentDateTime()});
-            this.scrollToEnd();
-        },
-        getCurrentDateTime() {
-            const now = new Date();
-            const day = now.getDate().toString().padStart(2, '0');
-            const month = (now.getMonth() + 1).toString().padStart(2, '0'); // Months are 0-based
-            const year = now.getFullYear();
-            const hours = now.getHours().toString().padStart(2, '0');
-            const minutes = now.getMinutes().toString().padStart(2, '0');
-            return `${year}-${month}-${day} ${hours}:${minutes}`;
-        },
-        scrollToEnd() {
-            const container = this.$el.querySelector('.chat-container');
-            container.scrollTop = container.scrollHeight;
-        },
-        onOpen() { //연결 성공시
-            console.log('Connected to the WebSocket server.');
-            
-        },
-        onError(error) { //소켓 에러시
-            console.error('WebSocket error:', error);
-        },
-        onClose() { //연결이 끊기는 경우
-            console.log('Disconnected from the WebSocket server.');
-        },
-    },
-    mounted() {
-        this.connect();
-        this.scrollToEnd();
-    },
+  data() {
+      return {
+          ws: null, // 웹소켓을 위한 변수
+          newMessage: '',
+          messages: [
+
+          ],
+          roomnum: null,
+          memno:1,
+          UIMG:'default.png',
+          CIMG:'default.png',
+          UNICK:'NULL',
+          CNAME:'NULL',
+      };
+  },
+  methods: {
+      chattype(type){
+        return type === '1' ? 'user' : 'consultant';
+      },
+      chatdetail(){
+          const memno = new FormData();
+          memno.append('memno',this.memno);
+          axios.post(`${process.env.VUE_APP_BACK_END_URL}/chat/detail`,memno , { headers: {'Content-Type': 'application/json' } })
+          .then((res) =>{
+              this.messages = res.data;
+
+              this.chatprofile(memno);
+              this.scrollToEnd();
+          });
+          
+      },
+      async chatprofile(memno){
+        await axios.post(`${process.env.VUE_APP_BACK_END_URL}/chat/chatpro`,memno , { headers: {'Content-Type': 'application/json' } })
+        .then((res) =>{
+            console.log(res.data)
+            this.UIMG=res.data.UIMG;
+            this.CIMG=res.data.CIMG;
+        });
+          this.messages.forEach(message => {
+          if (message.chatdiv === '1') {
+              message.name = 'user';
+              console.log(this.UIMG);
+              message.profileImage = '/img/upimg/'+this.UIMG;
+          } else if (message.chatdiv === '2') {
+              message.name = 'consulte';
+              message.profileImage = '/img/upimg/'+this.CIMG;
+          }
+      })
+      },
+      formatDate(dateString) {
+          let date = new Date(dateString);
+          let year = date.getFullYear();
+          let month = ('0' + (date.getMonth() + 1)).slice(-2);
+          let day = ('0' + date.getDate()).slice(-2);
+          let hours = ('0' + date.getHours()).slice(-2);
+          let minutes = ('0' + date.getMinutes()).slice(-2);
+
+          return `${year}-${month}-${day} ${hours}:${minutes}`;
+      },   
+      connect() { //웹소켓 연결 시도
+          this.ws = new WebSocket(`${process.env.VUE_APP_Web_Socket_URL}/ws/chat`,this.memno); // 서버 URL에 맞게 수정 필요
+          this.ws.onmessage = (event) => {
+          this.onMessage(event);
+          };
+          this.ws.addEventListener('message', (event) => {
+            console.log("화긴")
+              if (!this.roomnum) {
+                this.roomnum=event.data;
+          } 
+          });
+          
+          
+
+          this.ws.onopen = () => this.onOpen();
+          this.ws.onerror = (error) => this.onError(error);
+          this.ws.onclose = () => this.onClose();
+          this.chatdetail();
+      },
+      sendMessage() {
+        console.log(this.roomnum)
+          if (this.newMessage.trim() !== '') {
+              this.messages.push({ chatdiv: "1",name: 'user', profileImage: '/img/upimg/'+this.UIMG, content: this.newMessage, chatdt: this.getCurrentDateTime()});
+              const messageObject = {
+                  chtno: this.roomnum,
+                  content: this.newMessage,
+                  chatdiv:"1"
+              };
+              this.ws.send(JSON.stringify(messageObject));
+              
+              this.newMessage = '';
+              this.$nextTick(() => {
+                  this.scrollToEnd();
+              });
+              
+          };
+      },
+       async onMessage(event) {
+        if (!this.roomnum) {
+            // 초기 메시지나 roomnum 설정 메시지를 무시
+            return;
+            }
+          console.log('Message received: ', event.data);
+
+          const message = JSON.parse(event.data);
+      
+          console.log("받은메세지:",message)
+          await this.messages.push({ chatdiv: "2",name: 'consulte', profileImage: '/img/upimg/'+this.CIMG, content: message.content, chatdt: this.getCurrentDateTime()});
+          this.scrollToEnd();
+      },
+      getCurrentDateTime() {
+          const now = new Date();
+          const day = now.getDate().toString().padStart(2, '0');
+          const month = (now.getMonth() + 1).toString().padStart(2, '0'); // Months are 0-based
+          const year = now.getFullYear();
+          const hours = now.getHours().toString().padStart(2, '0');
+          const minutes = now.getMinutes().toString().padStart(2, '0');
+          return `${year}-${month}-${day} ${hours}:${minutes}`;
+      },
+      scrollToEnd() {
+          const container = this.$el.querySelector('.chat-container');
+          container.scrollTop = container.scrollHeight;
+      },
+      onOpen() { //연결 성공시
+          console.log('Connected to the WebSocket server.');
+          
+      },
+      onError(error) { //소켓 에러시
+          console.error('WebSocket error:', error);
+      },
+      onClose() { //연결이 끊기는 경우
+          console.log('Disconnected from the WebSocket server.');
+      },
+
+  },
+  mounted() {
+      this.connect();
+      this.scrollToEnd();
+      
+  },
 };
 </script>

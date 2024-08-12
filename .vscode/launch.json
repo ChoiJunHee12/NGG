@@ -2,6 +2,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "MydreamApplicationTests",
+            "request": "launch",
+            "mainClass": "kr.ict.mydream.MydreamApplicationTests",
+            "projectName": "mydream"
+        },
+        {
+            "type": "java",
             "name": "Spring Boot-MydreamApplication<mydream>",
             "request": "launch",
             "cwd": "${workspaceFolder}",
