@@ -9,10 +9,10 @@ import lombok.Setter;
 @Setter
 @Alias("scedulevo")
 public class SceduleVO {
-    private Long schno; // 일정번호(PK)
-    private Long memno; // 회원번호(FK)
-    private Date startdt; // 일정시작일시
-    private Date enddt; // 일정종료일시
+    private int schno; // 일정번호(PK)
+    private int memno; // 회원번호(FK)
+    private String startdt; // 일정시작일시
+    private String enddt; // 일정종료일시
     private String title; // 제목
     private String content; // 내용
     private Date credt; // 최초등록일자

@@ -1,14 +1,14 @@
 .mains-containers {
-    width: 1280px;
+    width: 100%;
     height: auto;
     margin: 0 auto;
     display: flex;
     justify-content: center;
     align-items: center;
     text-align: center;
-    background-color: rgba(255, 255, 255);
+    /* background-color: rgba(255, 255, 255); */
     /* border: 3px solid rgba(0, 0, 0, 0.068); */
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    /* box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); */
     border-radius: 5px;
     flex-wrap: wrap;
     transition: padding-top 0.3s ease;
@@ -93,9 +93,9 @@
   .box6 {
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
     width: 610px;
-    height: 350px;
+    height: 450px;
     border-radius: 5px;
-    background-color: #f8f9fa;
+    /* background-color: #f8f9fa; */
   }
   
   .center-img {
@@ -114,6 +114,7 @@
     background-color: #102669;
     color: white;
     border-radius: 3px;
+    padding: 5px;
   }
   .box-text2 {
     width: 170px;
@@ -215,6 +216,7 @@
     border-radius: 5px;
     margin-bottom: 20px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    margin-top: 10px;
   }
   
   .mains-headers-p {
@@ -376,11 +378,11 @@
   }
   
   .center-img2 {
-    width: 100px;
-    height: 100px;
+    width: 110px;
+    height: 110px;
     border-radius: 50%;
     margin-left: 20px;
-    margin-top: 15px;
+    margin-top: 10px;
     box-shadow: 0 5px 15px rgba(150, 145, 145, 0.3);
   }
   
@@ -606,4 +608,67 @@
     font-weight: bold;
     color: #0c1b49;
     text-align: left;
+  }
+
+  .mainpage-profile {
+    display: block;
+    background: #fff;
+    padding: 20px 20px 10px 45px;
+    /* margin: 0% 5%; */
+    position: relative;
+  
+    /*Font*/
+    font-size: 0.35em;
+    line-height: 1.5;
+    color: #11045e;
+  
+    /*Box Shadow - (Optional)*/
+    -moz-box-shadow: 2px 2px 15px #ccc;
+    -webkit-box-shadow: 2px 2px 15px #ccc;
+    box-shadow: 2px 2px 15px #ccc;
+  
+    /*Borders - (Optional)*/
+    border-left-style: solid;
+    border-left-width: 15px;
+    /* border-right-style: solid; */
+    border-right-width: 0px;
+    margin-top: -10px;
+  }
+  
+  .mainpage-title {
+    width: 100%;
+    margin: auto;
+    /* margin-bottom: 4%; */
+    text-align: left;
+    color: #ffffff;
+    font-size: 5em;
+  }
+
+  .apply-button {
+    padding: 10px 20px;
+    background-color: #102669;
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.1rem;
+    margin-top: 40px;
+    transition: background-color 0.5s, color 0.5s;
+  }
+  
+  .apply-button:hover {
+    background-color: #0056b3;
+  }
+  
+  .chat {
+    transition: transform 0.3s ease; /* Smooth transition */
+    width: 100px;
+    position: absolute;
+    margin-top: -48px;
+    margin-left: 105px;
+    font-size: 1.5rem;
+    cursor: pointer;
+  }
+  .chat:hover {
+    transform: scale(1.3);
   }
