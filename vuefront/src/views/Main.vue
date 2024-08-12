@@ -1,5 +1,10 @@
 <template>
+      <div class="ProfileTitle">
+      <blockquote class="blockquote-profile">
+        <b> <p>내 정보</p></b>
+      </blockquote>
   <div class="mains-containers">
+    
     <div class="mains-header-top">
       <p class="mains-header-title">ONLINE AI INTERVIEW REPORT</p>
     </div>
@@ -311,6 +316,7 @@
         "
       ></p>
     </div>
+  </div>
   </div>
 </template>
 

@@ -41,6 +41,13 @@ const routes = [
       import(/* webpackChunkName: "about" */ "../views/resume/ResumeWriteView.vue"),
   },
   {
+    path: "/ResumeWrite2",
+    name: "ResumeWrite2",
+
+    component: () =>
+      import(/* webpackChunkName: "about" */ "../views/resume/ResumeWriteView.vue"),
+  },
+  {
 
     path: '/ResumeWrite',
     name: 'ResumeUpdate',

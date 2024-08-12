@@ -390,7 +390,7 @@
             <div class="info-input-container">
               <span class="label-area">
                 <label for="loccd" class="join-label chooseRadio"
-                  >✔️ 희망직무</label
+                  >✔️ 거주 지역</label
                 >
               </span>
               <div class="job-input-area">
