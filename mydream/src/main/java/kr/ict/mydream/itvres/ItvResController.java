@@ -34,6 +34,7 @@ public class ItvResController {
 
     @GetMapping("/userData")
     public List<ItvDTO> fetchUserData(@RequestParam(value = "intno", required = false) Integer intno) {
+        System.out.println(itvService.detail(intno));
         return itvService.detail(intno);
     }
 
@@ -52,7 +53,7 @@ public class ItvResController {
     @GetMapping("/faceData")
     public List<Integer> getFaceData(@RequestParam(value = "intno") Integer intno) {
         List<Integer> values = itvService.faceData(intno);
-        System.out.println(values);
+        // System.out.println(values);
         return values;
     }
 

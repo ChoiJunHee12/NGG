@@ -23,7 +23,14 @@
         <div class="resduty-qcon10">
           <div class="reshduty-totalcom">
             <div class="resduty-analyze6-con">
-              <li> {{ aifeedbk }}</li>
+              <li> {{ efeed1 }}</li>
+              <li> {{ efeed2 }}</li>
+              <li> {{ pfeed1 }}</li>
+              <li> {{ pfeed2 }}</li>
+              <li> {{ vfeed1 }}</li>
+              <li> {{ vfeed2 }}</li>
+              <li> {{ sttfeed1 }}</li>
+              <li> {{ sttfeed2 }}</li>
               <li> {{ cnsfeedbk }}</li>
             </div>
           </div>
@@ -162,7 +169,6 @@ export default {
       // isReviewSubmitted: false,
       // AIFeedback: [],
       intno: this.$props.intno,
-      userData: [],
       activePage: 1,
       page: 1,
       question : '',
@@ -188,10 +194,16 @@ export default {
       // this.mname = response.data.mname[0];
       // this.resDate = response.data.resDate[0];
       // console.log(response.data)
-      this.userData = response.data;
       this.userName = response.data[0].mname;
       this.credt = response.data[0].credt;
-      this.aifeedbk = response.data[0].aifeedbk;
+      this.efeed1 = response.data[0].efeed1;
+      this.efeed2 = response.data[0].efeed2;
+      this.pfeed1 = response.data[0].pfeed1;
+      this.pfeed2 = response.data[0].pfeed2;
+      this.vfeed1 = response.data[0].vfeed1;
+      this.vfeed2 = response.data[0].vfeed2;
+      this.sttfeed1 = response.data[0].sttfeed1;
+      this.sttfeed2 = response.data[0].sttfeed2;
       this.pbadcnt = response.data.pbadcnt;
       this.cnsfeedbk = response.data[0].cnsfeedbk;
       console.log(this.cnsfeedbk);

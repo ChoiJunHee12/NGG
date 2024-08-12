@@ -1,9 +1,11 @@
 <template>
+
   <div class="container">
     <div class="mainpage-title">
       <blockquote class="mainpage-profile">
         <b> <p>ONLINE AI INTERVIEW REPORT</p></b>
       </blockquote>
+
     </div>
     <div class="mains-header-container">
       <div class="mains-headers-left">
