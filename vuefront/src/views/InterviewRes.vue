@@ -63,9 +63,13 @@
             />
             <div class="interviewRes-empty-button">
               <router-link to="AISetting">
+<<<<<<< HEAD
+              <button class="btn btn-next interviewRes-empty-btn">AI 모의면접 보러 가기</button>
+=======
                 <button class="btn btn-next interviewRes-empty-btn">
                   AI 모의면접 보러 가기
                 </button>
+>>>>>>> origin/develop
               </router-link>
             </div>
           </div>
@@ -100,10 +104,15 @@
               class="interviewRes-empty-image"
             />
             <div class="interviewRes-empty-button">
+<<<<<<< HEAD
+              <router-link to = "AISetting">
+              <button class="btn btn-next interviewRes-empty-btn">AI 모의면접 보러 가기</button>
+=======
               <router-link to="AISetting">
                 <button class="btn btn-next interviewRes-empty-btn">
                   AI 모의면접 보러 가기
                 </button>
+>>>>>>> origin/develop
               </router-link>
             </div>
           </div>
