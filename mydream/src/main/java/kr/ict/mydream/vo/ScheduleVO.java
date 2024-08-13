@@ -7,8 +7,8 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@Alias("scedulevo")
-public class SceduleVO {
+@Alias("schedulevo")
+public class ScheduleVO {
     private int schno; // 일정번호(PK)
     private int memno; // 회원번호(FK)
     private String startdt; // 일정시작일시

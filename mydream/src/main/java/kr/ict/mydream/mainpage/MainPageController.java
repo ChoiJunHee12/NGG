@@ -62,8 +62,8 @@ public class MainPageController {
 
     // 회원 일정 조회
     @GetMapping("/memberSchedules")
-    public ResponseEntity<List<SceduleVO>> getSchedulesByMembers(@RequestParam("memno") int memno) {
-        List<SceduleVO> schedules = mainPageService.getSchedulesByMember(memno);
+    public ResponseEntity<List<ScheduleVO>> getSchedulesByMembers(@RequestParam("memno") int memno) {
+        List<ScheduleVO> schedules = mainPageService.getSchedulesByMember(memno);
         return !schedules.isEmpty() ? ResponseEntity.ok(schedules) : ResponseEntity.notFound().build();
     }
 
