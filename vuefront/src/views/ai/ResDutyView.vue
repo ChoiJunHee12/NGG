@@ -509,7 +509,7 @@ plotOptions: {
             connectorAllowed: false
         },
         pointStart: 0,
-        pointInterval: 10
+        pointInterval: 5
     }
 },
 
