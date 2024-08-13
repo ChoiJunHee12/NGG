@@ -108,6 +108,9 @@ public class MainPageController {
     @GetMapping("/latestInterviewInfo")
     public ResponseEntity<Map<String, Integer>> getLatestInterviewInfo(@RequestParam("memno") int memno) {
         Map<String, Integer> latestInfo = mainPageService.getLatestInterviewInfo(memno);
+        if (latestInfo == null || latestInfo.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
         return ResponseEntity.ok(latestInfo);
     }
 }

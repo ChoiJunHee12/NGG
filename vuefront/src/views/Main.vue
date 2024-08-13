@@ -211,7 +211,7 @@
       class="tab-content"
       v-if="activeSection === 'ai-analysis'"
     >
-      <div class="mains-content">
+      <div class="mains-content chart-container">
         <div class="mains-floor-1">
           <div class="box2">
             <p class="box-text">감정 분석 결과</p>
@@ -231,14 +231,23 @@
             <p class="box-text">감성, 음성, 자세 요약</p>
             <div id="chart-4" style="margin-top: -10px"></div>
           </div>
+          <!-- 블러 오버레이 -->
+          <div v-if="showBlurOverlay" class="blur-overlay">
+            <p>
+              인터뷰 데이터가 없습니다. <br />
+              <button @click="goToAIInterview" class="apply-button">
+                AI 면접 하러가기
+              </button>
+            </p>
+          </div>
+          <!-- 블러 오버레이 끝 -->
         </div>
       </div>
     </div>
-
     <!-- 컨설팅 탭 -->
     <div
       id="consulting"
-      class="tab-content"
+      class="tab-content chart-container"
       v-if="activeSection === 'consulting'"
     >
       <div
@@ -315,6 +324,16 @@
         <p class="interview-a-p">
           {{ consultantTotalFeedback || "종합 요약 내용 없음" }}
         </p>
+        <!-- 블러 오버레이 -->
+        <div v-if="showBlurOverlay" class="blur-overlay">
+          <p>
+            인터뷰 데이터가 없습니다. <br />
+            <button @click="goToAIInterview" class="apply-button">
+              AI 면접 하러가기
+            </button>
+          </p>
+        </div>
+        <!-- 블러 오버레이 끝 -->
       </div>
     </div>
   </div>
@@ -338,19 +357,41 @@ export default {
     const intno = ref(null);
     const cnsno = ref(null);
 
-    // 가장 최근 인터뷰 번호와 컨설턴트 번호를 가져오는 새로운 함수
+    // 가장 최근 인터뷰 번호와 컨설턴트 번호를 가져오는 함수
     const fetchLatestInterviewInfo = async (memno) => {
       try {
         const response = await axios.get(
           `${process.env.VUE_APP_BACK_END_URL}/mainpage/latestInterviewInfo?memno=${memno}`
         );
-        intno.value = response.data.intno;
-        cnsno.value = response.data.cnsno;
+        console.log("API Response:", response.data, "Status:", response.status);
+        if (
+          response.status === 204 ||
+          !response.data ||
+          Object.keys(response.data).length === 0
+        ) {
+          console.warn("No interview data found");
+          intno.value = null;
+          cnsno.value = null;
+        } else if (response.data.intno) {
+          intno.value = response.data.intno;
+          cnsno.value = response.data.cnsno;
+        } else {
+          console.warn("Unexpected data structure:", response.data);
+          intno.value = null;
+          cnsno.value = null;
+        }
       } catch (error) {
         console.error("Error fetching latest interview info:", error);
+        intno.value = null;
+        cnsno.value = null;
         throw error;
       }
     };
+
+    const showBlurOverlay = computed(() => {
+      console.log("intno value:", intno.value); // 디버깅을 위한 로그
+      return intno.value === null || intno.value === undefined;
+    });
 
     const categoryMap = {
       1: "IT/개발",
@@ -402,6 +443,11 @@ export default {
     // 컨설턴트 1대1 상담으로 가기
     const goToConsultantChat = () => {
       router.push("/OneToOne");
+    };
+
+    // 인터뷰 데이터가 없을 경우, AI면접으로 가기
+    const goToAIInterview = () => {
+      router.push("/AISetting");
     };
 
     // 회원 데이터 변환 함수(희망직무, 거주지역)
@@ -639,18 +685,49 @@ export default {
 
     // 핵심키워드 분석
     const keywordStressLevel = computed(() => {
+      if (
+        intno.value === null ||
+        stressRate.value === null ||
+        stressRate.value === 0
+      ) {
+        return "데이터 없음";
+      }
+      console.log("스트레스데이터:", stressRate.value);
       return stressRate.value > 40 ? "스트레스가 높음" : "스트레스 적정수준";
     });
 
     const keywordVoiceStability = computed(() => {
+      if (
+        intno.value === null ||
+        voiceRate.value === null ||
+        voiceRate.value === 0
+      ) {
+        return "데이터 없음";
+      }
+      console.log("음성데이터:", voiceRate.value);
       return voiceRate.value > 70 ? "목소리가 불안정함" : "목소리가 안정적임";
     });
 
     const keywordPostureBalance = computed(() => {
+      if (
+        intno.value === null ||
+        postureBadCountRate.value === null ||
+        postureBadCountRate.value === 0
+      ) {
+        return "데이터 없음";
+      }
+      console.log("자세데이터:", postureBadCountRate.value);
       return postureBadCountRate.value > 50 ? "자세가 불균형함" : "균형 잡힘";
     });
 
     const keywordConsultantMsg = computed(() => {
+      if (
+        intno.value === null ||
+        !interviewReport.value ||
+        interviewReport.value.cnsscore === undefined
+      ) {
+        return "데이터 없음";
+      }
       return interviewReport.value.cnsscore > 80
         ? "매우 우수함"
         : "개선이 필요함";
@@ -682,6 +759,9 @@ export default {
         .getDate()
         .toString()
         .padStart(2, "0")}`;
+    };
+    const display = () => {
+      return { display: "none" };
     };
 
     // 버블차트
@@ -953,7 +1033,7 @@ export default {
     onMounted(async () => {
       loading.value = true;
       error.value = null;
-
+      console.log(intno.value);
       try {
         const memno = localStorage.getItem("memno");
         if (!memno) {
@@ -961,23 +1041,18 @@ export default {
         }
 
         await fetchLatestInterviewInfo(memno);
-
-        if (!intno.value || !cnsno.value) {
-          throw new Error(
-            "Failed to fetch interview or consultant information"
-          );
-        }
+        console.log("Fetched intno:", intno.value); // 디버깅을 위한 로그
 
         await Promise.all([
           fetchMemberData(memno),
-          fetchStressRate(intno.value, memno),
-          fetchVoiceRate(intno.value, memno),
-          fetchPostureBadCountRate(intno.value, memno),
-          fetchConsultantScore(intno.value),
+          fetchStressRate(intno, memno),
+          fetchVoiceRate(intno, memno),
+          fetchPostureBadCountRate(intno, memno),
+          fetchConsultantScore(intno),
           fetchMemberSchedules(memno),
-          fetchConsultantQuestions(intno.value, [6, 7]),
-          fetchConsultantFeedback(memno, cnsno.value, intno.value, [6, 7]),
-          fetchConsultantTotalFeedback(memno, intno.value),
+          fetchConsultantQuestions(intno, [6, 7]),
+          fetchConsultantFeedback(memno, cnsno, intno, [6, 7]),
+          fetchConsultantTotalFeedback(memno, intno),
           fetchConsultantDetail(memno),
           fetchRecentInterviewScores(memno),
         ]);
@@ -1003,6 +1078,7 @@ export default {
     };
 
     return {
+      display,
       intno,
       cnsno,
       memberData,
@@ -1025,10 +1101,38 @@ export default {
       handleImageError,
       goToConsultantInfo,
       goToConsultantChat,
+      goToAIInterview,
       profileImageUrl,
       ConsultantImageUrl,
       recentScores,
+      showBlurOverlay,
     };
   },
 };
 </script>
+
+<style scoped>
+.chart-container {
+  position: relative;
+}
+
+.blur-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(10px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+}
+
+.blur-overlay p {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #0d0d0d;
+}
+</style>

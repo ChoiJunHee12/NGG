@@ -42,5 +42,5 @@ public interface MainPageDao {
     List<IntDetailVO> getInterviewDetails(int memno);
 
     // 회원의 최근 인터뷰 정보를 가져옴
-    Map<String, Integer> getLatestInterviewInfo(int memno);
+    Map<String, Object> getLatestInterviewInfo(int memno);
 }
