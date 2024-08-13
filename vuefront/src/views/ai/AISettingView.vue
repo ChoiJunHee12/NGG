@@ -119,7 +119,8 @@ export default {
   },
   mounted() {
     window.scrollTo(0, 0);
-    // localStorage.setItem('memno', 5);
+
+    // memno: localStorage.getItem("memno");
   },
   computed: {
     allChecked() {
