@@ -103,7 +103,7 @@ public class MainPageService {
         }
 
         // 회원 일정 조회
-        public List<SceduleVO> getSchedulesByMember(int memno) {
+        public List<ScheduleVO> getSchedulesByMember(int memno) {
                 return mainPageDao.getSchedulesByMember(memno);
         }
 

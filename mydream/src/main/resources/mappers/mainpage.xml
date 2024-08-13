@@ -85,8 +85,8 @@
     </select>
 
     <!-- 회원 일정 조회 -->
-    <select id="getSchedulesByMember" resultType="scedulevo">
-        SELECT * FROM TBSCEDULE WHERE memno = #{memno}
+    <select id="getSchedulesByMember" resultType="schedulevo">
+        SELECT * FROM TBSCHEDULE WHERE memno = #{memno}
     </select> 
 
     <!-- 컨설턴트 직무 질문&답변 STT -->

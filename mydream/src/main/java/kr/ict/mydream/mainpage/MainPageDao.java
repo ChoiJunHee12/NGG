@@ -27,7 +27,7 @@ public interface MainPageDao {
     IntResVO getLatestConsultantScore(int intno);
 
     // 회원 일정 조회
-    List<SceduleVO> getSchedulesByMember(int memno);
+    List<ScheduleVO> getSchedulesByMember(int memno);
 
     // 컨설턴트 직무 질문&답변 STT
     List<IntDetailVO> getConsultantQuestions(Map<String, Object> params);
