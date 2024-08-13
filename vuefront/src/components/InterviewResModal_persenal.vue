@@ -158,6 +158,14 @@ export default {
       credt:'',
       pbadcnt:[],
       qnaData:[],
+      efeed1:'',
+      efeed2:'',
+      pfeed1:'',
+      pfeed2:'',
+      vfeed1:'',
+      vfeed2:'',
+      sttfeed1:'',
+      sttfeed2:'',
     };
   },
   methods: {

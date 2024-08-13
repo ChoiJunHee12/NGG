@@ -32,20 +32,20 @@ export default {
   components: { Header, Footer, Sidebar },
   data() {
     return {
-      isSidebarVisible: !this.$route.meta.hideLayout,
+      isSidebarVisible: false, // 사이드바 기본 상태를 닫혀있게 설정
     };
   },
   watch: {
     '$route'(to, from) {
-      this.isSidebarVisible = !to.meta.hideLayout;
+      this.isSidebarVisible = !to.meta.hideLayout; // 라우트 변경 시 사이드바 상태 업데이트
     }
   },
   methods: {
     toggleSidebar() {
-      this.isSidebarVisible = !this.isSidebarVisible;
+      this.isSidebarVisible = !this.isSidebarVisible; // 사이드바 열기/닫기 토글
     },
     setSidebarVisibility(isVisible) {
-      this.isSidebarVisible = isVisible;
+      this.isSidebarVisible = isVisible; // 사이드바 가시성 설정
     },
     scrollToTop() {
       window.scrollTo({

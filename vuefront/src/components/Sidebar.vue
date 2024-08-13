@@ -49,7 +49,7 @@ export default {
   props: {
     isVisible: {
       type: Boolean,
-      required: true,
+      required: false,
     },
   },
 };
