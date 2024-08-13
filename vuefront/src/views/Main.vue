@@ -1,11 +1,9 @@
 <template>
-
   <div class="container">
     <div class="mainpage-title">
       <blockquote class="mainpage-profile">
         <b> <p>ONLINE AI INTERVIEW REPORT</p></b>
       </blockquote>
-
     </div>
     <div class="mains-header-container">
       <div class="mains-headers-left">
@@ -337,6 +335,23 @@ export default {
   },
   setup() {
     const memberData = ref({});
+    const intno = ref(null);
+    const cnsno = ref(null);
+
+    // 가장 최근 인터뷰 번호와 컨설턴트 번호를 가져오는 새로운 함수
+    const fetchLatestInterviewInfo = async (memno) => {
+      try {
+        const response = await axios.get(
+          `${process.env.VUE_APP_BACK_END_URL}/mainpage/latestInterviewInfo?memno=${memno}`
+        );
+        intno.value = response.data.intno;
+        cnsno.value = response.data.cnsno;
+      } catch (error) {
+        console.error("Error fetching latest interview info:", error);
+        throw error;
+      }
+    };
+
     const categoryMap = {
       1: "IT/개발",
       2: "교육",
@@ -936,27 +951,49 @@ export default {
     // 전체 차트 끝
 
     onMounted(async () => {
-      const memno = 10; // 예시 memno 값
-      const intno = 10; // 예시 intno 값
-      const cnsno = 1001; // 예시 cnsno 값
-      await fetchMemberData(memno);
-      await fetchStressRate(intno, memno);
-      await fetchVoiceRate(intno, memno);
-      await fetchPostureBadCountRate(intno, memno);
-      await fetchConsultantScore(intno);
-      await fetchMemberSchedules(memno);
-      await fetchConsultantQuestions(intno, [6, 7]);
-      await fetchConsultantFeedback(memno, cnsno, intno, [6, 7]);
-      await fetchConsultantTotalFeedback(memno, intno);
-      await fetchConsultantDetail(memno);
-      await fetchRecentInterviewScores(memno);
+      loading.value = true;
+      error.value = null;
 
-      // 프로그레스 바 초기화
-      const progressBars = document.querySelectorAll(".progress-bar");
-      progressBars.forEach((bar) => {
-        const value = bar.getAttribute("data-value");
-        bar.style.width = `${value}%`;
-      });
+      try {
+        const memno = localStorage.getItem("memno");
+        if (!memno) {
+          throw new Error("No memno found in localStorage");
+        }
+
+        await fetchLatestInterviewInfo(memno);
+
+        if (!intno.value || !cnsno.value) {
+          throw new Error(
+            "Failed to fetch interview or consultant information"
+          );
+        }
+
+        await Promise.all([
+          fetchMemberData(memno),
+          fetchStressRate(intno.value, memno),
+          fetchVoiceRate(intno.value, memno),
+          fetchPostureBadCountRate(intno.value, memno),
+          fetchConsultantScore(intno.value),
+          fetchMemberSchedules(memno),
+          fetchConsultantQuestions(intno.value, [6, 7]),
+          fetchConsultantFeedback(memno, cnsno.value, intno.value, [6, 7]),
+          fetchConsultantTotalFeedback(memno, intno.value),
+          fetchConsultantDetail(memno),
+          fetchRecentInterviewScores(memno),
+        ]);
+
+        // 프로그레스 바 초기화
+        const progressBars = document.querySelectorAll(".progress-bar");
+        progressBars.forEach((bar) => {
+          const value = bar.getAttribute("data-value");
+          bar.style.width = `${value}%`;
+        });
+      } catch (err) {
+        console.error("Error in onMounted:", err);
+        error.value = err.message;
+      } finally {
+        loading.value = false;
+      }
     });
 
     // 탭 활성화
@@ -966,6 +1003,8 @@ export default {
     };
 
     return {
+      intno,
+      cnsno,
       memberData,
       interviewReport,
       stressRate,

@@ -104,4 +104,10 @@ public class MainPageController {
         return ResponseEntity.ok(scores);
     }
 
+    // 회원의 최근 인터뷰 정보를 가져옴
+    @GetMapping("/latestInterviewInfo")
+    public ResponseEntity<Map<String, Integer>> getLatestInterviewInfo(@RequestParam("memno") int memno) {
+        Map<String, Integer> latestInfo = mainPageService.getLatestInterviewInfo(memno);
+        return ResponseEntity.ok(latestInfo);
+    }
 }

@@ -1,4 +1,4 @@
-package kr.ict.mydream.consultantprofilepage;
+package kr.co.ict.yourdream.consultantprofilepage;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -34,8 +34,8 @@ public class ConsultantProfileController {
     }
 
     @GetMapping("/{id}/career")
-    public ResponseEntity<List<ConsultantCareerDTO>> getCareer(@PathVariable("id") String id) {
-        List<ConsultantCareerDTO> careerList = profileService.getCareer(id);
+    public ResponseEntity<List<ConsultantProfileCareerDTO>> getCareer(@PathVariable("id") String id) {
+        List<ConsultantProfileCareerDTO> careerList = profileService.getCareer(id);
         return new ResponseEntity<>(careerList, HttpStatus.OK);
     }
 }

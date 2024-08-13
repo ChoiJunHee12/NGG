@@ -80,7 +80,8 @@
     <select id="getLatestConsultantScore" resultType="intresvo">
         SELECT * 
         FROM TBINTRES
-        WHERE intno = #{intno}
+        WHERE intno = #{intno} 
+        AND memno = #{memno}
         AND upddt = (SELECT MAX(upddt) FROM TBINTRES WHERE intno = #{intno})
     </select>
 
@@ -156,5 +157,18 @@
     GROUP BY d.intno, d.qno
     ORDER BY d.intno, d.qno
     ]]>
+    </select>
+
+
+    <select id="getLatestInterviewInfo" resultType="java.util.Map">
+        SELECT ir.intno, mc.cnsno
+        FROM (
+            SELECT intno, memno
+            FROM TBINTRES
+            WHERE memno = #{memno}
+            ORDER BY credt DESC
+        ) ir
+        JOIN TBMEMBERCONSULT mc ON ir.memno = mc.memno
+        WHERE ROWNUM = 1
     </select>
 </mapper>

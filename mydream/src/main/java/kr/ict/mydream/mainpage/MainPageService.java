@@ -244,4 +244,8 @@ public class MainPageService {
                 return emotionData;
         }
 
+        // 회원의 최근 인터뷰 정보를 가져옴
+        public Map<String, Integer> getLatestInterviewInfo(int memno) {
+                return mainPageDao.getLatestInterviewInfo(memno);
+        }
 }
