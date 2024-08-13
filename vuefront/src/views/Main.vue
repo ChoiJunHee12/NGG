@@ -50,14 +50,20 @@
                 <div class="analysis-left">
                   스트레스
                   <div class="progress-container">
-                    <div class="progress-bar" :data-value="stressRate"></div>
+                    <div
+                      class="main-progress-bar"
+                      :data-value="stressRate"
+                    ></div>
                   </div>
                   <div class="analysis-rate">{{ stressRate }}%</div>
                 </div>
                 <div class="analysis-left">
                   음성분석
                   <div class="progress-container">
-                    <div class="progress-bar" :data-value="voiceRate"></div>
+                    <div
+                      class="main-progress-bar"
+                      :data-value="voiceRate"
+                    ></div>
                   </div>
                   <div class="analysis-rate">{{ voiceRate }}%</div>
                 </div>
@@ -65,7 +71,7 @@
                   자세분석
                   <div class="progress-container">
                     <div
-                      class="progress-bar"
+                      class="main-progress-bar"
                       :data-value="postureBadCountRate"
                     ></div>
                   </div>
@@ -75,7 +81,7 @@
                   컨설턴트 평가
                   <div class="progress-container" style="margin-left: 8.5px">
                     <div
-                      class="progress-bar"
+                      class="main-progress-bar"
                       :data-value="interviewReport.cnsscore"
                     ></div>
                   </div>
@@ -477,6 +483,7 @@ export default {
           `${process.env.VUE_APP_BACK_END_URL}/mainpage/memberDetail?memno=${memno}`
         );
         memberData.value = transformMemberData(response.data);
+        // console.log("회원정보:", memberData.value);
       } catch (error) {
         console.error("Error fetching member data:", error);
       }
@@ -484,11 +491,13 @@ export default {
 
     // 스트레스율
     const fetchStressRate = async (intno, memno) => {
+      console.log(typeof intno.value);
       try {
         const response = await axios.get(
-          `${process.env.VUE_APP_BACK_END_URL}/mainpage/stressRate?intno=${intno}&memno=${memno}`
+          `${process.env.VUE_APP_BACK_END_URL}/mainpage/stressRate?intno=${intno.value}&memno=${memno}`
         );
         stressRate.value = response.data;
+        console.log("스트레스율: ", stressRate.value);
       } catch (error) {
         console.error("Error fetching stress rate:", error);
       }
@@ -497,7 +506,7 @@ export default {
     const fetchVoiceRate = async (intno, memno) => {
       try {
         const response = await axios.get(
-          `${process.env.VUE_APP_BACK_END_URL}/mainpage/voiceRate?intno=${intno}&memno=${memno}`
+          `${process.env.VUE_APP_BACK_END_URL}/mainpage/voiceRate?intno=${intno.value}&memno=${memno}`
         );
         voiceRate.value = response.data;
       } catch (error) {
@@ -508,7 +517,7 @@ export default {
     const fetchPostureBadCountRate = async (intno, memno) => {
       try {
         const response = await axios.get(
-          `${process.env.VUE_APP_BACK_END_URL}/mainpage/postureBadCountRate?intno=${intno}&memno=${memno}`
+          `${process.env.VUE_APP_BACK_END_URL}/mainpage/postureBadCountRate?intno=${intno.value}&memno=${memno}`
         );
         postureBadCountRate.value = response.data;
       } catch (error) {
@@ -585,7 +594,7 @@ export default {
         const response = await axios.get(
           `${
             process.env.VUE_APP_BACK_END_URL
-          }/mainpage/consultantQuestions?intno=${intno}&qnos=${qnos.join(
+          }/mainpage/consultantQuestions?intno=${intno.value}&qnos=${qnos.join(
             "&qnos="
           )}`
         );
@@ -611,18 +620,37 @@ export default {
     // 직무면접 질문&답변별 피드백
     const fetchConsultantFeedback = async (memno, cnsno, intno, qnos) => {
       try {
+        if (cnsno.value === null || intno.value === null) {
+          console.warn("cnsno or intno is null, skipping feedback fetch");
+          return;
+        }
+
+        const qnosValue = Array.isArray(qnos) ? qnos : qnos.value || [];
+
+        console.log(
+          "Fetching feedback for memno:",
+          memno,
+          "cnsno:",
+          cnsno.value,
+          "intno:",
+          intno.value,
+          "qnos:",
+          qnosValue
+        );
+
         const response = await axios.get(
           `${process.env.VUE_APP_BACK_END_URL}/mainpage/consultantFeedback`,
           {
             params: {
-              memno,
-              cnsno,
-              intno,
-              qnos: qnos.join(","),
+              memno: memno,
+              cnsno: cnsno.value,
+              intno: intno.value,
+              qnos: qnosValue.join(","),
             },
           }
         );
         const data = response.data;
+        console.log("API response:", data);
 
         // 피드백 매핑
         const feedbackMap = {
@@ -636,9 +664,10 @@ export default {
               item.qcnsfeedbk;
           }
         });
+
+        console.log("Updated consultantfeedback:", consultantfeedback.value);
       } catch (error) {
         console.error("Error fetching consultant feedback:", error);
-        // 에러 상세 정보 로깅
         if (error.response) {
           console.error("Response data:", error.response.data);
           console.error("Response status:", error.response.status);
@@ -649,16 +678,37 @@ export default {
     // 종합피드백
     const fetchConsultantTotalFeedback = async (memno, intno) => {
       try {
+        console.log(
+          "Fetching feedback for memno:",
+          memno,
+          "intno:",
+          intno.value
+        );
+
+        // intno가 null이 아닌지 확인
+        if (intno.value === null) {
+          console.warn("intno is null, skipping feedback fetch");
+          return;
+        }
+
         const response = await axios.get(
           `${process.env.VUE_APP_BACK_END_URL}/mainpage/consultantTotalFeedback`,
           {
-            params: { memno, intno },
+            params: {
+              memno: memno,
+              intno: intno.value, // intno는 ref 객체이므로 .value 사용
+            },
           }
         );
-        // console.log("API response:", response.data); // 응답 데이터 확인
+
+        console.log("API response:", response.data); // 응답 데이터 확인
         consultantTotalFeedback.value = response.data; // 응답 값을 직접 할당
       } catch (error) {
         console.error("Error fetching consultant total feedback:", error);
+        if (error.response) {
+          console.error("Response data:", error.response.data);
+          console.error("Response status:", error.response.status);
+        }
       }
     };
 
@@ -1058,7 +1108,7 @@ export default {
         ]);
 
         // 프로그레스 바 초기화
-        const progressBars = document.querySelectorAll(".progress-bar");
+        const progressBars = document.querySelectorAll(".main-progress-bar");
         progressBars.forEach((bar) => {
           const value = bar.getAttribute("data-value");
           bar.style.width = `${value}%`;
