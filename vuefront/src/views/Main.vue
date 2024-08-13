@@ -907,6 +907,15 @@ export default {
         plotOptions: {
           column: {
             borderRadius: "25%",
+            dataLabels: {
+              enabled: true,
+              formatter: function () {
+                return this.y === 0 ? "" : "";
+              },
+            },
+          },
+          series: {
+            minPointLength: 3, // 최소 막대 길이 설정
           },
         },
         legend: {
