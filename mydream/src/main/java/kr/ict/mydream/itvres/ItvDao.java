@@ -9,9 +9,9 @@ import kr.ict.mydream.dto.ItvDTO;
 @Mapper
 public interface ItvDao {
 
-    public List<Map<String, Object>> itvAttitudeList();
+    public List<Map<String, Object>> itvAttitudeList(int memno);
 
-    public List<Map<String, Object>> itvCareerList();
+    public List<Map<String, Object>> itvCareerList(int memno);
 
     public List<ItvDTO> detail(int intno);
 

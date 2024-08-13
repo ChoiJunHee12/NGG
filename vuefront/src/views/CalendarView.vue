@@ -237,10 +237,10 @@ export default defineComponent({
         console.log("현재 보이는 년월:", currentYearMonth);
 
         // 현재 보이는 년월이 이전에 요청한 년월과 다를 경우에만 요청 실행
-        if (currentYearMonth !== lastYearMonth.value) {
-          lastYearMonth.value = currentYearMonth;
-          // fetchSchedule(currentYearMonth);
-        }
+        // if (currentYearMonth !== lastYearMonth.value) {
+        //   lastYearMonth.value = currentYearMonth;
+        //   // fetchSchedule(currentYearMonth);
+        // }
       }
     });
     const dDays = computed(() => {

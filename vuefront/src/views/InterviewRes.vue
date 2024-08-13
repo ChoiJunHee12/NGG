@@ -79,6 +79,7 @@ export default {
       popState_duty: false,
       selectedIntno: null,
       intno:5,
+      memno:localStorage.getItem("memno"),
     };
   },
   mounted() {
@@ -110,7 +111,7 @@ export default {
     
     async fetchAttitudeResults() {
       try {
-        const response = await axios.get(`${process.env.VUE_APP_BACK_END_URL}/itv/attitude`);
+        const response = await axios.get(`${process.env.VUE_APP_BACK_END_URL}/itv/attitude`,{ params: { memno: this.memno } });
         this.attitude = response.data;
         console.log("Fetched attitude results:", this.attitude);
       } catch (error) {
@@ -119,7 +120,7 @@ export default {
     },
     async fetchCareerResults() {
       try {
-        const response = await axios.get(`${process.env.VUE_APP_BACK_END_URL}/itv/career`);
+        const response = await axios.get(`${process.env.VUE_APP_BACK_END_URL}/itv/career`,{ params: { memno: this.memno } });
         this.career = response.data;
         console.log("Fetched career results:", this.career);
       } catch (error) {
