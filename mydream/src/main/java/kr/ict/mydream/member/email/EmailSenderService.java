@@ -1,4 +1,4 @@
-package kr.ict.mydream.membership;
+package kr.ict.mydream.member.email;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -74,6 +74,7 @@ public class EmailSenderService {
             helper.setText(body, true);
             mailSender.send(message);
             certificationNumberDAO.saveCertificationNumber(toEmail, authCode);
+            System.out.println("인증번호:"+authCode);
 
         } catch (MessagingException e) {
             throw new RuntimeException(e);

@@ -1,4 +1,4 @@
-package kr.ict.mydream.membership;
+package kr.ict.mydream.member.email;
 
 import org.apache.ibatis.annotations.Mapper;
 

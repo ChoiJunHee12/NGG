@@ -1,4 +1,4 @@
-package kr.ict.mydream.membership;
+package kr.ict.mydream.member.email;
 
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Repository;

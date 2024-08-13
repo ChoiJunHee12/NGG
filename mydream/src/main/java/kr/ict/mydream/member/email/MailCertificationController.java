@@ -1,4 +1,4 @@
-package kr.ict.mydream.membership;
+package kr.ict.mydream.member.email;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
