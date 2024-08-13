@@ -61,26 +61,30 @@ public class InterviewController {
 
     @PostMapping("/setintdetail")
     public void setIntDetail(@RequestBody List<IntDetailVO> detailvoList) {
-        for (int i = 0; i <= 6; i++) {
+        // for (int i = 0; i <= 6; i++) {
 
-            System.out.println(i + 1 + "번쨰 intno" + detailvoList.get(i).getIntno());
-            System.out.println(i + 1 + "번쨰 qno" + detailvoList.get(i).getQno());
-            System.out.println(i + 1 + "번쨰 aiqno" + detailvoList.get(i).getAiqno());
-            System.out.println(i + 1 + "번쨰 cnsqno" + detailvoList.get(i).getCnsqno());
-            System.out.println(i + 1 + "번쨰 question" + detailvoList.get(i).getQuestion());
-            System.out.println(i + 1 + "번쨰 answer" + detailvoList.get(i).getAnswer());
-            System.out.println(i + 1 + "번쨰 ecntgood" + detailvoList.get(i).getEcntgood());
-            System.out.println(i + 1 + "번쨰 ecntsoso" + detailvoList.get(i).getEcntsoso());
-            System.out.println(i + 1 + "번쨰 ecntbad" + detailvoList.get(i).getEcntbad());
-            System.out.println(i + 1 + "번쨰 pbadcnt" + detailvoList.get(i).getPbadcnt());
-            System.out.println(i + 1 + "번쨰 vhertz" + detailvoList.get(i).getVhertz());
-            System.out.println(i + 1 + "번쨰 vamplit" + detailvoList.get(i).getVamplit());
-            System.out.println(i + 1 + "번쨰 vempty" + detailvoList.get(i).getVempty());
-            System.out.println(i + 1 + "번쨰 aifeedbk" + detailvoList.get(i).getAifeedbk());
-            System.out.println(i + 1 + "번쨰 escore" + detailvoList.get(i).getEscore());
-            System.out.println(i + 1 + "번쨰 pscore" + detailvoList.get(i).getPscore());
-            System.out.println(i + 1 + "번쨰 vscore" + detailvoList.get(i).getVscore());
-        }
+        // System.out.println(i + 1 + "번쨰 intno" + detailvoList.get(i).getIntno());
+        // System.out.println(i + 1 + "번쨰 qno" + detailvoList.get(i).getQno());
+        // System.out.println(i + 1 + "번쨰 aiqno" + detailvoList.get(i).getAiqno());
+        // System.out.println(i + 1 + "번쨰 cnsqno" + detailvoList.get(i).getCnsqno());
+        // System.out.println(i + 1 + "번쨰 question" +
+        // detailvoList.get(i).getQuestion());
+        // System.out.println(i + 1 + "번쨰 answer" + detailvoList.get(i).getAnswer());
+        // System.out.println(i + 1 + "번쨰 ecntgood" +
+        // detailvoList.get(i).getEcntgood());
+        // System.out.println(i + 1 + "번쨰 ecntsoso" +
+        // detailvoList.get(i).getEcntsoso());
+        // System.out.println(i + 1 + "번쨰 ecntbad" + detailvoList.get(i).getEcntbad());
+        // System.out.println(i + 1 + "번쨰 pbadcnt" + detailvoList.get(i).getPbadcnt());
+        // System.out.println(i + 1 + "번쨰 vhertz" + detailvoList.get(i).getVhertz());
+        // System.out.println(i + 1 + "번쨰 vamplit" + detailvoList.get(i).getVamplit());
+        // System.out.println(i + 1 + "번쨰 vempty" + detailvoList.get(i).getVempty());
+        // System.out.println(i + 1 + "번쨰 aifeedbk" +
+        // detailvoList.get(i).getAifeedbk());
+        // System.out.println(i + 1 + "번쨰 escore" + detailvoList.get(i).getEscore());
+        // System.out.println(i + 1 + "번쨰 pscore" + detailvoList.get(i).getPscore());
+        // System.out.println(i + 1 + "번쨰 vscore" + detailvoList.get(i).getVscore());
+        // }
         interviewService.setIntDetail(detailvoList);
     }
 
