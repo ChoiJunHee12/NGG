@@ -203,15 +203,9 @@
           >
             이전 문항
           </button>
-          <<<<<<< HEAD
           <button v-if="page < 7" class="reshduty-nextbtn col-1" @click="next">
             다음 문항
           </button>
-          =======
-          <button v-if="page < 7" class="reshduty-nextbtn col-1" @click="next">
-            다음 문항
-          </button>
-          >>>>>>> origin/develop
           <button class="reshduty-homebtn col-1" @click="$emit('close', false)">
             닫기
           </button>
@@ -442,42 +436,11 @@ export default {
         .then(function (response) {
           console.log([response.data]); // 응답 데이터 확인
 
-<<<<<<< HEAD
-      let option = {
-        title: {
-          text: '감정 점수'
-        },
-        tooltip: {
-          trigger: 'axis'
-        },
-        legend: {
-          left: 'left',
-          data: ['점']
-        },
-        radar: [
-          {
-            indicator: [
-              { text: 'Q1', max: 100 },
-              { text: 'Q2', max: 100 },
-              { text: 'Q3', max: 100 },
-              { text: 'Q4', max: 100 },
-              { text: 'Q5', max: 100 },
-              { text: 'Q6', max: 100 },
-              { text: 'Q7', max: 100 }
-            ],
-            center: ['50%', '50%'],
-            radius: 80
-          }
-        ],
-        series: [
-          {
-            type: 'radar',
-=======
           let option = {
             title: {
               text: "감정 점수",
             },
->>>>>>> origin/develop
+
             tooltip: {
               trigger: "axis",
             },
@@ -529,54 +492,7 @@ export default {
     },
 
     barchart() {
-<<<<<<< HEAD
-      axios.get(`${process.env.VUE_APP_BACK_END_URL}/itv/barData`, { params: { intno: this.intno } })
-    .then(function(response){
-      Highcharts.chart('barchart', {
-        chart: {
-          type: 'column',
-          height: '380px'
-        },
-        title: {
-          text: '자세 흐트러짐',
-          align: 'left'
-        },
-        subtitle: {
-          text: '',
-          align: 'left'
-        },
-        xAxis: {
-          categories: ['Q1', 'Q2', 'Q3', 'Q4', 'Q5', 'Q6', 'Q7'],
-          crosshair: true,
-          accessibility: {
-            description: 'Countries'
-          }
-        },
-        yAxis: {
-          min: 0,
-          title: {
-            text: 'Count'
-          }
-        },
-        tooltip: {
-          valueSuffix: '(회)'
-        },
-        plotOptions: {
-          column: {
-            pointPadding: 0.2,
-            borderWidth: 0
-          }
-        },
-        series: [
-          {
-            name: response.data.chartname,
-            data: response.data.values,
-            color: '#08AD94'
-          }
-        ]
-      })
-    })
-=======
+
       axios
         .get(`${process.env.VUE_APP_BACK_END_URL}/itv/barData`, {
           params: { intno: this.intno },
@@ -626,7 +542,6 @@ export default {
             ],
           });
         });
->>>>>>> origin/develop
     },
     voiceg() {
       axios
@@ -637,47 +552,7 @@ export default {
               height: 380,
               width: 470,
             },
-<<<<<<< HEAD
-            pointStart: 0,
-            pointInterval: 10
-          }
-        },
-        series: [
-          {
-            name: 'Q1',
-            data: response.data.q1
-          },
-          {
-            name: 'Q2',
-            data: response.data.q2
-          },
-          {
-            name: 'Q3',
-            data: response.data.q3
-          },
-          {
-            name: 'Q4',
-            data: response.data.q4
-          },
-          {
-            name: 'Q5',
-            data: response.data.q5
-          },
-          {
-            name: 'Q6',
-            data: response.data.q6
-          },
-          {
-            name: 'Q7',
-            data: response.data.q7
-          }
-        ],
-        responsive: {
-          rules: [
-            {
-              condition: {
-                maxWidth: 500
-=======
+
             title: {
               text: "음성 떨림",
               align: "left",
@@ -689,7 +564,6 @@ export default {
             yAxis: {
               title: {
                 text: response.data.chartname,
->>>>>>> origin/develop
               },
             },
             xAxis: {

@@ -86,13 +86,6 @@ export default defineComponent({
           .endOf("month")
           .format("YYYY-MM-DD"); // 해당 년월의 마지막 날 계산
 
-<<<<<<< HEAD
-    const response = await axios.get(`${process.env.VUE_APP_BACK_END_URL}/schedule`, {
-      params: {
-        memno: localStorage.getItem("memno"),
-        startdt: `${yearMonth}-01`,  // 해당 월의 첫날
-        enddt: endOfMonth,           // 해당 월의 마지막 날
-=======
         const response = await axios.get(
           `${process.env.VUE_APP_BACK_END_URL}/schedule`,
           {
@@ -128,7 +121,6 @@ export default defineComponent({
         error.value = "데이터를 불러오는 데 실패했습니다.";
       } finally {
         isLoading.value = false;
->>>>>>> origin/develop
       }
     };
 
@@ -149,11 +141,8 @@ export default defineComponent({
         const newEvent = {
           title,
           startdt: startdt,
-<<<<<<< HEAD
-          enddt: enddt,        
-=======
+
           enddt: enddt,
->>>>>>> origin/develop
           memno: localStorage.getItem("memno"),
         };
 
@@ -279,11 +268,8 @@ export default defineComponent({
           lastYearMonth.value = currentYearMonth;
           // fetchSchedule(currentYearMonth);
         }
-<<<<<<< HEAD
-      }
-=======
+
       },
->>>>>>> origin/develop
     });
     const dDays = computed(() => {
       if (!schedule.value || !Array.isArray(schedule.value.ddays)) return [];
