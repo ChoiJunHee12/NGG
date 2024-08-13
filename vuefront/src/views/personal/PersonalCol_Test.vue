@@ -1,76 +1,100 @@
 <template>
-      <div class="container">
-          <div class="w3-container w3-light-grey">
-            <h2 class="personal-title">퍼스널컬러 진단</h2>
-          </div>
-          <input type="file" ref="fileInput" class="ai-form-control mt-1" accept="image/*" @change="uploadImage" style="display:none;">
-          <div class="personal-flex-container">                      
-              <div class="personal-image" v-show="!imageUploaded" @click="triggerFileInput" >
-                <img src="img/MakeUp_image/upload3.png" alt="기본 이미지">
-              </div>
-              <div class="personal-image" v-show="imageUploaded" @click="triggerFileInput" >
-                <img :src="uploadedImageUrl" alt="업로드된 이미지" > 
-              </div>
-              
-                <div class="personal-palette">
-                  <table>
-                    <thead>
-                      <tr>
-                        <th colspan="2" >WARM TONE</th>
-                        <th colspan="2" >COOL TONE</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td class="tone-title" colspan="2">SPRING</td>
-                        <td class="tone-title" colspan="2">SUMMER</td>
-                      </tr>
-                      <tr>
-                        <td colspan="2" class="spring_warm">
-                          <div class="personal-switch" 
-                              v-for="(color, index) in springWarmColors" 
-                              :key="index" 
-                              :style="{ backgroundColor: color }">
-                          </div>
-                        </td>
-                        <td colspan="2" class="summer_cool">
-                          <div class="personal-switch" 
-                              v-for="(color, index) in summerCoolColors" 
-                              :key="index" 
-                              :style="{ backgroundColor: color }">
-                          </div>                          
-                        </td>
-                      </tr>
-                      <tr>
-                        <td class="tone-title" colspan="2">AUTUMN</td>
-                        <td class="tone-title" colspan="2">WINTER</td>
-                      </tr>
-                      <tr>
-                        <td colspan="2" class="autumn_warm">
-                          <div class="personal-switch" 
-                              v-for="(color, index) in autumnWarmColors" 
-                              :key="index" 
-                              :style="{ backgroundColor: color }">
-                          </div>                            
-                        </td>
-                        <td colspan="2" class="winter_cool">
-                          <div class="personal-switch" 
-                              v-for="(color, index) in winterCoolColors" 
-                              :key="index" 
-                              :style="{ backgroundColor: color }">
-                          </div>                          
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>                
-          </div>
-            
-        <div class="personal-btn-grp">
-          <button class="btn btn-next personal-btn" @click="movepage" style="width: 240px; ">퍼스널컬러 진단</button>
-        </div>
-
+  <div class="container">
+    <div class="w3-container w3-light-grey">
+      <h2 class="personal-title">퍼스널컬러 진단</h2>
+    </div>
+    <input
+      type="file"
+      ref="fileInput"
+      class="ai-form-control mt-1"
+      accept="image/*"
+      @change="uploadImage"
+      style="display: none"
+    />
+    <div class="personal-flex-container">
+      <div
+        class="personal-image"
+        v-show="!imageUploaded"
+        @click="triggerFileInput"
+      >
+        <img src="img/MakeUp_image/upload3.png" alt="기본 이미지" />
       </div>
+      <div
+        class="personal-image"
+        v-show="imageUploaded"
+        @click="triggerFileInput"
+      >
+        <img :src="uploadedImageUrl" alt="업로드된 이미지" />
+      </div>
+
+      <div class="personal-palette">
+        <table>
+          <thead>
+            <tr>
+              <th colspan="2">WARM TONE</th>
+              <th colspan="2">COOL TONE</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="tone-title" colspan="2">SPRING</td>
+              <td class="tone-title" colspan="2">SUMMER</td>
+            </tr>
+            <tr>
+              <td colspan="2" class="spring_warm">
+                <div
+                  class="personal-switch"
+                  v-for="(color, index) in springWarmColors"
+                  :key="index"
+                  :style="{ backgroundColor: color }"
+                ></div>
+              </td>
+              <td colspan="2" class="summer_cool">
+                <div
+                  class="personal-switch"
+                  v-for="(color, index) in summerCoolColors"
+                  :key="index"
+                  :style="{ backgroundColor: color }"
+                ></div>
+              </td>
+            </tr>
+            <tr>
+              <td class="tone-title" colspan="2">AUTUMN</td>
+              <td class="tone-title" colspan="2">WINTER</td>
+            </tr>
+            <tr>
+              <td colspan="2" class="autumn_warm">
+                <div
+                  class="personal-switch"
+                  v-for="(color, index) in autumnWarmColors"
+                  :key="index"
+                  :style="{ backgroundColor: color }"
+                ></div>
+              </td>
+              <td colspan="2" class="winter_cool">
+                <div
+                  class="personal-switch"
+                  v-for="(color, index) in winterCoolColors"
+                  :key="index"
+                  :style="{ backgroundColor: color }"
+                ></div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="personal-btn-grp">
+      <button
+        class="btn btn-next personal-btn"
+        @click="movepage"
+        style="width: 240px"
+      >
+        퍼스널컬러 진단
+      </button>
+    </div>
+  </div>
 </template>
 <script>
 import axios from "axios";
@@ -80,8 +104,8 @@ export default {
       imageUploaded: false,
       uploadedImageUrl: "",
       maskmessage: "",
-      loadingImage: '/img/MakeUp_image/loading.gif',
-      
+      loadingImage: "/img/MakeUp_image/loading.gif",
+
       selectedColor: "#FFFFFF",
       springWarmColors: [
         "#FE9901",
@@ -187,12 +211,11 @@ export default {
         "#4C4C4C",
         "#030119",
       ],
-      season:null,
-      spring:null,
-      winter:null,
-      autumn:null,
-      summer:null,
-
+      season: null,
+      spring: null,
+      winter: null,
+      autumn: null,
+      summer: null,
     };
   },
   methods: {
@@ -215,8 +238,7 @@ export default {
     triggerFileInput() {
       this.$refs.fileInput.click(); // 파일 업로드 input 클릭
     },
-    async uploadImage(event) {      
-      
+    async uploadImage(event) {
       const file = event.target.files[0];
       if (file) {
         this.uploadedImageUrl = this.loadingImage;
@@ -224,90 +246,102 @@ export default {
 
         const reader = new FileReader();
         reader.onload = (e) => {
-          localStorage.setItem('befimg', e.target.result);
-          localStorage.setItem('befimgn', file.name);
+          localStorage.setItem("befimg", e.target.result);
+          localStorage.setItem("befimgn", file.name);
         };
         reader.readAsDataURL(file);
 
         const formData = new FormData();
-        formData.append('imgfile', file);
+        formData.append("imgfile", file);
 
-        axios.post(`${process.env.VUE_APP_DJANGO_APP_BACK_END_URL}personalcol/detect_mask`, formData, {
-          headers: { 'Content-Type': 'multipart/form-data' },
-        }).then((response) => {
-          
-          console.log('전송시작!');
-          if (response.data.image) {
-            
-            const imageUrl = `data:image/jpeg;base64,${response.data.image}`;
-            // console.log('imageUrl',imageUrl)
-            localStorage.setItem('befimg',imageUrl);
-            this.uploadedImageUrl = imageUrl
-            
-            this.imageUploaded = true;
-            this.maskmessage = response.data.message;
-          } else {
-            alert(response.data.message);
+        axios
+          .post(
+            `${process.env.VUE_APP_DJANGO_APP_BACK_END_URL}personalcol/detect_mask`,
+            formData,
+            {
+              headers: { "Content-Type": "multipart/form-data" },
+            }
+          )
+          .then((response) => {
+            console.log("전송시작!");
+            if (response.data.image) {
+              const imageUrl = `data:image/jpeg;base64,${response.data.image}`;
+              // console.log('imageUrl',imageUrl)
+              localStorage.setItem("befimg", imageUrl);
+              this.uploadedImageUrl = imageUrl;
+
+              this.imageUploaded = true;
+              this.maskmessage = response.data.message;
+            } else {
+              alert(response.data.message);
+              this.imageUploaded = false;
+            }
+            console.log("전송완료!");
+
+            axios
+              .post(
+                `${process.env.VUE_APP_DJANGO_APP_BACK_END_URL}personalcol/seasontone`,
+                formData,
+                {
+                  headers: { "Content-Type": "multipart/form-data" },
+                }
+              )
+              .then((res) => {
+                console.log(res.data);
+                this.season = res.data.season;
+                this.spring = res.data.Spring.toFixed(2);
+                this.summer = res.data.Summer.toFixed(2);
+                this.autumn = res.data.Autumn.toFixed(2);
+                this.winter = res.data.Winter.toFixed(2);
+              })
+              .catch((error) => {
+                console.error("장고 서버로 컬러 요청 실패:", error);
+                alert("이미지 전송 중 오류가 발생했습니다.");
+              });
+          })
+          .catch((error) => {
+            console.error("장고 서버로 이미지 전송 실패:", error);
+            alert("이미지 전송 중 오류가 발생했습니다.");
             this.imageUploaded = false;
-          }
-          console.log('전송완료!');
-
-          axios.post(`${process.env.VUE_APP_DJANGO_APP_BACK_END_URL}personalcol/seasontone`,formData, {
-          headers: { 'Content-Type': 'multipart/form-data' },
-        }).then((res) =>{
-        console.log(res.data)
-            this.season=res.data.season
-            this.spring=res.data.Spring.toFixed(2);
-            this.summer=res.data.Summer.toFixed(2);
-            this.autumn=res.data.Autumn.toFixed(2);
-            this.winter=res.data.Winter.toFixed(2);
-            
-            
-            
-        }).catch((error) => {
-          console.error('장고 서버로 컬러 요청 실패:', error);
-          alert('이미지 전송 중 오류가 발생했습니다.');
-        });
-
-
-
-        }).catch((error) => {
-          console.error('장고 서버로 이미지 전송 실패:', error);
-          alert('이미지 전송 중 오류가 발생했습니다.');
-          this.imageUploaded = false;
-        });
+          });
       } else {
-        alert('이미지를 선택해 주세요.');
+        alert("이미지를 선택해 주세요.");
       }
     },
     getSeasonNumber(season) {
-    if (season === 'Spring') {
+      if (season === "Spring") {
         return 1;
-    } else if (season === 'Summer') {
+      } else if (season === "Summer") {
         return 2;
-    } else if (season === 'Autumn') {
+      } else if (season === "Autumn") {
         return 3;
-    } else if (season === 'Winter') {
+      } else if (season === "Winter") {
         return 4;
-    } else {
+      } else {
         return -1; // 알 수 없는 계절 값에 대한 기본 반환 값
-    }
+      }
     },
-    async movepage(){    
+    async movepage() {
       const updateform = new FormData();
-      updateform.append('memno',3);
-      updateform.append('seasoncd',this.getSeasonNumber(this.season));
-      console.log("계절은"+this.season)
-      await axios.post(`${process.env.VUE_APP_BACK_END_URL}/personal/seasonUpdate`, updateform, { headers: {'Content-Type': 'application/json' } });
-      const list ={season:this.season,
-        spring:this.spring,summer:this.summer,autumn:this.autumn,winter:this.winter};
-      console.log(list)
-     
-      this.$router.push({name:"PersonalCol_Result",query:list
-            });
-    },
-    
+      updateform.append("memno", localStorage.getItem("memno"));
+      updateform.append("seasoncd", this.getSeasonNumber(this.season));
+      console.log("계절은" + this.season);
+      await axios.post(
+        `${process.env.VUE_APP_BACK_END_URL}/personal/seasonUpdate`,
+        updateform,
+        { headers: { "Content-Type": "application/json" } }
+      );
+      const list = {
+        season: this.season,
+        spring: this.spring,
+        summer: this.summer,
+        autumn: this.autumn,
+        winter: this.winter,
+      };
+      console.log(list);
 
+      this.$router.push({ name: "PersonalCol_Result", query: list });
+    },
   },
 };
 </script>

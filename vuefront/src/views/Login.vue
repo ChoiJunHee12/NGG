@@ -49,6 +49,7 @@
                   placeholder=" 대문자, 숫자, 특수문자 포함 8자리"
                   v-model="password"
                   @input="checkPwdFormat"
+                  @keyup.enter="submitForm('login')"
                 />
               </div>
               <div class="error-msg-area">
