@@ -1,64 +1,131 @@
 <template>
   <div class="container">
     <div class="interRestitle">
-      <blockquote class="blockquote-interRes"><b>
-        <p>면접결과 관리</p></b>
+      <blockquote class="blockquote-interRes">
+        <b> <p>면접결과 관리</p></b>
       </blockquote>
     </div>
-    <hr>
+    <hr />
     <div class="interviewRes-tab row">
-      <div @click="pagechage(1)" class="col-1" :class="{'interviewRes-lbutton': true, 'interviewactive': activePage === 1}">인성면접결과</div>
-      <div @click="pagechage(2)" class="col-1" :class="{'interviewRes-button': true, 'interviewactive': activePage === 2}">직무면접결과</div>
+      <div
+        @click="pagechage(1)"
+        class="col-1"
+        :class="{
+          'interviewRes-lbutton': true,
+          interviewactive: activePage === 1,
+        }"
+      >
+        인성면접결과
+      </div>
+      <div
+        @click="pagechage(2)"
+        class="col-1"
+        :class="{
+          'interviewRes-button': true,
+          interviewactive: activePage === 2,
+        }"
+      >
+        직무면접결과
+      </div>
     </div>
     <div class="interviewRes-con">
       <!-- 동일한 컨텐츠 구조 -->
-      <div :class="{'display-block': content === 1, 'display-none': content !== 1}" class="row scrollable-div interviewRes-display">
-        <div v-for="(e, index) in attitude" :key="index" class="interviewRes-displaytwo">
+      <div
+        :class="{
+          'display-block': content === 1,
+          'display-none': content !== 1,
+        }"
+        class="row scrollable-div interviewRes-display"
+      >
+        <div
+          v-for="(e, index) in attitude"
+          :key="index"
+          class="interviewRes-displaytwo"
+        >
           <table v-show="e !== null" class="interviewRes-table">
             <tr>
-              <td class="interviewRes-list" @click="showModal_personal(e.INTNO)">
-                <p>〈인성면접〉{{e.MNAME}}님 면접결과 {{ formatDate(e.CREDT) }}</p>
+              <td
+                class="interviewRes-list"
+                @click="showModal_personal(e.INTNO)"
+              >
+                <p>
+                  〈인성면접〉{{ e.MNAME }}님 면접결과 {{ formatDate(e.CREDT) }}
+                </p>
               </td>
             </tr>
           </table>
         </div>
         <div v-show="attitude.length === 0" class="interviewRes-empty">
           <div class="interviewRes-empty-content">
-            <img src="../../public/img/InterviewRes_image/nopersonal.png" class="interviewRes-empty-image">
+            <img
+              src="../../public/img/InterviewRes_image/nopersonal.png"
+              class="interviewRes-empty-image"
+            />
             <div class="interviewRes-empty-button">
-              <button class="btn btn-next interviewRes-empty-btn">AI면접보러 가기</button>
+              <router-link to="AISetting">
+                <button class="btn btn-next interviewRes-empty-btn">
+                  AI 모의면접 보러 가기
+                </button>
+              </router-link>
             </div>
           </div>
         </div>
       </div>
-      <div :class="{'display-block': content === 2, 'display-none': content !== 2}" class="row scrollable-div interviewRes-display">
-        <div v-for="(e, index) in career" :key="index" class="interviewRes-displaytwo">
+      <div
+        :class="{
+          'display-block': content === 2,
+          'display-none': content !== 2,
+        }"
+        class="row scrollable-div interviewRes-display"
+      >
+        <div
+          v-for="(e, index) in career"
+          :key="index"
+          class="interviewRes-displaytwo"
+        >
           <table v-show="e !== null" class="interviewRes-table">
             <tr>
               <td class="interviewRes-list" @click="showModal_duty(e.INTNO)">
-                <p>〈직무면접〉{{e.MNAME}}님 면접결과 {{ formatDate(e.CREDT) }}</p>
+                <p>
+                  〈직무면접〉{{ e.MNAME }}님 면접결과 {{ formatDate(e.CREDT) }}
+                </p>
               </td>
             </tr>
           </table>
         </div>
         <div v-show="career.length === 0" class="interviewRes-empty">
           <div class="interviewRes-empty-content">
-            <img src="../../public/img/InterviewRes_image/noduty.png" class="interviewRes-empty-image">
+            <img
+              src="../../public/img/InterviewRes_image/noduty.png"
+              class="interviewRes-empty-image"
+            />
             <div class="interviewRes-empty-button">
-              <button class="btn btn-next interviewRes-empty-btn">AI 모의면접 보러 가기</button>
+              <router-link to="AISetting">
+                <button class="btn btn-next interviewRes-empty-btn">
+                  AI 모의면접 보러 가기
+                </button>
+              </router-link>
             </div>
           </div>
         </div>
       </div>
     </div>
   </div>
-  <InterviewResPersenalModal v-if="popState_personal" @close="closeModal_personal" v-bind:intno="intno"></InterviewResPersenalModal>
-  <InterviewResDutyModal v-if="popState_duty" @close="closeModal_duty" v-bind:intno="intno"></InterviewResDutyModal>
+  <InterviewResPersenalModal
+    v-if="popState_personal"
+    @close="closeModal_personal"
+    v-bind:intno="intno"
+  ></InterviewResPersenalModal>
+  <InterviewResDutyModal
+    v-if="popState_duty"
+    @close="closeModal_duty"
+    v-bind:intno="intno"
+  ></InterviewResDutyModal>
   <OneToOne v-if="popState_one" @close="closeModal_one"></OneToOne>
 </template>
 
 <script>
-import axios from 'axios';
+import axios from "axios";
 import InterviewResPersenalModal from "../components/InterviewResModal_persenal.vue";
 import InterviewResDutyModal from "../components/InterviewResModal_duty.vue";
 
@@ -69,7 +136,7 @@ export default {
   },
   data() {
     return {
-      link: '/InterviewRes',
+      link: "/InterviewRes",
       activePage: 1,
       page: 1,
       attitude: [],
@@ -78,8 +145,8 @@ export default {
       popState_personal: false,
       popState_duty: false,
       selectedIntno: null,
-      intno:5,
-      memno:localStorage.getItem("memno"),
+      intno: 5,
+      memno: localStorage.getItem("memno"),
     };
   },
   mounted() {
@@ -95,7 +162,7 @@ export default {
     showModal_personal(intno) {
       this.popState_personal = true;
       this.intno = intno;
-      console.log("intno넘어오나요?"+intno);
+      console.log("intno넘어오나요?" + intno);
     },
     closeModal_personal() {
       this.popState_personal = false;
@@ -103,15 +170,18 @@ export default {
     showModal_duty(intno) {
       this.popState_duty = true;
       this.intno = intno;
-      console.log("intno넘어오나요?"+intno);
+      console.log("intno넘어오나요?" + intno);
     },
     closeModal_duty() {
       this.popState_duty = false;
     },
-    
+
     async fetchAttitudeResults() {
       try {
-        const response = await axios.get(`${process.env.VUE_APP_BACK_END_URL}/itv/attitude`,{ params: { memno: this.memno } });
+        const response = await axios.get(
+          `${process.env.VUE_APP_BACK_END_URL}/itv/attitude`,
+          { params: { memno: this.memno } }
+        );
         this.attitude = response.data;
         console.log("Fetched attitude results:", this.attitude);
       } catch (error) {
@@ -120,7 +190,10 @@ export default {
     },
     async fetchCareerResults() {
       try {
-        const response = await axios.get(`${process.env.VUE_APP_BACK_END_URL}/itv/career`,{ params: { memno: this.memno } });
+        const response = await axios.get(
+          `${process.env.VUE_APP_BACK_END_URL}/itv/career`,
+          { params: { memno: this.memno } }
+        );
         this.career = response.data;
         console.log("Fetched career results:", this.career);
       } catch (error) {
@@ -129,7 +202,7 @@ export default {
     },
     formatDate(datetime) {
       // 'T'를 기준으로 문자열을 나누고 첫 번째 부분을 반환합니다.
-      return datetime.split('T')[0];
+      return datetime.split("T")[0];
     },
   },
 };

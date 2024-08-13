@@ -28,9 +28,9 @@
                 WHERE CNSNO = #{cnsno}
                 ORDER BY DBMS_RANDOM.VALUE
             )
-            WHERE ROWNUM <![CDATA[<]]>= 2
-            ORDER BY 3, 1
+            WHERE ROWNUM <![CDATA[<]]>= 2            
         </if>
+        ORDER BY 3, 1
     </select>
 
     <select id="getIntTypeName" parameterType="int" resultType="String">
