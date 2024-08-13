@@ -14,6 +14,7 @@ public class HttpHandshakeInterceptor implements HandshakeInterceptor {
     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response,
             WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception {
         String protocol = request.getHeaders().getFirst("Sec-WebSocket-Protocol");
+        // int Intprotocol = Integer.parseInt(protocol);
         if (protocol != null) {
             response.getHeaders().set("Sec-WebSocket-Protocol", protocol);
             attributes.put("protocol", protocol);

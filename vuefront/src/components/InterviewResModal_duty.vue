@@ -134,7 +134,11 @@
         </div> -->
         <div class="reshdudy-btnarea">
           <button v-if="page > 1" class="reshduty-nextbtn col-1" @click="Previous">이전 문항</button>
+<<<<<<< HEAD
           <button v-if='page < 7' class="reshduty-nextbtn col-1" @click="next">다음 문항</button>
+=======
+          <button v-if='page<7' class="reshduty-nextbtn col-1" @click="next">다음 문항</button>
+>>>>>>> origin/develop
           <button class="reshduty-homebtn col-1" @click="$emit('close', false)">닫기</button>
         </div>
       </div>

@@ -14,4 +14,5 @@ public class AIQuestionVO {
     private String aiquestion;
     private Date credt;
     private Date upddt;
+
 }
