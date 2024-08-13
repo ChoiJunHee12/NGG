@@ -127,15 +127,7 @@
                 id="email"
                 name="email"
                 v-model="tempProfile.email"
-              />
-            </div>
-            <div class="form-group">
-              <label for="pwd">✅비밀번호</label>
-              <input
-                type="password"
-                id="pwd"
-                name="pwd"
-                v-model="tempProfile.password"
+                disabled
               />
             </div>
             <div class="form-group">
@@ -202,16 +194,13 @@ import axios from "axios";
 export default {
   data() {
     return {
-      // memno: localStorage.getItem("memno"),
-      memno: 51,
+      memno: localStorage.getItem("memno"),
+      // memno: loc,
       activeTab: "info",
       isModalOpen: false,
       myprofile: {},
       myedu: {},
-      tempProfile: {
-        password: "",
-      },
-      originalPassword: "", // 기존 비밀번호를 저장
+      tempProfile: {},
       loccdMapping: {
         1: "서울",
         2: "경기도",
@@ -233,7 +222,6 @@ export default {
   },
   mounted() {
     this.fetchMemberDetails();
-    this.originalPassword = this.tempProfile.password;
   },
   computed: {
     categcdString: {
