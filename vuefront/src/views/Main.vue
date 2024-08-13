@@ -491,13 +491,13 @@ export default {
 
     // 스트레스율
     const fetchStressRate = async (intno, memno) => {
-      console.log(typeof intno.value);
+      // console.log(typeof intno.value);
       try {
         const response = await axios.get(
           `${process.env.VUE_APP_BACK_END_URL}/mainpage/stressRate?intno=${intno.value}&memno=${memno}`
         );
         stressRate.value = response.data;
-        console.log("스트레스율: ", stressRate.value);
+        // console.log("스트레스율: ", stressRate.value);
       } catch (error) {
         console.error("Error fetching stress rate:", error);
       }
@@ -524,15 +524,42 @@ export default {
         console.error("Error fetching posture bad count rate:", error);
       }
     };
+
     // 컨설턴트 평가점수
     const fetchConsultantScore = async (intno) => {
+      const memno = localStorage.getItem("memno"); // localStorage에서 memno를 직접 가져옵니다.
+
+      console.log("타입확인 intno:", typeof intno.value, intno.value);
+      console.log("타입확인 memno:", typeof memno, memno);
+
+      if (!intno.value || !memno) {
+        console.error("Invalid intno or memno", { intno: intno.value, memno });
+        return;
+      }
+
       try {
         const response = await axios.get(
-          `${process.env.VUE_APP_BACK_END_URL}/mainpage/consultantScore?intno=${intno.value}`
+          `${process.env.VUE_APP_BACK_END_URL}/mainpage/consultantScore`,
+          {
+            params: {
+              intno: intno.value,
+              memno: memno,
+            },
+          }
         );
-        interviewReport.value = response.data;
+
+        if (response.data) {
+          interviewReport.value = response.data;
+          console.log("컨설턴트 평가점수: ", interviewReport.value);
+        } else {
+          console.warn("No data received from consultantScore API");
+        }
       } catch (error) {
-        console.error("Error fetching consultant score:", error);
+        console.error("Error fetching consultant score:", error.message);
+        if (error.response) {
+          console.error("Response status:", error.response.status);
+          console.error("Response data:", error.response.data);
+        }
       }
     };
 
@@ -742,7 +769,7 @@ export default {
       ) {
         return "데이터 없음";
       }
-      console.log("스트레스데이터:", stressRate.value);
+      // console.log("스트레스데이터:", stressRate.value);
       return stressRate.value > 40 ? "스트레스가 높음" : "스트레스 적정수준";
     });
 
@@ -754,7 +781,7 @@ export default {
       ) {
         return "데이터 없음";
       }
-      console.log("음성데이터:", voiceRate.value);
+      // console.log("음성데이터:", voiceRate.value);
       return voiceRate.value > 70 ? "목소리가 불안정함" : "목소리가 안정적임";
     });
 
@@ -766,7 +793,7 @@ export default {
       ) {
         return "데이터 없음";
       }
-      console.log("자세데이터:", postureBadCountRate.value);
+      // console.log("자세데이터:", postureBadCountRate.value);
       return postureBadCountRate.value > 50 ? "자세가 불균형함" : "균형 잡힘";
     });
 
@@ -778,7 +805,7 @@ export default {
       ) {
         return "데이터 없음";
       }
-      return interviewReport.value.cnsscore > 80
+      return interviewReport.value.cnsscore > 70
         ? "매우 우수함"
         : "개선이 필요함";
     });
