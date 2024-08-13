@@ -85,7 +85,7 @@ public class MainPageService {
 
                 List<IntDetailVO> latestDetails = mainPageDao.getLatestPostureDetails(params);
                 if (latestDetails.isEmpty()) {
-                        return 100; // 데이터가 없으면 최고 점수 반환
+                        return 100; // 데이터가 없으면 0 반환? 아니면 자세가 좋으니까 badcount가 0일테니까 100점 반환?
                 }
 
                 float totalBadCount = 0;
@@ -99,8 +99,11 @@ public class MainPageService {
         }
 
         // 컨설턴트 평가 점수 조회
-        public IntResVO getConsultantScore(int intno) {
-                return mainPageDao.getLatestConsultantScore(intno);
+        public IntResVO getLatestConsultantScore(int intno, int memno) {
+                Map<String, Object> params = new HashMap<>();
+                params.put("intno", intno);
+                params.put("memno", memno);
+                return mainPageDao.getLatestConsultantScore(params);
         }
 
         // 회원 일정 조회

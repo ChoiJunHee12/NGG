@@ -24,7 +24,7 @@ public interface MainPageDao {
     List<IntDetailVO> getLatestPostureDetails(Map<String, Object> params);
 
     // 회원 면접 결과(최신 컨설턴트 평가 점수 조회)
-    IntResVO getLatestConsultantScore(int intno);
+    IntResVO getLatestConsultantScore(Map<String, Object> params);
 
     // 회원 일정 조회
     List<ScheduleVO> getSchedulesByMember(int memno);
