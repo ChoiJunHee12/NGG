@@ -528,7 +528,7 @@ export default {
     const fetchConsultantScore = async (intno) => {
       try {
         const response = await axios.get(
-          `${process.env.VUE_APP_BACK_END_URL}/mainpage/consultantScore?intno=${intno}`
+          `${process.env.VUE_APP_BACK_END_URL}/mainpage/consultantScore?intno=${intno.value}`
         );
         interviewReport.value = response.data;
       } catch (error) {
