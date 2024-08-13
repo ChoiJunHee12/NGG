@@ -8,6 +8,7 @@ export default createStore({
     memno: localStorage.getItem("memno") || "",
     rolecd: localStorage.getItem("rolecd") || "",
     token: localStorage.getItem("token") || "",
+    profileImageSrc: "",
   },
   getters: {
     // 인증했는지 판단
@@ -16,6 +17,7 @@ export default createStore({
     rolecd: (state) => state.rolecd,
     accessToken: (state) => state.token, // 'accessToken'을 사용하는 경우
     memno: (state) => state.memno, // 'id' 또는 'memno'를 사용하는 경우
+    profileImageSrc: (state) => state.profileImageSrc,
   },
   mutations: {
     setAuth(state, { email, token, memno, rolecd }) {
@@ -37,6 +39,9 @@ export default createStore({
       localStorage.removeItem("token");
       localStorage.removeItem("memno");
       localStorage.removeItem("rolecd");
+    },
+    setProfileImageSrc(state, url) {
+      state.profileImageSrc = url;
     },
   },
   actions: {
@@ -78,6 +83,9 @@ export default createStore({
             error.response ? error.response.data : error.message
           );
         });
+    },
+    updateProfileImageSrc({ commit }, url) {
+      commit("setProfileImageSrc", url);
     },
     setAuth({ commit }, { email, token, memno, rolecd }) {
       commit("setAuth", { email, token, memno, rolecd });
