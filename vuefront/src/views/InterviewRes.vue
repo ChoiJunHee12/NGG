@@ -26,7 +26,9 @@
           <div class="interviewRes-empty-content">
             <img src="../../public/img/InterviewRes_image/nopersonal.png" class="interviewRes-empty-image">
             <div class="interviewRes-empty-button">
-              <button class="btn btn-next interviewRes-empty-btn">AI면접보러 가기</button>
+              <router-link to="AISetting">
+              <button class="btn btn-next interviewRes-empty-btn">AI 모의면접 보러 가기</button>
+              </router-link>
             </div>
           </div>
         </div>
@@ -45,7 +47,9 @@
           <div class="interviewRes-empty-content">
             <img src="../../public/img/InterviewRes_image/noduty.png" class="interviewRes-empty-image">
             <div class="interviewRes-empty-button">
+              <router-link to = "AISetting">
               <button class="btn btn-next interviewRes-empty-btn">AI 모의면접 보러 가기</button>
+              </router-link>
             </div>
           </div>
         </div>

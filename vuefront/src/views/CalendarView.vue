@@ -47,7 +47,7 @@ import axios from "axios";
 
 const ScheduleVO = {
   schno: null,
-  memno: 1,
+  memno: localStorage.getItem("memno"),
   startdt: null,
   enddt: null,
   title: null,
@@ -78,7 +78,7 @@ export default defineComponent({
 
     const response = await axios.get(`${process.env.VUE_APP_BACK_END_URL}/schedule`, {
       params: {
-        memno: ScheduleVO.memno,
+        memno: localStorage.getItem("memno"),
         startdt: `${yearMonth}-01`,  // 해당 월의 첫날
         enddt: endOfMonth,           // 해당 월의 마지막 날
       }
@@ -129,7 +129,7 @@ export default defineComponent({
           title,
           startdt: startdt,
           enddt: enddt,        
-          memno: 1
+          memno: localStorage.getItem("memno"),
         };
 
         const response = await axios.post(`${process.env.VUE_APP_BACK_END_URL}/schedule/add`, newEvent, {
@@ -237,10 +237,10 @@ export default defineComponent({
         console.log("현재 보이는 년월:", currentYearMonth);
 
         // 현재 보이는 년월이 이전에 요청한 년월과 다를 경우에만 요청 실행
-        // if (currentYearMonth !== lastYearMonth.value) {
-        //   lastYearMonth.value = currentYearMonth;
-        //   // fetchSchedule(currentYearMonth);
-        // }
+        if (currentYearMonth !== lastYearMonth.value) {
+          lastYearMonth.value = currentYearMonth;
+          // fetchSchedule(currentYearMonth);
+        }
       }
     });
     const dDays = computed(() => {

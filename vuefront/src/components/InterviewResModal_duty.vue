@@ -367,7 +367,9 @@ export default {
               { text: 'Q2', max: 100 },
               { text: 'Q3', max: 100 },
               { text: 'Q4', max: 100 },
-              { text: 'Q5', max: 100 }
+              { text: 'Q5', max: 100 },
+              { text: 'Q6', max: 100 },
+              { text: 'Q7', max: 100 }
             ],
             center: ['50%', '50%'],
             radius: 80
@@ -418,7 +420,7 @@ export default {
           align: 'left'
         },
         xAxis: {
-          categories: ['Q1', 'Q2', 'Q3', 'Q4', 'Q5'],
+          categories: ['Q1', 'Q2', 'Q3', 'Q4', 'Q5', 'Q6', 'Q7'],
           crosshair: true,
           accessibility: {
             description: 'Countries'
@@ -512,6 +514,14 @@ export default {
           {
             name: 'Q5',
             data: response.data.q5
+          },
+          {
+            name: 'Q6',
+            data: response.data.q6
+          },
+          {
+            name: 'Q7',
+            data: response.data.q7
           }
         ],
         responsive: {
