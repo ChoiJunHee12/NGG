@@ -15,7 +15,7 @@ const ConsultQuestion: React.FC = () => {
       if (questions.length < 5) {
         setQuestions([
           ...questions,
-          { question: currentQuestion, keywords: currentKeywords },
+          {  question: currentQuestion, keywords: currentKeywords },
         ]);
         setCurrentQuestion('');
         setCurrentKeywords(['', '', '']);

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.ict.mydream.itvres.ItvDao">
-    <select id="itvAttitudeList" resultType="java.util.Map"> 
-        SELECT m.name AS mname, a.intno AS intno, a.memno AS memno, a.credt AS credt FROM TBMEMBER M JOIN tbintres a ON m.memno = a.memno WHERE a.inttypecd = '1' ORDER BY m.name DESC
+    <select id="itvAttitudeList" parameterType="int" resultType="java.util.Map"> 
+        SELECT m.name AS mname, a.intno AS intno, a.memno AS memno, a.credt AS credt FROM TBMEMBER M JOIN tbintres a ON m.memno = a.memno WHERE a.inttypecd = '1' and m.memno = #{memno} ORDER BY m.name DESC
     </select>
-    <select id="itvCareerList" resultType="java.util.Map">
-        SELECT m.name AS mname, a.intno AS intno, a.memno AS memno, a.credt AS credt FROM TBMEMBER M JOIN tbintres a ON m.memno = a.memno WHERE a.inttypecd = '2' ORDER BY m.name DESC
+    <select id="itvCareerList" parameterType="int" resultType="java.util.Map">
+        SELECT m.name AS mname, a.intno AS intno, a.memno AS memno, a.credt AS credt FROM TBMEMBER M JOIN tbintres a ON m.memno = a.memno WHERE a.inttypecd = '2' and m.memno = #{memno} ORDER BY m.name DESC
     </select>
 
     <select id="detail" parameterType="int" resultType="kr.ict.mydream.dto.ItvDTO">

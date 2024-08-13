@@ -14,12 +14,12 @@ public class ItvService {
     @Autowired
     private ItvDao itvDao;
 
-    public List<Map<String, Object>> itvAttitudeList() {
-        return itvDao.itvAttitudeList();
+    public List<Map<String, Object>> itvAttitudeList(int memno) {
+        return itvDao.itvAttitudeList(memno);
     }
 
-    public List<Map<String, Object>> itvCareerList() {
-        return itvDao.itvCareerList();
+    public List<Map<String, Object>> itvCareerList(int memno) {
+        return itvDao.itvCareerList(memno);
     }
 
     public List<ItvDTO> detail(int intno) {
