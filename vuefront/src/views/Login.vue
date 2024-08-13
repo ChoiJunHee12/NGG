@@ -26,9 +26,9 @@
                   @input="checkEmailFormat"
                 />
                 <div class="error-msg-area">
-                  <p v-if="emailError" class="login-error-msg">
+                  <!-- <p v-if="emailError" class="login-error-msg">
                     올바른 이메일 형식이 아닙니다.
-                  </p>
+                  </p> -->
                 </div>
               </div>
             </div>
@@ -69,16 +69,14 @@
                 뒤로가기
               </button>
               &nbsp;
-              <router-link to="/Main"
-                ><button
-                  class="login-ctlbtn select-btn"
-                  id="login-btn"
-                  type="button"
-                  @click="submitForm('login')"
-                >
-                  로그인
-                </button></router-link
+              <button
+                class="login-ctlbtn select-btn"
+                id="login-btn"
+                type="button"
+                @click="submitForm('login')"
               >
+                로그인
+              </button>
             </div>
           </form>
         </div>
@@ -121,7 +119,7 @@
               <div class="input-area">
                 <input
                   class="join-input-text"
-                  type="email"
+                  type="text"
                   v-model="email"
                   @input="checkEmailFormat"
                   id="email"
@@ -134,10 +132,19 @@
                 >
                   인증
                 </button>
+
+                <!-- SignupModal 컴포넌트 사용 -->
+                <SignupModal
+                  ref="signupModal"
+                  :title="modalTitle"
+                  :message="modalMessage"
+                  @close="handleModalClose"
+                />
+
                 <div class="error-msg-area">
-                  <p v-if="emailError" class="login-error-msg">
+                  <!-- <p v-if="emailError" class="login-error-msg">
                     올바른 이메일 형식이 아닙니다.
-                  </p>
+                  </p> -->
                   <p style="display: none" id="emailCheck-msg" class="msg"></p>
                 </div>
               </div>
@@ -288,6 +295,7 @@
                   class="datepicker"
                   :enable-time-picker="false"
                   style="display: inline-block"
+                  format="yyyy년 MM월 dd일"
                 />
               </div>
             </div>
@@ -303,10 +311,11 @@
               <div class="input-area">
                 <input
                   class="join-input-text"
-                  type="text"
+                  type="tel"
                   name="phonenum"
                   id="phonenum"
                   v-model="phonenum"
+                  @input="formatPhoneNumber"
                   placeholder="전화번호 입력"
                 />
               </div>
@@ -326,7 +335,11 @@
                   value="M"
                   name="gendercd"
                 />
-                <label for="option1" class="join-label custom-radio"></label
+                <label
+                  for="option1"
+                  class="join-label custom-radio"
+                  style="padding-left: 0px"
+                ></label
                 >남성
                 <input
                   type="radio"
@@ -334,7 +347,11 @@
                   value="F"
                   name="gendercd"
                 />
-                <label for="option1" class="join-label custom-radio"></label
+                <label
+                  for="option1"
+                  class="join-label custom-radio"
+                  style="padding-left: 0px"
+                ></label
                 >여성
               </div>
             </div>
@@ -390,7 +407,8 @@
             <div class="info-input-container">
               <span class="label-area">
                 <label for="loccd" class="join-label chooseRadio"
-                  >✔️ 거주지역</label>                >
+                  >✔️ 희망직무</label
+                >
               </span>
               <div class="job-input-area">
                 <input
@@ -458,6 +476,11 @@
                 id="join-btn"
                 type="button"
                 @click="submitForm('signup')"
+                :disabled="!canSubmit"
+                :class="{
+                  'btn-disabled': !canSubmit,
+                  'btn-active': canSubmit,
+                }"
               >
                 가입하기
               </button>
@@ -470,6 +493,8 @@
 </template>
 
 <script>
+import SignupModal from "../components/SignupModal.vue";
+import { mapActions } from "vuex";
 import axios from "axios";
 import { ref, onMounted, defineComponent } from "vue";
 import Datepicker from "@vuepic/vue-datepicker";
@@ -478,6 +503,7 @@ import "@vuepic/vue-datepicker/dist/main.css";
 export default defineComponent({
   components: {
     Datepicker,
+    SignupModal,
   },
   setup() {
     const email = ref("");
@@ -535,10 +561,32 @@ export default defineComponent({
       emailError: false,
       showPwdMsg: false,
       pwdError: false,
+      modalTitle: "", // 모달 제목
+      modalMessage: "", // 모달 메시지
+      registrationSuccess: false, // 회원가입 성공 여부를 기록합니다.
     };
   },
 
   methods: {
+    formatPhoneNumber(event) {
+      // 사용자가 입력한 값을 가져옵니다.
+      let input = event.target.value;
+
+      // 하이픈을 제거하고 숫자만 남깁니다.
+      input = input.replace(/\D/g, "");
+
+      // 3-4-4 포맷으로 하이픈 추가
+      if (input.length <= 3) {
+        input = input;
+      } else if (input.length <= 7) {
+        input = `${input.slice(0, 3)}-${input.slice(3)}`;
+      } else {
+        input = `${input.slice(0, 3)}-${input.slice(3, 7)}-${input.slice(7, 11)}`;
+      }
+
+      // 모델을 업데이트하여 하이픈이 포함된 값을 보여줍니다.
+      this.phonenum = input;
+    },
     back() {
       // 뒤로가기 기능 구현
       window.history.back();
@@ -561,18 +609,27 @@ export default defineComponent({
           email: email,
         })
         .then((res) => {
-          alert("Res DAta:" + res.data);
-          if (res.data == 0) {
-            alert("인증 번호가 발송되었습니다.");
-            document.getElementById("emailCheck-msg").style.display = "none";
+          // alert("Res DAta:" + res.data);
+          if (res.data === 0) {
+            // alert("인증 번호가 발송되었습니다.");
+            this.modalTitle = "이메일 인증 성공"; // 모달 제목 설정
+            this.modalMessage = "인증 번호가 발송되었습니다."; // 모달 메시지 설정
+            this.$refs.signupModal.show(); // 모달을 표시
+            // document.getElementById("emailCheck-msg").style.display = "none";
           } else {
-            document.getElementById("emailCheck-msg").innerHTML =
-              "이미 사용중인 이메일입니다.";
-            document.getElementById("emailCheck-msg").style.display = "block";
+            this.modalTitle = "이메일 인증 실패"; // 모달 제목 설정
+            this.modalMessage = "이미 사용중인 이메일입니다."; // 모달 메시지 설정
+            this.$refs.signupModal.show(); // 모달을 표시
+            // document.getElementById("emailCheck-msg").innerHTML =
+            //   "이미 사용중인 이메일입니다.";
+            // document.getElementById("emailCheck-msg").style.display = "block";
           }
         })
         .catch((error) => {
-          alert("인증 번호 발송에 오류가 발생했습니다.");
+          // alert("인증 번호 발송에 오류가 발생했습니다.");
+          this.modalTitle = "이메일 인증 실패"; // 모달 제목 설정
+          this.modalMessage = "올바르지않은 이메일 형식입니다."; // 모달 메시지 설정
+          this.$refs.signupModal.show();
           console.error("API 호출 에러(인증번호 발송)", error);
           return false;
         });
@@ -590,15 +647,24 @@ export default defineComponent({
         )
         .then((res) => {
           if (res.data) {
-            alert("인증번호가 확인되었습니다.");
+            // alert("인증번호가 확인되었습니다.");
+            this.modalTitle = "인증 성공";
+            this.modalMessage = "인증번호가 확인되었습니다.";
+            this.$refs.signupModal.show();
             this.isEmailVerified = true;
           } else {
-            alert("인증번호가 올바르지 않습니다.");
+            // alert("인증번호가 올바르지 않습니다.");
+            this.modalTitle = "인증 실패";
+            this.modalMessage = "인증번호가 올바르지 않습니다.";
+            this.$refs.signupModal.show();
             this.isEmailVerified = false;
           }
         })
         .catch((error) => {
-          alert("인증번호 확인에 오류가 발생했습니다.");
+          // alert("인증번호 확인에 오류가 발생했습니다.");
+          this.modalTitle = "오류";
+          this.modalMessage = "인증 중 오류가 발생했습니다.";
+          this.$refs.signupModal.show();
           console.error("API 호출 에러(인증번호 확인)", error);
           this.isEmailVerified = false;
         });
@@ -612,6 +678,8 @@ export default defineComponent({
         pwd
       );
     },
+    ...mapActions(["login"]),
+
     submitForm(formType) {
       if (formType === "login") {
         // 로그인 폼 제출
@@ -625,10 +693,19 @@ export default defineComponent({
           } else {
             this.showPwdMsg = false;
           }
-          alert("환영합니다.");
-          window.location.href = "/main";
+          console.log(this.email);
+          console.log(this.password);
+          this.login({ email: this.email, password: this.password })
+            .then(() => {
+              alert("환영합니다.");
+              this.$router.push("/main");
+            })
+            .catch((err) => {
+              console.log(err);
+              alert("이메일 형식이 올바르지 않습니다.");
+            });
         } else {
-          alert("이메일 형식이 올바르지 않습니다.");
+          console.log("오지말아야할곳");
         }
       } else if (formType === "signup") {
         // 회원가입 폼 제출
@@ -657,16 +734,23 @@ export default defineComponent({
         // 회원가입 요청
         axios
           .post(
-            `${process.env.VUE_APP_BACK_END_URL}/tbmember/signup`,
+            `${process.env.VUE_APP_BACK_END_URL}/membership/register`,
             signupData
           )
           .then((res) => {
             console.log("서버응답:", res.data);
-            if (res.status === 200) {
-              alert("회원가입이 완료되었습니다.");
-              window.location.href = "/login";
+            if (res.data === "User registered successfully") {
+              this.registrationSuccess = true;
+              this.modalTitle = "";
+              this.modalMessage = "회원가입이 완료되었습니다.";
+              this.$refs.signupModal.show(this.redirectToLogin); // 콜백 함수 전달
+              // alert("회원가입이 완료되었습니다.");
+              // window.location.href = "/login";
             } else {
-              alert("회원가입에 실패하였습니다.");
+              this.modalTitle = "";
+              this.modalMessage = "회원가입에 실패하였습니다.";
+              this.$refs.signupModal.show();
+              // alert("회원가입에 실패하였습니다.");
             }
           })
           .catch((error) => {
@@ -675,6 +759,49 @@ export default defineComponent({
           });
       }
     },
+
+    redirectToLogin() {
+      window.location.href = "/login";
+    },
+  },
+  computed: {
+    canSubmit() {
+      // 모든 유효성 검사가 통과되고 이메일 인증이 완료된 경우 true 반환
+      return (
+        !this.emailError &&
+        !this.pwdError &&
+        this.isEmailVerified &&
+        this.email.trim() !== "" &&
+        this.password.trim() !== "" &&
+        this.name.trim() !== "" &&
+        this.nickname.trim() !== "" &&
+        this.phonenum.trim() !== "" &&
+        this.gendercd.trim() !== "" &&
+        this.categcd.trim() !== "" &&
+        this.loccd.trim() !== "" &&
+        this.birthymd // 생년월일은 빈값 체크를 다르게 할 수 있습니다.
+      );
+    },
   },
 });
 </script>
+
+<style>
+.btn-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-active {
+  opacity: 1;
+  cursor: pointer;
+}
+
+.join-label custom-radio {
+  padding-left: 500px;
+}
+
+.dp__pointer {
+  text-align: center;
+}
+</style>
