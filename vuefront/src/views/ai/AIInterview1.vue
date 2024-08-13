@@ -1,5 +1,4 @@
 <template>
-    
   <div id="content" class="AI-Setting">
     <!-- TTS audio 숨김-->
     <audio ref="audio" style="display: none;"></audio>
@@ -20,13 +19,25 @@
     <!-- Interview section -->
     <div class="device-check">
       <h3 class="AI-interview-title">
-        질문 1<br />{{question}}
+        질문 1<br /><span v-show="interviewStarted">{{aiquestion1.totalq}}</span>
       </h3>
       <transition name="fade">
         <div v-if="showInterviewSection">
           <div class="interview-section">
-            <div class="video-preview">
-              <img :src="imageSrc" alt="interview preview" />
+            <!-- Webcam section -->
+            <div class="ai-face-webcam-container">
+              <div
+                class="ai-face-webcam-frame"
+                :class="{
+                  'ai-face-recognition-active': isRecognizing,
+                  'ai-face-recognition-complete': isRecognitionComplete,
+                }"
+              >
+                <div class="ai-face-image-container">
+                  <video ref="videoElement" autoplay></video>
+                </div>
+                <div class="ai-face-recognition-overlay"></div>
+              </div>    
             </div>
 
             <!-- Timer section -->
@@ -51,7 +62,6 @@
               </div>
 
               <!-- Buttons -->
-              
               <button
                 class="btn btn-start-interview"
                 v-if="!interviewStarted"
@@ -93,12 +103,9 @@
         <ul>
           <li><strong style="color: mediumblue">면접 시작 버튼</strong>을 누르면 <strong style="color: mediumblue">생각 시간 30초 타이머</strong>가 활성화됩니다.</li>
           <li>준비가 끝나면 '생각시간 종료' 버튼을 눌러 바로 답변을 시작할 수 있습니다.</li>
-          <li><strong style="color: mediumblue">답변 시간은 90초</strong>이며 그 전이라도 답변이 완료되면 답변 제출 버튼을 누르면 됩니다.
-          </li>
-          <li>
-            답변이 끝나면 '답변 제출' 버튼을 눌러 조기 종료할 수 있습니다.
-          </li>
-          <li><strong style="color: mediumblue">재답변 기회는 답변 시작 후 20초 이내에 1회 가능합니다.</strong></li>
+          <li><strong style="color: mediumblue">답변 시간은 90초</strong>이며 그 전이라도 답변이 완료되면 답변 제출 버튼을 누르면 됩니다.</li>
+          <li>답변이 끝나면 '답변 제출' 버튼을 눌러 조기 종료할 수 있습니다.</li>
+          <li><strong style="color: mediumblue">재답변 기회는 답변 시작 후 20초 이후에 <strong style="color: red">1회</strong> 가능합니다.</strong></li>
         </ul>
       </div>
     </div>
@@ -107,6 +114,7 @@
 
 <script>
 import axios from 'axios';
+
 export default {
   data() {
     return {
@@ -124,11 +132,38 @@ export default {
       hasRestarted: false,
       showInterviewSection: false,
       interviewStarted: false,
-      question:"우리 회사의 (해당 직무)에서 가장 중요하다고 생각하는 업무는 무엇이며, \n 그 업무를 수행하기 위해 필요한 역량은 무엇이라고 생각하십니까?",
+      aiquestion1: JSON.parse(localStorage.getItem('questionlist'))[0],
+      mediaRecorder: null,
+      recordedChunks: [],
+      videoStream: null,
+      recordingInProgress: false // 추가된 플래그
     };
   },
-  
+  mounted() {
+    console.log('첫 번째 질문 페이지');
+    console.log(this.aiquestion1);
+    window.scrollTo(0, 0);
+    this.convertTextToSpeech();
+    setTimeout(() => {
+      this.showInterviewSection = true;
+      this.startStreaming(); // 스트리밍 시작
+    }, 2000);
+  },
   methods: {
+    async convertTextToSpeech() {
+      try {
+        const response = await axios.post(
+          `${process.env.VUE_APP_DJANGO_APP_BACK_END_URL}/tts/text_to_speech/`,
+          { text: this.aiquestion1.totalq },
+          { responseType: 'blob' }
+        );
+        const url = window.URL.createObjectURL(new Blob([response.data], { type: 'audio/mpeg' }));
+        this.$refs.audio.src = url;
+      } catch (error) {
+        console.error('Error converting text to speech:', error);
+        alert('Failed to convert text to speech');
+      }
+    },
     startInterview() {
       this.interviewStarted = true;
       this.startThinkingTime();
@@ -153,7 +188,6 @@ export default {
       this.isAnsweringTime = true;
       this.remainingTime = 90;
       this.progressTime = 100;
-      this.imageSrc = "img/interviewing.gif";
       this.startAnsweringTime();
     },
     startAnsweringTime() {
@@ -166,9 +200,48 @@ export default {
           }
         } else {
           clearInterval(this.interval);
-          this.submitAnswer();
+          this.submitAnswer(); // 녹화가 완료되었는지 여부를 체크하고 전송
         }
       }, 1000);
+
+      // Check and start recording if answering time is active
+      if (this.isAnsweringTime && !this.recordingInProgress) {
+        this.startRecording(); // 녹화 시작
+      }
+    },
+    startStreaming() {
+      navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+        .then(stream => {
+          this.videoStream = stream;
+          this.$refs.videoElement.srcObject = stream;
+          this.isCameraStarted = true;
+
+          // Initialize MediaRecorder
+          this.initMediaRecorder();
+        })
+        .catch(error => {
+          console.error('Error starting streaming:', error);
+          alert('Failed to start video streaming');
+        });
+    },
+    stopStreaming() {
+      if (this.videoStream) {
+        this.videoStream.getTracks().forEach(track => track.stop());
+        this.videoStream = null;
+      }
+    },
+    initMediaRecorder() {
+      if (this.videoStream) {
+        this.mediaRecorder = new MediaRecorder(this.videoStream);
+        this.mediaRecorder.ondataavailable = (event) => {
+          if (event.data.size > 0) {
+            this.recordedChunks.push(event.data);
+          }
+        };
+        this.mediaRecorder.onstop = () => {
+          console.log('Recording stopped');
+        };
+      }
     },
     restartInterview() {
       if (!this.hasRestarted) {
@@ -178,39 +251,71 @@ export default {
         this.progressTime = 100;
         this.restartButtonEnabled = false;
         this.startAnsweringTime();
+
+        // Stop current recording and start a new one
+        this.stopRecording();
+        this.recordedChunks = [];
+        this.initMediaRecorder();
+        this.startRecording();
       }
     },
     submitAnswer() {
-      clearInterval(this.interval);
-      this.allChecked = true;
-      this.$router.push({ name: "AIInterview2" });
+      console.log('제출누름')
+      this.stopRecording(); // Stop the current recording
+      this.uploadRecordedVideo(); // Upload the recorded video
     },
-    /*TTS 평상시에는 비용 발생의 이유로 주석 처리하겠습니다.....*/
-    async convertTextToSpeech() {
-        try {
-          const response = await axios.post(
-            `${process.env.VUE_APP_DJANGO_APP_BACK_END_URL}/tts/text_to_speech/`,
-            { text: this.question },
-            { responseType: 'blob' }
-          );
-  
-          const url = window.URL.createObjectURL(new Blob([response.data], { type: 'audio/mpeg' }));
-          this.$refs.audio.src = url;
+    startRecording() {
+      if (this.mediaRecorder) {
+        this.mediaRecorder.start();
+        console.log('Recording started');
+        this.recordingInProgress = true; // 녹화가 진행 중임을 표시
+      }
+    },
+    stopRecording() {
+      if (this.mediaRecorder && this.recordingInProgress) {
+        this.mediaRecorder.stop();
+        this.recordingInProgress = false;
+      }
+    },
+    uploadRecordedVideo() {
+      if (this.recordedChunks.length > 0) {
+        const recordedBlob = new Blob(this.recordedChunks, { type: 'video/webm' });
+
+        // Prepare FormData to send the recorded video
+        const formData = new FormData();
+        formData.append('video', recordedBlob, 'interview.webm');
+
+        // Send the video to the server
+        axios.post(
+          `${process.env.VUE_APP_DJANGO_APP_BACK_END_URL}/interview/question_detail`,
+          formData,
+          {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          }
+        )
+        .then(response => {
+          localStorage.setItem('q1detail', JSON.stringify(response.data));
           
-        } catch (error) {
-          console.error('Error converting text to speech:', error);
-          alert('Failed to convert text to speech');
-        }
-      },
+        })
+        .catch(error => {
+          console.error('Error uploading video:', error);
+          alert('Failed to upload video');
+        });
+        this.$router.push({ name: "AIInterview2" });
+      }
+    },
+    stopCamera() {
+      this.stopStreaming();
+    },
   },
-  mounted() {
-    setTimeout(() => {
-      this.showInterviewSection = true;
-    }, 2000);
-    this.convertTextToSpeech()
-  },
+  beforeUnmount() {
+    this.stopCamera();
+  }
 };
 </script>
+
 
 <style scoped>
 .progress-bar {

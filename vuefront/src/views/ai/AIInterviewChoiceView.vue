@@ -24,13 +24,14 @@
       </h5>
       <p>면접 유형을 선택 후 다음 버튼을 누르세요.</p>
       <div class="notice-section">
-        <div class="notice-item">
+        <div class="notice-item" @click="triggerCheckbox('personality')">
           <div class="checkbox-container">
             <input
               type="checkbox"
               id="personality"
+              ref="personalityCheckbox"
               v-model="personalitySelected"
-              @change="updateSelection"
+              @change="updateSelection(1)"
             />
             <label for="personality"></label>
           </div>
@@ -46,13 +47,15 @@
           </div>
         </div>
 
-        <div class="notice-item">
-          <div class="checkbox-container">
+
+        <!-- 기존의 notice-item -->        
+        <div class="notice-item" v-if="!cnsYnN" :style="{ opacity: 0.3 }" @click="selectCNS">
+          <div class="checkbox-container" v-if="cnsYnN">
             <input
               type="checkbox"
               id="personality_job"
-              v-model="personalityJobSelected"
-              @change="updateSelection"
+              v-model="personalityJobSelected"              
+              @change="updateSelection(2)"
             />
             <label for="personality_job"></label>
           </div>
@@ -75,6 +78,39 @@
             </p>
           </div>
         </div>
+        <div class="notice-item" v-show="cnsYnN" @click="triggerCheckbox('personality_job')">
+          <div class="checkbox-container">
+            <input
+              type="checkbox"
+              id="personality_job"
+              ref="personalityJobCheckbox"
+              v-model="personalityJobSelected"              
+              @change="updateSelection(2)"
+            />
+            <label for="personality_job"></label>
+          </div>
+          <div class="notice-image2">
+            <img src="img/interview2.png" alt="인성+직무면접" />
+          </div>
+          <div class="notice-text">
+            <h5>인성+직무면접</h5>
+            <p>
+              <strong style="color: mediumblue">인성 관련 질문 5개</strong>와
+              <strong style="color: mediumblue">직무 관련 질문 2개</strong>로
+              구성됩니다.
+            </p>
+            <p>
+              인성+직무면접은
+              <strong style="color: mediumblue"
+                >지원 분야의 컨설턴트가 배정된 경우에만 진행 가능</strong
+              >
+              합니다.
+            </p>
+          </div>
+        </div>
+
+
+
       </div>
       <br />
       <h5>
@@ -104,6 +140,7 @@
   </div>
 </template>
 <script>
+import axios from 'axios';
 export default {
   data() {
     return {
@@ -112,7 +149,28 @@ export default {
       personalitySelected: false,
       personalityJobSelected: false,
       selectedInterview: "",
+      inttypecd:0,
+      memno:localStorage.getItem('memno'),
+      cnsYnN:'',
     };
+  },
+  mounted() {    
+    window.scrollTo(0, 0);
+    // 컨설턴트 존재 여부 Y/N으로 반환
+    axios.get(`${process.env.VUE_APP_BACK_END_URL}/interview/getcnsYnN?memno=${this.memno}`)   
+    .then((res) => {    
+      const status = res.data;
+      console.log(status);
+      localStorage.setItem('status',status);
+      if (status=='N'){
+        this.cnsYnN = false;
+      } else if(status=='Y') {     
+        this.cnsYnN = true;
+      }
+    })
+    .catch((error) => {
+      console.error("마운트시 에러발생");
+    });      
   },
   computed: {
     isInterviewSelected() {
@@ -121,16 +179,39 @@ export default {
   },
   methods: {
     handleBack() {
-      this.$router.push({ name: "AIMicTest" });
+      // this.$router.push({ name: "AIMicTest" });
+      history.back();
     },
     handleNext() {
-      if (this.personalitySelected) {
-        this.$router.push({ name: "AIInterview1" });
-      } else if (this.personalityJobSelected) {
-        this.$router.push({ name: "AIInterview1" });
-      }
+      console.log('inttypecd',this.inttypecd);
+      // 인터뷰타입이름 인성/직무로 반환
+      axios.get(`${process.env.VUE_APP_BACK_END_URL}/interview/getinttypename?inttypecd=${this.inttypecd}`)
+      .then((res) => {  
+        const inttypename = res.data;
+        console.log('직무or인성',inttypename);
+        localStorage.setItem('inttypename',inttypename);
+        
+      })
+      .catch((error) => {
+        console.error("에러발생 에러발생");
+      });
+      // 질문 받아오기.
+      axios.get(`${process.env.VUE_APP_BACK_END_URL}/interview/getquestion?memno=${this.memno}`)      
+        .then((res) => {          
+          
+          localStorage.setItem('questionlist', JSON.stringify(res.data));
+          
+          console.log('localStorage에 questionlist이름으로 ')
+          console.log(JSON.parse(localStorage.getItem('questionlist')))
+          console.log('저장')
+          this.$router.push({ name: "AIInterview1" });
+        })
+        .catch((error) => {
+          console.error("에러발생 에러발생");
+        });
+      
     },
-    updateSelection() {
+    updateSelection(inttypecd) {
       if (this.personalitySelected && this.personalityJobSelected) {
         // 둘 다 선택된 경우, 마지막으로 선택된 것만 유지
         if (this.selectedInterview === "personality") {
@@ -147,7 +228,22 @@ export default {
       } else {
         this.selectedInterview = "";
       }
+      // 인성면접 체크박스를 누를 때 마다 로컬스토리지의 inttypecd에 1이나 2가 업데이트됨.
+      localStorage.setItem('inttypecd', inttypecd); 
+      console.log('localStorage에 inttypecd이름으로 <',localStorage.getItem('inttypecd'),'>저장')      
+      this.inttypecd = inttypecd;
+      
     },
+    triggerCheckbox(type) {
+      if (type === 'personality') {
+        this.$refs.personalityCheckbox.click(); // 체크박스를 클릭한 것처럼 동작
+      } else if (type === 'personality_job') {
+        this.$refs.personalityJobCheckbox.click(); // 체크박스를 클릭한 것처럼 동작
+      }
+    },
+    selectCNS(){
+      alert('컨설턴트를 선택해주세요')
+    }
   },
 };
 </script>
@@ -345,5 +441,6 @@ export default {
   opacity: 0;
   transform: translateY(10px);
 }
+
 </style>
   
