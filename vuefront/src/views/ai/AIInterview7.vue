@@ -18,96 +18,110 @@
 
     <!-- Interview section -->
     <div class="device-check">
-      <h3 class="AI-interview-title">
-        질문 7<br /><span v-show="interviewStarted">(직무질문){{question7.totalq}}</span>
-      </h3>
-      <transition name="fade">
-        <div v-if="showInterviewSection">
-          <div class="interview-section">
-            <!-- Webcam section -->
-            <div class="ai-face-webcam-container">
-              <div
-                class="ai-face-webcam-frame"
-                :class="{
-                  'ai-face-recognition-active': isRecognizing,
-                  'ai-face-recognition-complete': isRecognitionComplete,
-                }"
-              >
-                <div class="ai-face-image-container">
-                  <video ref="videoElement" autoplay></video>
-                </div>
-                <div class="ai-face-recognition-overlay"></div>
-              </div>    
-            </div>
-
-            <!-- Timer section -->
-            <div class="timer-section">
-              <div class="timer-circle">
-                <svg viewBox="0 0 36 36">
-                  <path
-                    class="circle-bg"
-                    d="M18 2.0845
-                          a 15.9155 15.9155 0 0 1 0 31.831
-                          a 15.9155 15.9155 0 0 1 0 -31.831"
-                  />
-                  <path
-                    class="circle"
-                    :stroke-dasharray="progressTime + ', 100'"
-                    d="M18 2.0845
-                          a 15.9155 15.9155 0 0 1 0 31.831
-                          a 15.9155 15.9155 0 0 1 0 -31.831"
-                  />
-                </svg>
-                <div class="timer-text">{{ remainingTime }}<br />SECONDS</div>
+      <template v-if="!isInterviewCompleted">
+        <h3 class="AI-interview-title">
+          질문 7<br /><span v-show="interviewStarted">{{question7.totalq}}</span>
+        </h3>
+        <transition name="fade">
+          <div v-if="showInterviewSection">
+            <div class="interview-section">
+              <!-- Webcam section -->
+              <div class="ai-face-webcam-container">
+                <div
+                  class="ai-face-webcam-frame"
+                  :class="{
+                    'ai-face-recognition-active': isRecognizing,
+                    'ai-face-recognition-complete': isRecognitionComplete,
+                  }"
+                >
+                  <div class="ai-face-image-container">
+                    <video ref="videoElement" autoplay></video>
+                  </div>
+                  <div class="ai-face-recognition-overlay"></div>
+                </div>    
               </div>
 
-              <!-- Buttons -->
-              <button
-                class="btn btn-start-interview"
-                v-if="!interviewStarted"
-                @click="startInterview"
-              >
-                면접 시작
-              </button>
-              <button
-                class="btn btn-think-end"
-                v-if="isThinkingTime && !isThinkingTimeOver"
-                @click="endThinkingTime"
-              >
-                생각시간 종료
-              </button>
-              <div
-                class="button-group-vertical"
-                v-if="isAnsweringTime && remainingTime > 0"
-              >
+              <!-- Timer section -->
+              <div class="timer-section">
+                <div class="timer-circle">
+                  <svg viewBox="0 0 36 36">
+                    <path
+                      class="circle-bg"
+                      d="M18 2.0845
+                            a 15.9155 15.9155 0 0 1 0 31.831
+                            a 15.9155 15.9155 0 0 1 0 -31.831"
+                    />
+                    <path
+                      class="circle"
+                      :stroke-dasharray="progressTime + ', 100'"
+                      d="M18 2.0845
+                            a 15.9155 15.9155 0 0 1 0 31.831
+                            a 15.9155 15.9155 0 0 1 0 -31.831"
+                    />
+                  </svg>
+                  <div class="timer-text">{{ remainingTime }}<br />SECONDS</div>
+                </div>
+
+                <!-- Buttons -->
                 <button
-                  class="btn btn-retry"
-                  @click="restartInterview"
-                  :disabled="!restartButtonEnabled || hasRestarted"
+                  class="btn btn-start-interview"
+                  v-if="!interviewStarted"
+                  @click="startInterview"
                 >
-                  다시 시작하기
+                  면접 시작
                 </button>
-                <button class="btn btn-submit" @click="submitAnswer">
-                  답변 제출
+                <button
+                  class="btn btn-think-end"
+                  v-if="isThinkingTime && !isThinkingTimeOver"
+                  @click="endThinkingTime"
+                >
+                  생각시간 종료
                 </button>
+                <div
+                  class="button-group-vertical"
+                  v-if="isAnsweringTime && remainingTime > 0"
+                >
+                  <button
+                    class="btn btn-retry"
+                    @click="restartInterview"
+                    :disabled="!restartButtonEnabled || hasRestarted"
+                  >
+                    다시 시작하기
+                  </button>
+                  <button class="btn btn-submit" @click="submitAnswer">
+                    답변 제출
+                  </button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </transition>
-      <br />
+        </transition>
+        <br />
 
-      <!-- Instructions (always visible) -->
-      <div class="instruction-section">
-        <h4><strong>※ 면접시 주의사항</strong></h4>
-        <ul>
-          <li><strong style="color: mediumblue">면접 시작 버튼</strong>을 누르면 <strong style="color: mediumblue">생각 시간 30초 타이머</strong>가 활성화됩니다.</li>
-          <li>준비가 끝나면 '생각시간 종료' 버튼을 눌러 바로 답변을 시작할 수 있습니다.</li>
-          <li><strong style="color: mediumblue">답변 시간은 90초</strong>이며 그 전이라도 답변이 완료되면 답변 제출 버튼을 누르면 됩니다.</li>
-          <li>답변이 끝나면 '답변 제출' 버튼을 눌러 조기 종료할 수 있습니다.</li>
-          <li><strong style="color: mediumblue">재답변 기회는 답변 시작 후 20초 이후에 <strong style="color: red">1회</strong> 가능합니다.</strong></li>
-        </ul>
-      </div>
+        <!-- Instructions (always visible) -->
+        <div class="instruction-section">
+          <h4><strong>※ 면접시 주의사항</strong></h4>
+          <ul>
+            <li><strong style="color: mediumblue">면접 시작 버튼</strong>을 누르면 <strong style="color: mediumblue">생각 시간 30초 타이머</strong>가 활성화됩니다.</li>
+            <li>준비가 끝나면 '생각시간 종료' 버튼을 눌러 바로 답변을 시작할 수 있습니다.</li>
+            <li><strong style="color: mediumblue">답변 시간은 90초</strong>이며 그 전이라도 답변이 완료되면 답변 제출 버튼을 누르면 됩니다.</li>
+            <li>답변이 끝나면 '답변 제출' 버튼을 눌러 조기 종료할 수 있습니다.</li>
+            <li><strong style="color: mediumblue">재답변 기회는 답변 시작 후 20초 이후에 <strong style="color: red">1회</strong> 가능합니다.</strong></li>
+          </ul>
+        </div>
+      </template>
+      <template v-else>
+        <div class="interview-completed">
+          <h3 class="AI-interview-title">수고하셨습니다.</h3>
+          <br />
+          <h5>이제 모든 인성 AI면접을 마쳤습니다.</h5>
+          <h5>아래의 면접 결과 버튼을 눌러 결과지를 확인해 보시기 바랍니다.</h5>
+          <br />
+          <button class="btn btn-result" @click="viewResults">
+            면접 결과 확인
+          </button>
+        </div>
+      </template>
     </div>
   </div>
 </template>
@@ -118,28 +132,86 @@ import axios from 'axios';
 export default {
   data() {
     return {
-      progress: 64,
+      progress: 94,
       currentStep: 4,
       remainingTime: 30,
       progressTime: 100,
-      interval: null,
-      imageSrc: "img/interviewing.gif",
+      interval: null,      
       isThinkingTime: false,
       isThinkingTimeOver: false,
       isAnsweringTime: false,
       restartButtonEnabled: false,
-      allChecked: false,
       hasRestarted: false,
       showInterviewSection: false,
       interviewStarted: false,
       question7: JSON.parse(localStorage.getItem('questionlist'))[6],
+      isInterviewCompleted: false,
       mediaRecorder: null,
       recordedChunks: [],
       videoStream: null,
-      recordingInProgress: false // 추가된 플래그
+      recordingInProgress: false, // 추가된 플래그      
+      detail:[],
+      stt:[],
+      emotion:[],
+      position:[],
+      voice:[],
+      video_url:[],    
+      feedback:[],
+      intresult:{
+        sttresult:[],
+        eresult:[],
+        presult:[],
+        vresult:[]
+      },
+      escoreAverage:0,
+      pscoreAverage:0,
+      vscoreAverage:0,
+      eresultData:[
+        '감정분석 결과 상 종합 평가 문장 1',
+        '감정분석 결과 상 종합 평가 문장 2',
+        '감정분석 결과 중 종합 평가 문장 1',
+        '감정분석 결과 중 종합 평가 문장 2',
+        '감정분석 결과 하 종합 평가 문장 1',
+        '감정분석 결과 하 종합 평가 문장 2',
+      ],
+      presultData:[
+        '자세분석 결과 상 종합 평가 문장 1',
+        '자세분석 결과 상 종합 평가 문장 2',
+        '자세분석 결과 중 종합 평가 문장 1',
+        '자세분석 결과 중 종합 평가 문장 2',
+        '자세분석 결과 하 종합 평가 문장 1',
+        '자세분석 결과 하 종합 평가 문장 2',
+      ],
+      vresultData:[
+        '음성분석 결과 상 종합 평가 문장 1',
+        '음성분석 결과 상 종합 평가 문장 2',
+        '음성분석 결과 중 종합 평가 문장 1',
+        '음성분석 결과 중 종합 평가 문장 2',
+        '음성분석 결과 하 종합 평가 문장 1',
+        '음성분석 결과 하 종합 평가 문장 2',
+      ],
+      intresvo:{
+        memno:localStorage.getItem('memno'),
+        inttypecd:localStorage.getItem('inttypename')
+      },
+      detailvoList:[],
+      detailvo:{},
+      intfeedbkvo:{},
+      intno:0,
     };
   },
+  computed: {
+    averageEscore() {
+      const length = this.emotion.length;
+      let total = 0;
+      for (let i = 0; i < length; i++) {
+        total += this.emotion[i].escore;
+      }
+      return length ? total / length : 0;
+    }
+  },
   mounted() {
+    console.log(localStorage.getItem('inttypename'));
     console.log('첫 번째 질문 페이지');
     window.scrollTo(0, 0);
     this.convertTextToSpeech();
@@ -164,6 +236,7 @@ export default {
       }
     },
     startInterview() {
+      this.isThinkingTime = true;
       this.interviewStarted = true;
       this.startThinkingTime();
       this.$refs.audio.play();
@@ -272,17 +345,18 @@ export default {
     },
     submitAnswer() {
       console.log('제출누름')
+      this.progress = 100
       this.stopRecording(); // Stop the current recording
       this.uploadRecordedVideo(); // Upload the recorded video
     },
     uploadRecordedVideo() {
+      this.isInterviewCompleted = true;
       if (this.recordedChunks.length > 0) {
+        
         const recordedBlob = new Blob(this.recordedChunks, { type: 'video/webm' });
-
         // Prepare FormData to send the recorded video
         const formData = new FormData();
         formData.append('video', recordedBlob, 'interview.webm');
-
         // Send the video to the server
         axios.post(
           `${process.env.VUE_APP_DJANGO_APP_BACK_END_URL}/interview/question_detail`,
@@ -293,20 +367,180 @@ export default {
             },
           }
         )
-        .then(response => {
-          localStorage.setItem('q7detail', JSON.stringify(response.data));
+        .then(qres => {
+          localStorage.setItem('q7detail', JSON.stringify(qres.data));          
+
+          // const inttypename = localStorage.getItem('inttypename')
+          console.log("다들어있는거!!!!!",JSON.parse(localStorage.getItem("q7detail")))
+          const details = ["q1detail", "q2detail", "q3detail", "q4detail", "q5detail", "q6detail", "q7detail"];
+          details.forEach(key => {
+              const storedDetail = JSON.parse(localStorage.getItem(key));
+              
+              this.stt.push(storedDetail.answer || null);
+              this.emotion.push(storedDetail.emotion || { escore: 0 });
+              this.position.push(storedDetail.position || { pscore: 0 });
+              this.voice.push(storedDetail.voice || { vscore: 0 });
+              this.video_url.push(storedDetail.video_url || '');
+              this.feedback.push(storedDetail.aifeedback || '');
+          });        
+          
+          // emotion 배열에서 escore 값을 추출
+          const emotionScores = this.emotion.map(e => e.escore);
+          // position 배열에서 pscore 값을 추출
+          const positionScores = this.position.map(p => p.pscore);
+          // voice 배열에서 vscore 값을 추출
+          const voiceScores = this.voice.map(v => v.vscore);
+
+          // 각 배열의 평균 계산
+          this.escoreAverage = this.computeAverage(emotionScores);
+          this.pscoreAverage = this.computeAverage(positionScores);
+          this.vscoreAverage = this.computeAverage(voiceScores);
+
+          console.log('평균값확인')
+          console.log(this.escoreAverage)
+          console.log(this.pscoreAverage)
+          console.log(this.vscoreAverage)
+          
+
+          this.updateResults(this.escoreAverage, this.eresultData, 'eresult');
+          this.updateResults(this.pscoreAverage, this.presultData, 'presult');
+          this.updateResults(this.vscoreAverage, this.vresultData, 'vresult');
+
+          localStorage.setItem('efinalcmt',JSON.stringify(this.intresult.eresult))
+          localStorage.setItem('pfinalcmt',JSON.stringify(this.intresult.presult))
+          localStorage.setItem('vfinalcmt',JSON.stringify(this.intresult.vresult))
+          console.log(`JSON.parse(localStorage.getItem('efinalcmt'))`,JSON.parse(localStorage.getItem('efinalcmt')));
+
+
+          axios.post(`${process.env.VUE_APP_BACK_END_URL}/interview/setintres`, {
+              memno: localStorage.getItem('memno'),
+              inttypecd: 2
+          })
+          .then(setintres => {
+              console.log('TBINTRES에 INSERT 완료');
+              console.log('intno값 반환 => ', setintres.data);
+              this.intno = setintres.data;
+
+              // detailvoList를 초기화
+              this.detailvoList = [];
+
+              // 반복문을 통해 detailvo 객체를 생성하고 detailvoList에 추가
+              for (let i = 0; i < 7; i++) {
+                  let detailvo = {
+                      intno: this.intno,
+                      qno: i + 1,
+                      aiqno: i <= 4 ? JSON.parse(localStorage.getItem('questionlist'))[i].totalqno : null,
+                      cnsqno: i > 4 ? JSON.parse(localStorage.getItem('questionlist'))[i].totalqno : null,
+                      question: JSON.parse(localStorage.getItem('questionlist'))[i].totalq,
+                      answer: this.stt[i],
+                      ecntgood: this.emotion[i].ecntgood,
+                      ecntsoso: this.emotion[i].ecntsoso,
+                      ecntbad: this.emotion[i].ecntbad,
+                      pbadcnt: this.position[i].pbadcnt,
+                      vhertz: this.voice[i].vhertz,
+                      vamplit: this.voice[i].vamplit,
+                      vempty: this.voice[i].vempty,
+                      aifeedbk: this.feedback[i],
+                      escore: this.emotion[i].escore,
+                      pscore: this.position[i].pscore,
+                      vscore: this.voice[i].vscore
+                  };
+                  this.detailvoList.push(detailvo);
+              }
+              console.log('this.detailvo', this.detailvoList);
+              console.log('this.intresult.eresult => ',this.intresult.eresult[0])
+
+
+              axios.post(`${process.env.VUE_APP_DJANGO_APP_BACK_END_URL}/interview/interview_result`, this.stt)
+              .then(response => {
+                // 서버에서 반환한 JSON 응답 처리            
+                this.intresult.sttresult = response.data;
+                console.log(this.intresult.sttresult);
+                localStorage.setItem('sttfinalcmt',JSON.stringify(this.intresult.sttresult))
+                console.log('sttfinalcmt',this.intresult.sttresult.sttresult1);
+
+                this.intfeedbkvo.intno = this.intno
+                this.intfeedbkvo.efeed1 = this.intresult.eresult[0];
+                this.intfeedbkvo.efeed2 = this.intresult.eresult[1];
+                this.intfeedbkvo.pfeed1 = this.intresult.presult[0];
+                this.intfeedbkvo.pfeed2 = this.intresult.presult[1];
+                this.intfeedbkvo.vfeed1 = this.intresult.vresult[0];
+                this.intfeedbkvo.vfeed2 = this.intresult.vresult[1];
+                this.intfeedbkvo.sttfeed1 = this.intresult.sttresult.sttresult1;
+                this.intfeedbkvo.sttfeed2 = this.intresult.sttresult.sttresult2;
+                console.log('this.intfeedbkvo => ',this.intfeedbkvo)
+                
+                axios.post(`${process.env.VUE_APP_BACK_END_URL}/interview/setintfeedbk`, this.intfeedbkvo)
+                .then(()=>{
+                  console.log('피드백인서트완료')
+                  axios.post(`${process.env.VUE_APP_BACK_END_URL}/interview/setintdetail`, this.detailvoList)
+                  .then(()=>{
+                    console.log('디테일인서트완료')
+                    
+                  })
+                })            
+                
+              
+
+              })
+              .catch(error => {
+                console.error("There was an error!", error);
+              });
+              
+              
+          })
+          .then(res => {
+              console.log('TBINTDETAIL에 INSERT 완료');
+          })
+          .catch(error => {
+              console.error('요청 중 오류 발생:', error);
+          });
+
+          
+          console.log(JSON.parse(localStorage.getItem('questionlist')))
+          
+
+
           
         })
         .catch(error => {
           console.error('Error uploading video:', error);
           alert('Failed to upload video');
         });
-        this.$router.push({ name: "ResDuty" });
       }
     },
     stopCamera() {
       this.stopStreaming();
     },
+    viewResults() {
+      this.$router.push({ name: "ResDuty" });
+    },
+    computeAverage(numbersArray) {
+      if (numbersArray.length === 0) return 0; // 배열이 비어 있을 경우 0 반환
+      const total = numbersArray.reduce((acc, num) => acc + num, 0);
+      return total / numbersArray.length;
+    },
+    updateResults(average, resultData, resultKey) {
+      // 빈 배열을 초기화
+      this.intresult[resultKey] = [];
+
+      if (average >= 70) {
+        this.intresult[resultKey].push(resultData[0]);
+        this.intresult[resultKey].push(resultData[1]);
+        console.log(resultData[0]);
+        console.log(resultData[1]);
+      } else if (average >= 40) {
+        this.intresult[resultKey].push(resultData[2]);
+        this.intresult[resultKey].push(resultData[3]);
+        console.log(resultData[2]);
+        console.log(resultData[3]);
+      } else {
+        this.intresult[resultKey].push(resultData[4]);
+        this.intresult[resultKey].push(resultData[5]);
+        console.log(resultData[4]);
+        console.log(resultData[5]);
+      }
+    }
   },
   beforeUnmount() {
     this.stopCamera();
@@ -550,5 +784,28 @@ svg {
 
 .AI-Setting::-webkit-scrollbar-thumb:hover {
   background: #555;
+}
+
+/* 추가된 스타일 */
+.interview-completed {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.btn-result {
+  background-color: #32cd32;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 1.1rem;
+  transition: background-color 0.5s, color 0.5s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.btn-result:hover {
+  background-color: #2ab02a;
 }
 </style>

@@ -61,7 +61,7 @@ public class InterviewController {
 
     @PostMapping("/setintdetail")
     public void setIntDetail(@RequestBody List<IntDetailVO> detailvoList) {
-        for (int i = 0; i <= 4; i++) {
+        for (int i = 0; i <= 6; i++) {
 
             System.out.println(i + 1 + "번쨰 intno" + detailvoList.get(i).getIntno());
             System.out.println(i + 1 + "번쨰 qno" + detailvoList.get(i).getQno());

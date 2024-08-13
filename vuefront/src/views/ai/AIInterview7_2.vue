@@ -19,7 +19,7 @@
     <!-- Interview section -->
     <div class="device-check">
       <h3 class="AI-interview-title">
-        질문 6<br /><span v-show="interviewStarted">(직무질문){{question6.totalq}}</span>
+        질문 7<br /><span v-show="interviewStarted">(직무질문){{question7.totalq}}</span>
       </h3>
       <transition name="fade">
         <div v-if="showInterviewSection">
@@ -118,7 +118,7 @@ import axios from 'axios';
 export default {
   data() {
     return {
-      progress: 87,
+      progress: 64,
       currentStep: 4,
       remainingTime: 30,
       progressTime: 100,
@@ -132,7 +132,7 @@ export default {
       hasRestarted: false,
       showInterviewSection: false,
       interviewStarted: false,
-      question6:JSON.parse(localStorage.getItem('questionlist'))[5],
+      question7: JSON.parse(localStorage.getItem('questionlist'))[6],
       mediaRecorder: null,
       recordedChunks: [],
       videoStream: null,
@@ -153,7 +153,7 @@ export default {
       try {
         const response = await axios.post(
           `${process.env.VUE_APP_DJANGO_APP_BACK_END_URL}/tts/text_to_speech/`,
-          { text: this.question6.totalq },
+          { text: this.question7.totalq },
           { responseType: 'blob' }
         );
         const url = window.URL.createObjectURL(new Blob([response.data], { type: 'audio/mpeg' }));
@@ -294,14 +294,14 @@ export default {
           }
         )
         .then(response => {
-          localStorage.setItem('q6detail', JSON.stringify(response.data));
+          localStorage.setItem('q7detail', JSON.stringify(response.data));
           
         })
         .catch(error => {
           console.error('Error uploading video:', error);
           alert('Failed to upload video');
         });
-        this.$router.push({ name: "AIInterview7" });
+        this.$router.push({ name: "ResDuty" });
       }
     },
     stopCamera() {
