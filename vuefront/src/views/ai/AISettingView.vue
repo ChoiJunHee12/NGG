@@ -119,6 +119,7 @@ export default {
   },
   mounted() {
     window.scrollTo(0, 0);
+
     // memno: localStorage.getItem("memno");
   },
   computed: {
