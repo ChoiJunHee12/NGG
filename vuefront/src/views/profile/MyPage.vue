@@ -202,11 +202,16 @@ import axios from "axios";
 export default {
   data() {
     return {
+      // memno: localStorage.getItem("memno"),
+      memno: 51,
       activeTab: "info",
       isModalOpen: false,
       myprofile: {},
       myedu: {},
-      tempProfile: {},
+      tempProfile: {
+        password: "",
+      },
+      originalPassword: "", // 기존 비밀번호를 저장
       loccdMapping: {
         1: "서울",
         2: "경기도",
@@ -228,6 +233,7 @@ export default {
   },
   mounted() {
     this.fetchMemberDetails();
+    this.originalPassword = this.tempProfile.password;
   },
   computed: {
     categcdString: {
@@ -267,31 +273,39 @@ export default {
     async uploadImage(file) {
       const formData = new FormData();
       formData.append("file", file);
-      formData.append("memno", this.myprofile.memno); // 회원 번호 추가
+      formData.append("memno", this.memno); // 회원 번호 추가
+      console.log(formData);
 
       try {
         const response = await axios.post(
-          `${process.env.VUE_APP_BACK_END_URL}/mypage/profileImage?memno=51`,
+          `${process.env.VUE_APP_BACK_END_URL}/membership/profileImage`,
           formData,
           {
             headers: {
               "Content-Type": "multipart/form-data",
             },
+            params: {
+              memno: this.memno,
+            },
           }
         );
 
         if (response.status === 200) {
-          // 업로드 성공 시 이미지 소스 업데이트
-          const imgName = response.data; // 또는 response.data.imgName 등으로 조정
+          const imgName = response.data; // 또는 response.data.imgName
           const timestamp = new Date().getTime(); // 밀리초 단위의 타임스탬프
+
+          // 이미지 URL에 타임스탬프 추가
           this.profileImageSrc = `/img/upimg/${imgName}?t=${timestamp}`;
-          console.log(response.data);
+          console.log("Image uploaded successfully:", response.data);
+
+          // Vue의 nextTick을 사용하여 DOM 업데이트 후에 이미지 소스를 강제로 변경
           this.$nextTick(() => {
             const img = this.$el.querySelector("img");
             if (img) {
-              img.src = img.src; // 이미지를 강제로 새로 고침
+              img.src = `/img/upimg/${imgName}?t=${timestamp}`; // URL 업데이트
             }
           });
+
           alert("프로필 이미지가 성공적으로 업데이트되었습니다.");
         }
       } catch (error) {
@@ -301,7 +315,9 @@ export default {
     },
     fetchMemberDetails() {
       axios
-        .get(`${process.env.VUE_APP_BACK_END_URL}/mypage/profile?memno=51`)
+        .get(
+          `${process.env.VUE_APP_BACK_END_URL}/membership/profile?memno=${this.memno}`
+        )
         .then((response) => {
           const data = response.data;
           this.myprofile = {
@@ -335,9 +351,10 @@ export default {
 
     handleSubmit() {
       const dataToSend = { ...this.tempProfile };
+
       axios
         .put(
-          `${process.env.VUE_APP_BACK_END_URL}/mypage/profile?memno=51`,
+          `${process.env.VUE_APP_BACK_END_URL}/membership/profile?memno=${this.memno}`,
           dataToSend
         )
         .then((response) => {
