@@ -1,9 +1,13 @@
 <template>
   <div id="content" class="AI-Setting">
-    <!-- Progress bar and steps -->
+    <!-- TTS audio 숨김-->
+    <audio ref="audio" style="display: none;"></audio>
+    <!-- Progress bar -->
     <div class="progress-bar">
       <div class="progress" :style="{ width: progress + '%' }"></div>
     </div>
+
+    <!-- Progress steps -->
     <div class="progress-text">
       <span :class="{ active: currentStep === 1 }">01. 환경점검</span>
       <span :class="{ active: currentStep === 2 }">02. 사용자 등록</span>
@@ -14,125 +18,108 @@
 
     <!-- Interview section -->
     <div class="device-check">
-      <template v-if="!isInterviewCompleted">
-        <h3 class="AI-interview-title">
-          질문 7<br />(해당 직무)와 관련된 최근 트렌드나 기술 동향에 대해 어떻게
-          생각하시나요? <br />이러한 변화가 우리 회사와 해당 직무에 어떤 영향을
-          미칠 것으로 예상하십니까?
-        </h3>
-        <transition name="fade">
-          <div v-if="showInterviewSection">
-            <div class="interview-section">
-              <div class="video-preview">
-                <img :src="imageSrc" alt="interview preview" />
+      <h3 class="AI-interview-title">
+        질문 7<br /><span v-show="interviewStarted">(직무질문){{question7.totalq}}</span>
+      </h3>
+      <transition name="fade">
+        <div v-if="showInterviewSection">
+          <div class="interview-section">
+            <!-- Webcam section -->
+            <div class="ai-face-webcam-container">
+              <div
+                class="ai-face-webcam-frame"
+                :class="{
+                  'ai-face-recognition-active': isRecognizing,
+                  'ai-face-recognition-complete': isRecognitionComplete,
+                }"
+              >
+                <div class="ai-face-image-container">
+                  <video ref="videoElement" autoplay></video>
+                </div>
+                <div class="ai-face-recognition-overlay"></div>
+              </div>    
+            </div>
+
+            <!-- Timer section -->
+            <div class="timer-section">
+              <div class="timer-circle">
+                <svg viewBox="0 0 36 36">
+                  <path
+                    class="circle-bg"
+                    d="M18 2.0845
+                          a 15.9155 15.9155 0 0 1 0 31.831
+                          a 15.9155 15.9155 0 0 1 0 -31.831"
+                  />
+                  <path
+                    class="circle"
+                    :stroke-dasharray="progressTime + ', 100'"
+                    d="M18 2.0845
+                          a 15.9155 15.9155 0 0 1 0 31.831
+                          a 15.9155 15.9155 0 0 1 0 -31.831"
+                  />
+                </svg>
+                <div class="timer-text">{{ remainingTime }}<br />SECONDS</div>
               </div>
 
-              <!-- Timer section -->
-              <div class="timer-section">
-                <div class="timer-circle">
-                  <svg viewBox="0 0 36 36">
-                    <path
-                      class="circle-bg"
-                      d="M18 2.0845
-                          a 15.9155 15.9155 0 0 1 0 31.831
-                          a 15.9155 15.9155 0 0 1 0 -31.831"
-                    />
-                    <path
-                      class="circle"
-                      :stroke-dasharray="progressTime + ', 100'"
-                      d="M18 2.0845
-                          a 15.9155 15.9155 0 0 1 0 31.831
-                          a 15.9155 15.9155 0 0 1 0 -31.831"
-                    />
-                  </svg>
-                  <div class="timer-text">{{ remainingTime }}<br />SECONDS</div>
-                </div>
-
-                <!-- Buttons -->
+              <!-- Buttons -->
+              <button
+                class="btn btn-start-interview"
+                v-if="!interviewStarted"
+                @click="startInterview"
+              >
+                면접 시작
+              </button>
+              <button
+                class="btn btn-think-end"
+                v-if="isThinkingTime && !isThinkingTimeOver"
+                @click="endThinkingTime"
+              >
+                생각시간 종료
+              </button>
+              <div
+                class="button-group-vertical"
+                v-if="isAnsweringTime && remainingTime > 0"
+              >
                 <button
-                  class="btn btn-start-interview"
-                  v-if="!interviewStarted"
-                  @click="startInterview"
+                  class="btn btn-retry"
+                  @click="restartInterview"
+                  :disabled="!restartButtonEnabled || hasRestarted"
                 >
-                  면접 시작
+                  다시 시작하기
                 </button>
-                <button
-                  class="btn btn-think-end"
-                  v-if="isThinkingTime && !isThinkingTimeOver"
-                  @click="endThinkingTime"
-                >
-                  생각시간 종료
+                <button class="btn btn-submit" @click="submitAnswer">
+                  답변 제출
                 </button>
-                <div
-                  class="button-group-vertical"
-                  v-if="isAnsweringTime && remainingTime > 0"
-                >
-                  <button
-                    class="btn btn-retry"
-                    @click="restartInterview"
-                    :disabled="!restartButtonEnabled || hasRestarted"
-                  >
-                    다시 시작하기
-                  </button>
-                  <button class="btn btn-submit" @click="submitAnswer">
-                    답변 제출
-                  </button>
-                </div>
               </div>
             </div>
           </div>
-        </transition>
-        <br />
-        <!-- Instructions (always visible) -->
-        <div class="instruction-section">
-          <h4><strong>※ 면접시 주의사항</strong></h4>
-          <ul>
-            <li>
-              <strong style="color: mediumblue">면접 시작 버튼</strong>을 누르면
-              <strong style="color: mediumblue">생각 시간 30초 타이머</strong>가
-              활성화됩니다.
-            </li>
-            <li>
-              준비가 끝나면 '생각시간 종료' 버튼을 눌러 바로 답변을 시작할 수
-              있습니다.
-            </li>
-            <li>
-              <strong style="color: mediumblue">답변 시간은 90초</strong>이며 그
-              전이라도 답변이 완료되면 답변 제출 버튼을 누르면 됩니다.
-            </li>
-            <li>
-              답변이 끝나면 '답변 제출' 버튼을 눌러 조기 종료할 수 있습니다.
-            </li>
-            <li>
-              <strong style="color: mediumblue"
-                >재답변 기회는 답변 시작 후 20초 이내에 1회 가능합니다.</strong
-              >
-            </li>
-          </ul>
         </div>
-      </template>
-      <template v-else>
-        <div class="interview-completed">
-          <h3 class="AI-interview-title">수고하셨습니다.</h3>
-          <br />
-          <h5>이제 모든 AI면접을 마쳤습니다.</h5>
-          <h5>아래의 면접 결과 버튼을 눌러 결과지를 확인해 보시기 바랍니다.</h5>
-          <br />
-          <button class="btn btn-result" @click="viewResults">
-            면접 결과 확인
-          </button>
-        </div>
-      </template>
+      </transition>
+      <br />
+
+      <!-- Instructions (always visible) -->
+      <div class="instruction-section">
+        <h4><strong>※ 면접시 주의사항</strong></h4>
+        <ul>
+          <li><strong style="color: mediumblue">면접 시작 버튼</strong>을 누르면 <strong style="color: mediumblue">생각 시간 30초 타이머</strong>가 활성화됩니다.</li>
+          <li>준비가 끝나면 '생각시간 종료' 버튼을 눌러 바로 답변을 시작할 수 있습니다.</li>
+          <li><strong style="color: mediumblue">답변 시간은 90초</strong>이며 그 전이라도 답변이 완료되면 답변 제출 버튼을 누르면 됩니다.</li>
+          <li>답변이 끝나면 '답변 제출' 버튼을 눌러 조기 종료할 수 있습니다.</li>
+          <li><strong style="color: mediumblue">재답변 기회는 답변 시작 후 20초 이후에 <strong style="color: red">1회</strong> 가능합니다.</strong></li>
+        </ul>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   data() {
     return {
-      progress: 100,
-      currentStep: 5,
+      progress: 64,
+      currentStep: 4,
       remainingTime: 30,
       progressTime: 100,
       interval: null,
@@ -144,19 +131,42 @@ export default {
       allChecked: false,
       hasRestarted: false,
       showInterviewSection: false,
-      isInterviewCompleted: false,
       interviewStarted: false,
+      question7: JSON.parse(localStorage.getItem('questionlist'))[6],
+      mediaRecorder: null,
+      recordedChunks: [],
+      videoStream: null,
+      recordingInProgress: false // 추가된 플래그
     };
   },
   mounted() {
+    console.log('첫 번째 질문 페이지');
+    window.scrollTo(0, 0);
+    this.convertTextToSpeech();
     setTimeout(() => {
       this.showInterviewSection = true;
+      this.startStreaming(); // 스트리밍 시작
     }, 2000);
   },
   methods: {
+    async convertTextToSpeech() {
+      try {
+        const response = await axios.post(
+          `${process.env.VUE_APP_DJANGO_APP_BACK_END_URL}/tts/text_to_speech/`,
+          { text: this.question7.totalq },
+          { responseType: 'blob' }
+        );
+        const url = window.URL.createObjectURL(new Blob([response.data], { type: 'audio/mpeg' }));
+        this.$refs.audio.src = url;
+      } catch (error) {
+        console.error('Error converting text to speech:', error);
+        alert('Failed to convert text to speech');
+      }
+    },
     startInterview() {
       this.interviewStarted = true;
       this.startThinkingTime();
+      this.$refs.audio.play();
     },
     startThinkingTime() {
       this.isThinkingTime = true;
@@ -177,7 +187,6 @@ export default {
       this.isAnsweringTime = true;
       this.remainingTime = 90;
       this.progressTime = 100;
-      this.imageSrc = "img/interviewing.gif";
       this.startAnsweringTime();
     },
     startAnsweringTime() {
@@ -190,9 +199,60 @@ export default {
           }
         } else {
           clearInterval(this.interval);
-          this.submitAnswer();
+          this.submitAnswer(); // 녹화가 완료되었는지 여부를 체크하고 전송
         }
       }, 1000);
+
+      // Check and start recording if answering time is active
+      if (this.isAnsweringTime && !this.recordingInProgress) {
+        this.startRecording(); // 녹화 시작
+      }
+    },
+    startStreaming() {
+      navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+        .then(stream => {
+          this.videoStream = stream;
+          this.$refs.videoElement.srcObject = stream;
+          this.isCameraStarted = true;
+
+          // Initialize MediaRecorder
+          this.initMediaRecorder();
+        })
+        .catch(error => {
+          console.error('Error starting streaming:', error);
+          alert('Failed to start video streaming');
+        });
+    },
+    stopStreaming() {
+      if (this.videoStream) {
+        this.videoStream.getTracks().forEach(track => track.stop());
+        this.videoStream = null;
+      }
+    },
+    initMediaRecorder() {
+      if (this.videoStream) {
+        this.mediaRecorder = new MediaRecorder(this.videoStream);
+        this.mediaRecorder.ondataavailable = (event) => {
+          if (event.data.size > 0) {
+            this.recordedChunks.push(event.data);
+          }
+        };
+        this.mediaRecorder.onstop = () => {
+          console.log('Recording stopped');
+        };
+      }
+    },
+    startRecording() {
+      if (this.mediaRecorder) {
+        this.mediaRecorder.start();
+        this.recordingInProgress = true; // 녹화가 진행 중임을 표시
+      }
+    },
+    stopRecording() {
+      if (this.mediaRecorder && this.recordingInProgress) {
+        this.mediaRecorder.stop();
+        this.recordingInProgress = false;
+      }
     },
     restartInterview() {
       if (!this.hasRestarted) {
@@ -202,19 +262,58 @@ export default {
         this.progressTime = 100;
         this.restartButtonEnabled = false;
         this.startAnsweringTime();
+
+        // Stop current recording and start a new one
+        this.stopRecording();
+        this.recordedChunks = [];
+        this.initMediaRecorder();
+        this.startRecording();
       }
     },
     submitAnswer() {
-      clearInterval(this.interval);
-      this.allChecked = true;
-      this.isInterviewCompleted = true;
+      console.log('제출누름')
+      this.stopRecording(); // Stop the current recording
+      this.uploadRecordedVideo(); // Upload the recorded video
     },
-    viewResults() {
-      this.$router.push({ name: "ResDuty" });
+    uploadRecordedVideo() {
+      if (this.recordedChunks.length > 0) {
+        const recordedBlob = new Blob(this.recordedChunks, { type: 'video/webm' });
+
+        // Prepare FormData to send the recorded video
+        const formData = new FormData();
+        formData.append('video', recordedBlob, 'interview.webm');
+
+        // Send the video to the server
+        axios.post(
+          `${process.env.VUE_APP_DJANGO_APP_BACK_END_URL}/interview/question_detail`,
+          formData,
+          {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          }
+        )
+        .then(response => {
+          localStorage.setItem('q7detail', JSON.stringify(response.data));
+          
+        })
+        .catch(error => {
+          console.error('Error uploading video:', error);
+          alert('Failed to upload video');
+        });
+        this.$router.push({ name: "ResDuty" });
+      }
+    },
+    stopCamera() {
+      this.stopStreaming();
     },
   },
+  beforeUnmount() {
+    this.stopCamera();
+  }
 };
 </script>
+
 
 <style scoped>
 .progress-bar {
@@ -348,9 +447,7 @@ svg {
   text-align: center;
 }
 
-.btn-think-end {
-  background-color: #07d0a9;
-  color: #ffffff;
+.btn {
   padding: 10px 20px;
   border: none;
   border-radius: 5px;
@@ -359,6 +456,11 @@ svg {
   font-size: 1.1rem;
   transition: background-color 0.5s, color 0.5s;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.btn-think-end {
+  background-color: #07d0a9;
+  color: #ffffff;
 }
 
 .btn-think-end:hover {
@@ -368,14 +470,6 @@ svg {
 .btn-start-interview {
   background-color: #1659de;
   color: #ffffff;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-weight: bold;
-  font-size: 1.1rem;
-  transition: background-color 0.5s, color 0.5s;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .btn-start-interview:hover {
@@ -383,27 +477,18 @@ svg {
 }
 
 .btn-retry {
-  background-color: #ffa500 !important;
-  color: #ffffff !important;
+  background-color: #ffa500;
+  color: #ffffff;
   margin-top: 10px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .btn-retry:hover {
-  background-color: #ff8c00 !important;
+  background-color: #ff8c00;
 }
 
 .btn-submit {
   background-color: #ff0000;
   color: #ffffff;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-weight: bold;
-  font-size: 1.1rem;
-  transition: background-color 0.5s, color 0.5s;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .btn-submit:hover {
@@ -451,30 +536,6 @@ svg {
   left: 0;
 }
 
-/* 추가된 스타일 */
-.interview-completed {
-  text-align: center;
-  margin-top: 20px;
-}
-
-.btn-result {
-  background-color: #32cd32;
-  color: white;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-weight: bold;
-  font-size: 1.1rem;
-  transition: background-color 0.5s, color 0.5s;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-}
-
-.btn-result:hover {
-  background-color: #2ab02a;
-}
-
-/* 스크롤바 스타일링 (선택적) */
 .AI-Setting::-webkit-scrollbar {
   width: 10px;
 }

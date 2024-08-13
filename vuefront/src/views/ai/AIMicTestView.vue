@@ -17,15 +17,53 @@
     <!-- Interview section -->
     <div class="device-check">
       <h3 class="AI-interview-title">음성 인식을 시작합니다</h3>
-      <h5>응시자의 음성을 인식하는 단계입니다.</h5>
+      <h3 style="font-weight:bold; margin-bottom:10px;">응시자의 음성을 인식하는 단계입니다.</h3>
       <h5>
-        <strong style="color: mediumblue">아래 녹음하기 버튼</strong>을 누른 뒤,
-        <strong style="color: mediumblue"
-          >"만나서 반가워요. 저는 지원자 내가꿈입니다"</strong
-        >라고 말씀해 주세요.
+        <p style="margin-bottom:6px;"><strong style="color: mediumblue">아래 녹음하기 버튼</strong>을 누른 뒤,
+        <strong style="color: mediumblue">"만나서 반가워요. 저는 지원자 {{memname}}입니다"</strong>라고 말씀해 주세요.</p>
+        <strong style="color: red">녹음 중지 버튼</strong>을 누르면, 
+        <strong style="color: mediumblue">인식된 음성이 텍스트로</strong> 나타납니다.
       </h5>
 
-      <!-- Webcam section -->
+
+      <div class="canvas-container">
+        <div class="canvas-frame">
+          <canvas class="audio-canvas" ref="visualizerCanvas" width= "640px" height= "480px" ></canvas>
+              
+              <button 
+              v-if="isRecording==1"
+              class="btn btn-recognition"
+              @click="startRecording">
+                녹음하기
+              </button>
+              <button 
+              v-if="isRecording==2"
+              class="btn btn-recognition btn-recording"               
+              @click="stopRecording">
+                녹음 중지
+              </button>
+              
+              <div v-if="isRecording==3" class="re-or-done">
+                <button
+                  class="btn btn-retry"               
+                  @click="startRecording">
+                  다시하기
+                </button>
+                <button
+                  class="btn btn-success"               
+                  @click="doneRecord">
+                  완료하기
+                </button>
+              </div>
+              <h5 class="stt-result">{{sttResult}}</h5>
+        </div>
+          
+      </div>
+          
+
+
+
+      <!-- Webcam section 
       <div class="webcam-container">
         <div class="webcam-frame">
           <video ref="video" autoplay muted></video>
@@ -36,7 +74,7 @@
             <img src="img/mictest.gif" class="mic-test-gif" />
           </div>
 
-          <!-- Buttons -->
+          Buttons
           <button
             class="btn btn-recognition"
             :class="{
@@ -51,7 +89,11 @@
             {{ buttonText }}
           </button>
         </div>
-      </div>
+      </div>-->
+
+
+
+
       <div class="device-check-btn">
         <button class="btn btn-pre" @click="handleBack">< 이전</button>
         <transition name="fade" mode="out-in">
@@ -70,18 +112,42 @@
 </template>
 
 <script>
+import axios from 'axios';
 export default {
   data() {
-    return {
+    return {            
+      memname:'',
       progress: 40,
       currentStep: 2,
       isRecognizing: false,
       isRecognitionComplete: false,
-      isRecording: false,
+      isRecording: 1,
       recognitionStatus: "",
       buttonText: "녹음하기",
       hasAttempted: false,
+      memno:'',
+      audioContext: null,
+      analyser: null,
+      dataArray: null,
+      canvasContext: null,
+      bufferLength: 0,
+      isVisualizing: false, // 시각화 상태를 추적
+      stream: null,
+      recordedChunks: [],
+      sttResult:'',
+      mediaRecorder: null,
     };
+  },
+  mounted() {
+    window.scrollTo(0, 0);
+    this.memno = localStorage.getItem('memno')
+    axios.get(`${process.env.VUE_APP_BACK_END_URL}/interview/getname?memno=${this.memno}`)
+        .then((res) => {
+          this.memname=res.data;
+        })
+        .catch((error) => {
+          console.error("에러발생 에러발생");
+        });
   },
   methods: {
     handleBack() {
@@ -90,40 +156,127 @@ export default {
     handleNext() {
       this.$router.push({ name: "AIInterviewChoice" });
     },
-    toggleRecording() {
-      if (this.isRecognitionComplete) return; // 이미 완료된 경우 함수 실행 중지
+    async startRecording() {
+      if (this.isVisualizing) return; // Skip if already visualizing
+      this.sttResult='';
+      this.isRecognitionComplete = false;
+          
+      this.isRecording = 2;
+      this.recordedChunks = []; // Reset recorded chunks
 
-      if (this.isRecording) {
-        this.stopRecording();
-      } else {
-        this.startRecording();
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        this.stream = stream; // Save the stream for stopping later
+
+        // Start media recorder
+        this.mediaRecorder = new MediaRecorder(stream);
+        this.mediaRecorder.ondataavailable = (event) => {
+          if (event.data.size > 0) {
+            this.recordedChunks.push(event.data);
+          }
+        };
+        this.mediaRecorder.onstop = this.handleStop;
+        this.mediaRecorder.start();
+
+        // Initialize audio context and analyser if needed
+        this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        this.analyser = this.audioContext.createAnalyser();
+        const source = this.audioContext.createMediaStreamSource(stream);
+        source.connect(this.analyser);
+        this.analyser.fftSize = 2048;
+        this.bufferLength = this.analyser.frequencyBinCount;
+        this.dataArray = new Uint8Array(this.bufferLength);
+        const canvas = this.$refs.visualizerCanvas;
+        this.canvasContext = canvas.getContext('2d');
+        this.isVisualizing = true;
+        this.draw();
+      } catch (error) {
+        console.error('Microphone access denied:', error);
       }
-    },
-    startRecording() {
-      this.isRecording = true;
-      this.buttonText = "녹음 중지";
-      this.recognitionStatus = "음성 인식 중...";
-      this.hasAttempted = true;
-      // 여기에 실제 음성 인식 로직을 구현합니다.
-
-      // 예시: 6초 후 인식 완료
-      setTimeout(() => {
-        this.isRecognitionComplete = true; // 인식 성공 시 상태 변경
-        this.stopRecording();
-      }, 6000);
     },
     stopRecording() {
-      this.isRecording = false;
-      if (this.isRecognitionComplete) {
-        this.buttonText = "음성 인식 성공";
-        this.recognitionStatus = "음성 인식 성공";
-      } else {
-        this.buttonText = "다시하기";
-        this.recognitionStatus = "음성 인식 실패";
+      if (this.mediaRecorder) {
+        this.mediaRecorder.stop();      
+        
+        // 시각화 중지
+        this.isVisualizing = false;
+
+        // 오디오 스트림 중지
+        if (this.stream) {
+          const tracks = this.stream.getTracks();
+          tracks.forEach(track => track.stop());
+        }
+
+        // 오디오 컨텍스트 종료
+        if (this.audioContext && this.audioContext.state !== 'closed') {
+          this.audioContext.close();
+        }
+
+        // 시각화 종료 시, Canvas 초기화
+        if (this.canvasContext) {
+          this.canvasContext.clearRect(0, 0, this.canvasContext.canvas.width, this.canvasContext.canvas.height);
+        }
+
+        // 녹음된 오디오를 blob에 저장해서 서버로 보냄.
+        this.handleStop();
+
+        this.isRecording = 3;
       }
     },
+    handleStop() {
+      // This function is called when mediaRecorder stops
+      const blob = new Blob(this.recordedChunks, { type: 'audio/wav' });
+      this.uploadAudio(blob);
+    },
+    async uploadAudio(blob) {
+      const formData = new FormData();
+      formData.append('audio', blob, 'recording.wav');
+      
+      try {
+        const response = await axios.post(`${process.env.VUE_APP_DJANGO_APP_BACK_END_URL}/interview/speach_text`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+        console.log('Server response:', response.data.result);        
+        // Handle server response
+        this.sttResult = response.data.result;
+      } catch (error) {
+        console.error('Error uploading audio:', error);
+      }
+    },
+    doneRecord() {
+      this.isRecognitionComplete = true;
+    },
+    draw() {
+      if (!this.isVisualizing) return;
+      requestAnimationFrame(this.draw);
+      this.analyser.getByteTimeDomainData(this.dataArray);
+      this.canvasContext.clearRect(0, 0, this.canvasContext.canvas.width, this.canvasContext.canvas.height);
+      this.canvasContext.lineWidth = 2;
+      this.canvasContext.strokeStyle = '#07d0a9';
+      this.canvasContext.beginPath();
+      const sliceWidth = this.canvasContext.canvas.width * 1.0 / this.bufferLength;
+      let x = 0;
+      for (let i = 0; i < this.bufferLength; i++) {
+        const v = this.dataArray[i] / 128.0;
+        const y = v * this.canvasContext.canvas.height / 2;
+        if (i === 0) {
+          this.canvasContext.moveTo(x, y);
+        } else {
+          this.canvasContext.lineTo(x, y);
+        }
+        x += sliceWidth;
+      }
+      this.canvasContext.lineTo(this.canvasContext.canvas.width, this.canvasContext.canvas.height / 2);
+      this.canvasContext.stroke();
+    },
   },
+  beforeUnmount() {
+    this.stopRecording(); // 컴포넌트가 언마운트되기 전에 녹음 중지
+  }
 };
+
 </script>
 
 <style scoped>
@@ -219,9 +372,6 @@ export default {
 }
 
 .image-container {
-  position: absolute;
-  top: 50%;
-  left: 50%;
   transform: translate(-50%, -50%);
   width: 100%;
   height: 100%;
@@ -329,5 +479,48 @@ export default {
 .fade-leave-to {
   opacity: 0;
   transform: translateY(10px);
+}
+
+.audio-canvas {
+  border: 1px solid black;
+  background-color: #000;
+
+}
+
+.canvas-container{
+  width: 640px;
+  margin: 0 auto;
+}
+
+.canvas-frame{
+  position: relative;
+  overflow: hidden;
+  display: flex; /* Flexbox 컨테이너로 설정 */
+  justify-content: center; /* 수평 중앙 정렬 */
+  align-items: center; /* 수직 중앙 정렬 */
+  height: 480px; /* 캔버스의 높이와 맞춰야 합니다. */
+  
+}
+
+.re-or-done{
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  display: flex;
+  transform: translateX(-50%);
+}
+.re-or-done button{
+  margin: 0 10px 0 10px;
+}
+
+.stt-result{  
+  font-size: 24px;
+  color: white;
+  position: absolute;
+  text-align: center;
+  top: 40%;
+  
+  margin: auto;
+  
 }
 </style>

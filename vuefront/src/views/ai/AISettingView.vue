@@ -59,9 +59,19 @@
         <strong style="color: mediumblue">장치 상태를 확인</strong>해 주세요.
       </h5>
       <div class="aisettings-device-grid">
-        <div v-for="device in devices" :key="device.name" class="aisettings-device-item">
+        <div
+          v-for="device in devices"
+          :key="device.name"
+          class="aisettings-device-item"
+          @click="triggerCheckbox(device)"
+        >
           <div class="aisettings-checkbox-container">
-            <input type="checkbox" :id="device.name" v-model="device.checked" />
+            <input
+              type="checkbox"
+              :id="device.name"
+              v-model="device.checked"
+              @click.stop
+            />
             <label :for="device.name"></label>
           </div>
           <div class="aisettings-device-icon">
@@ -73,7 +83,10 @@
 
       <!-- Buttons -->
       <div class="aisettings-device-check-btn">
-        <button class="aisettings-btn aisettings-btn-pre" @click="handleNext">
+        <button
+          class="aisettings-btn aisettings-btn-pre"
+          @click="nextToIntChoice"
+        >
           점검없이 바로 시작
         </button>
         <transition name="fade" mode="out-in">
@@ -90,6 +103,7 @@
     </div>
   </div>
 </template>
+
 <script>
 export default {
   data() {
@@ -103,6 +117,10 @@ export default {
       currentStep: 1,
     };
   },
+  mounted() {
+    window.scrollTo(0, 0);
+    // memno: localStorage.getItem("memno");
+  },
   computed: {
     allChecked() {
       return this.devices.every((device) => device.checked);
@@ -113,9 +131,13 @@ export default {
       // AIResumeView로 라우팅
       this.$router.push({ name: "AIFaceTest" });
     },
+    nextToIntChoice() {
+      this.$router.push({ name: "AIInterviewChoice" });
+    },
+    triggerCheckbox(device) {
+      console.log(device);
+      device.checked = !device.checked;
+    },
   },
 };
 </script>
-<style scoped>
-
-</style>

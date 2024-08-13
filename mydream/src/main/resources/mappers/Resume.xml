@@ -4,7 +4,7 @@
 <mapper namespace="kr.ict.mydream.resume.ResumeDao">
     <!-- 이력서 리스트 -->
     <select id="resumeList" parameterType="int" resultType="resumevo">
-        select rsmno, title, upddt from tbresume where memno=#{num} order by rsmno desc
+        select rsmno, title, upddt, memno from tbresume where memno=#{num} order by rsmno desc
     </select>
     <!-- 이력서 상세보기 -->
     <select id="resumeDetail" parameterType="int" resultType="resumevo">
