@@ -2,7 +2,7 @@
   <div class="container">
     <div class="interRestitle">
       <blockquote class="blockquote-interRes">
-        <b> <p>면접결과 관리</p></b>
+        <b><p>면접결과 관리</p></b>
       </blockquote>
     </div>
     <hr />
@@ -29,7 +29,7 @@
       </div>
     </div>
     <div class="interviewRes-con">
-      <!-- 동일한 컨텐츠 구조 -->
+      <!-- 인성면접결과 -->
       <div
         :class="{
           'display-block': content === 1,
@@ -38,7 +38,7 @@
         class="row scrollable-div interviewRes-display"
       >
         <div
-          v-for="(e, index) in attitude"
+          v-for="(e, index) in sortedAttitude"
           :key="index"
           class="interviewRes-displaytwo"
         >
@@ -48,14 +48,14 @@
                 class="interviewRes-list"
                 @click="showModal_personal(e.INTNO)"
               >
-                <p>
-                  〈인성면접〉{{ e.MNAME }}님 면접결과 {{ formatDate(e.CREDT) }}
-                </p>
+                <li style="padding: 10px;">
+                  {{ e.INTNO }} 〈인성면접〉{{ e.MNAME }}님 면접결과 {{ formatDate(e.CREDT) }}
+                </li>
               </td>
             </tr>
           </table>
         </div>
-        <div v-show="attitude.length === 0" class="interviewRes-empty">
+        <div v-show="sortedAttitude.length === 0" class="interviewRes-empty">
           <div class="interviewRes-empty-content">
             <img
               src="../../public/img/InterviewRes_image/nopersonal.png"
@@ -71,6 +71,8 @@
           </div>
         </div>
       </div>
+
+      <!-- 직무면접결과 -->
       <div
         :class="{
           'display-block': content === 2,
@@ -79,21 +81,21 @@
         class="row scrollable-div interviewRes-display"
       >
         <div
-          v-for="(e, index) in career"
+          v-for="(e, index) in sortedCareer"
           :key="index"
           class="interviewRes-displaytwo"
         >
           <table v-show="e !== null" class="interviewRes-table">
             <tr>
               <td class="interviewRes-list" @click="showModal_duty(e.INTNO)">
-                <p>
-                  〈직무면접〉{{ e.MNAME }}님 면접결과 {{ formatDate(e.CREDT) }}
-                </p>
+                <li style="padding: 10px;">
+                  {{ e.INTNO }} 〈직무면접〉{{ e.MNAME }}님 면접결과 {{ formatDate(e.CREDT) }}
+                </li>
               </td>
             </tr>
           </table>
         </div>
-        <div v-show="career.length === 0" class="interviewRes-empty">
+        <div v-show="sortedCareer.length === 0" class="interviewRes-empty">
           <div class="interviewRes-empty-content">
             <img
               src="../../public/img/InterviewRes_image/noduty.png"
@@ -153,6 +155,14 @@ export default {
     this.fetchAttitudeResults();
     this.fetchCareerResults();
   },
+  computed: {
+    sortedAttitude() {
+      return this.attitude.slice().sort((a, b) => b.INTNO - a.INTNO);
+    },
+    sortedCareer() {
+      return this.career.slice().sort((a, b) => b.INTNO - a.INTNO);
+    },
+  },
   methods: {
     pagechage(num) {
       this.activePage = num;
@@ -175,7 +185,6 @@ export default {
     closeModal_duty() {
       this.popState_duty = false;
     },
-
     async fetchAttitudeResults() {
       try {
         const response = await axios.get(
@@ -201,7 +210,6 @@ export default {
       }
     },
     formatDate(datetime) {
-      // 'T'를 기준으로 문자열을 나누고 첫 번째 부분을 반환합니다.
       return datetime.split("T")[0];
     },
   },
