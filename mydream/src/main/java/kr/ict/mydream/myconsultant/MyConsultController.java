@@ -21,17 +21,22 @@ public class MyConsultController {
     public ConsultVO myconsultprofile(@RequestBody MemberVO vo) {
         ConsultVO cvo = new ConsultVO();
         MemberConsultVO memberConsultVO = myConsultService.findCon(vo.getMemno());
-        System.out.println(memberConsultVO.getUseyn());
-        if ("Y".equals(memberConsultVO.getUseyn())) {
-            System.out.println(memberConsultVO.getCnsno());
-            cvo = myConsultService.getConsultDetails(memberConsultVO.getCnsno());
-            return cvo;
-        } else if (memberConsultVO.getUseyn() == "N") {
-
-        } else {
-            System.out.println("잘못된 번호");
+        try {
+            if ("Y".equals(memberConsultVO.getUseyn())) {
+                System.out.println(memberConsultVO.getCnsno());
+                cvo = myConsultService.getConsultDetails(memberConsultVO.getCnsno());
+                return cvo;
+            } else if (memberConsultVO.getUseyn() == "N") {
+    
+            } else {
+                System.out.println("잘못된 번호");
+                return null;
+            }
+        } catch (Exception e) {
+            return null;
         }
-        System.out.println(memberConsultVO.toString());
+        
+
 
         return cvo;
     }
