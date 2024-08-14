@@ -85,7 +85,7 @@ export default {
 
 .login-modal-button {
   padding: 10px 20px;
-  background-color: #11045e;
+  background-color: #102669;
   color: white;
   border: none;
   border-radius: 4px;

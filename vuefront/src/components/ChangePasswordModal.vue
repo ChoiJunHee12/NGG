@@ -148,7 +148,8 @@ export default {
 }
 
 .btn-submit {
-  background-color: #081d34;
+  font-weight: 700;
+  background-color: #102669;
   color: white;
   border: none;
   padding: 10px 20px;
@@ -158,6 +159,7 @@ export default {
 }
 
 .btn-cancel {
+  font-weight: 700;
   background-color: #6c757d;
   color: white;
   border: none;
