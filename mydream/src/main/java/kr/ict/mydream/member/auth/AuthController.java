@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -59,26 +60,42 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> authenticateUser(
-            @RequestBody AuthenticationRequest authenticationRequest) {
+public ResponseEntity<?> authenticateUser(@RequestBody AuthenticationRequest authenticationRequest) {
+    try {
+        // 이메일과 비밀번호로 인증 시도
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(authenticationRequest.getEmail(),
-                        authenticationRequest.getPassword()));
+            new UsernamePasswordAuthenticationToken(authenticationRequest.getEmail(), 
+                                                    authenticationRequest.getPassword()));
 
+        // 인증 성공 시 JWT 토큰 생성
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jwtTokenProvider.createToken(authentication);
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
+        // 사용자 정보 가져오기
         MemberVO member = memberLoginService.findByEmail(userDetails.getUsername());
         if (member == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not found");
         }
+
+        // 사용자 정보 출력 (로그 확인용)
         System.out.println(member.getEmail());
         System.out.println(member.getPassword());
+
         int memno = member.getMemno(); 
         String rolecd = member.getRolecd(); 
+
+        // 성공 시 JWT 토큰과 사용자 정보 반환
         return ResponseEntity.ok(new AuthenticationResponse(jwt, memno, rolecd));
+
+    } catch (BadCredentialsException ex) {
+        // 인증 실패 시 비밀번호가 잘못되었다는 메시지 반환
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("비밀번호가 잘못되었습니다.");
+    } catch (Exception ex) {
+        // 기타 오류 시 일반적인 오류 메시지 반환
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("로그인 중 오류가 발생했습니다.");
     }
+}
     
     
     @GetMapping("/logout")
