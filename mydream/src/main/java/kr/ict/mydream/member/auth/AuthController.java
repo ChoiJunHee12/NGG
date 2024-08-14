@@ -170,4 +170,24 @@ public ResponseEntity<?> authenticateUser(@RequestBody AuthenticationRequest aut
         return ResponseEntity.status(500).body("이미지 업로드 중 오류가 발생했습니다.");
     }
     }
+
+
+
+    // 비밀번호 변경
+    @PutMapping("/changePassword")
+    public ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest changePasswordRequest) {
+        if (changePasswordRequest.getCurrentPassword() == null || changePasswordRequest.getNewPassword() == null) {
+            return ResponseEntity.badRequest().body("Current or new password cannot be null");
+        }
+
+        boolean success = memberLoginService.changePassword(
+            changePasswordRequest.getMemno(), 
+            changePasswordRequest
+        );
+        if (success) {
+            return ResponseEntity.ok("Password changed successfully");
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Password change failed");
+        }
+    }
 }

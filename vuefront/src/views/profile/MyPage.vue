@@ -34,9 +34,22 @@
             </h1>
             <h2 class="title">{{ myprofile.nickname }}</h2>
           </div>
+        </div>
+        <div style="margin-right: 50px">
           <button class="edit-user-profile-button" @click="handleEditClick">
             프로필 수정
           </button>
+          <button
+            class="edit-user-profile-button"
+            @click="openChangePasswordModal"
+            style="margin-top: 15px"
+          >
+            비밀번호 변경
+          </button>
+          <ChangePasswordModal
+            v-model:visible="isModalVisible"
+            @change-password="handlePasswordChange"
+          />
         </div>
       </div>
 
@@ -191,8 +204,12 @@
 <script>
 import axios from "axios";
 import { mapActions } from "vuex";
+import ChangePasswordModal from "../../components/ChangePasswordModal.vue";
 
 export default {
+  components: {
+    ChangePasswordModal,
+  },
   data() {
     return {
       memno: localStorage.getItem("memno"),
@@ -219,6 +236,7 @@ export default {
         5: "경영",
       },
       profileImageSrc: "",
+      isModalVisible: false,
     };
   },
   mounted() {
@@ -250,6 +268,41 @@ export default {
   },
 
   methods: {
+    openChangePasswordModal() {
+      // console.log(memno);
+      console.log(this.currentPassword);
+      console.log(this.newPassword);
+      this.isModalVisible = true;
+    },
+    handleModalClose() {
+      this.isModalVisible = false;
+    },
+    async handlePasswordChange({ currentPassword, newPassword }) {
+      console.log("Current Password:", currentPassword);
+      console.log("New Password:", newPassword);
+      try {
+        const memno = parseInt(localStorage.getItem("memno"), 10);
+        const response = await axios.put(
+          `${process.env.VUE_APP_BACK_END_URL}/membership/changePassword`,
+          {
+            memno,
+            currentPassword,
+            newPassword,
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        alert("비밀번호가 성공적으로 변경되었습니다.");
+        this.isModalVisible = false;
+      } catch (error) {
+        console.error("비밀번호 변경 오류:", error.response.data);
+        alert("비밀번호 변경에 실패했습니다.");
+      }
+    },
+
     triggerFileInput() {
       this.$refs.fileInput.click();
     },
@@ -399,7 +452,7 @@ export default {
 }
 
 .user-profile-header {
-  width: 80%;
+  width: 90%;
   display: flex;
   align-items: center;
   margin-bottom: 30px;
