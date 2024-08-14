@@ -585,7 +585,8 @@ export default {
         consultantDetail.value.consultant &&
         consultantDetail.value.consultant.imgname
       ) {
-        return `/img/upimg/${consultantDetail.value.consultant.imgname}`;
+        console.log(consultantDetail.value.consultant.imgname);
+        return `/img/ConsultantInfo_image/${consultantDetail.value.consultant.imgname}`;
       }
       return "/img/MainPage_image/noimg.png"; // 기본 이미지 경로
     });

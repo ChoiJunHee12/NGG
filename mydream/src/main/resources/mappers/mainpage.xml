@@ -43,7 +43,7 @@
         JOIN 
             TBCONSULT c ON mc.CNSNO = c.CNSNO
         WHERE 
-            mc.MEMNO = #{memno}
+            mc.MEMNO = #{memno} AND mc.USEYN='Y'
     </select>    
 
     <!-- 최신 감정 데이터 조회 -->
