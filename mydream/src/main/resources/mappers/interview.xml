@@ -88,6 +88,8 @@
         VALUES(seq_feedno.nextval, #{intno}, #{efeed1},#{efeed2},#{pfeed1},#{pfeed2},#{vfeed1},#{vfeed2},#{sttfeed1},#{sttfeed2}, SYSDATE, SYSDATE)
     </insert>
 
-
+    <select id="getResNameTime" parameterType="int" resultType="java.util.Map" >
+        SELECT NAME AS "mname" ,(SELECT TO_CHAR(SYSDATE, 'yyyy-mm-dd') FROM dual) AS "resdate" FROM tbmember WHERE memno=#{memno}
+    </select>
 
 </mapper>

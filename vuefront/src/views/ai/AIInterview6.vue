@@ -409,6 +409,7 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin:80px;
 }
 
 .timer-circle {
@@ -550,5 +551,9 @@ svg {
 
 .AI-Setting::-webkit-scrollbar-thumb:hover {
   background: #555;
+}
+
+.ai-face-webcam-container {
+  margin-right:50px;
 }
 </style>

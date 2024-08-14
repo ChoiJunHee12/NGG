@@ -667,6 +667,7 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin:80px;
 }
 
 .timer-circle {
@@ -831,5 +832,9 @@ svg {
 
 .btn-result:hover {
   background-color: #2ab02a;
+}
+
+.ai-face-webcam-container {
+  margin-right:50px;
 }
 </style>

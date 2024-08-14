@@ -2,8 +2,8 @@
   <div class="res-container">
     <div class="res-btncon row">
       <div @click="pagechage(1)" class="col-1" :class="{ 'res-lbutton': true, 'res-qactive': nownum === 1 }" > Q1 </div>
-      <div @click="pagechage(2)" class="col-1" :class="{ 'res-button': true, 'res-qactive': nownum === 2 }" > Q2 </div> 
-      <div @click="pagechage(3)" class="col-1" :class="{ 'res-button': true, 'res-qactive': nownum === 3 }" > Q3 </div> 
+      <div @click="pagechage(2)" class="col-1" :class="{ 'res-button': true, 'res-qactive': nownum === 2 }" > Q2 </div>
+      <div @click="pagechage(3)" class="col-1" :class="{ 'res-button': true, 'res-qactive': nownum === 3 }" > Q3 </div>
       <div @click="pagechage(4)" class="col-1" :class="{ 'res-button': true, 'res-qactive': nownum === 4 }" > Q4 </div>
       <div @click="pagechage(5)" class="col-1" :class="{ 'res-button': true, 'res-qactive': nownum === 5 }" > Q5 </div>
       <div @click="pagechage(6)" class="col-1" :class="{ 'res-rbutton': true, 'res-qactive': nownum === 6 }" > 종합 평가 </div>
@@ -19,7 +19,7 @@
         <video class="res-video" controls :key="i">
           <source :src="video_url[i]" type="video/webm" />
         </video>
-        
+
         <div class="res-dgraph">
           <div id="graph2"></div>
           <!-- <div class="res-stress">스트레스율 : {{q1detail.emotion.escore}}(%)</div> -->
@@ -28,13 +28,19 @@
       <div class="res-qcon3">
         <div class="res-dcontent row">
           <div class="res-vcon col-1">
-            <img class="res-voicew" v-if="voice[i]" :src="voice[i]['vhertzimg']" />
+            <img
+              class="res-voicew"
+              v-if="voice[i]"
+              :src="voice[i]['vhertzimg']"
+            />
           </div>
           <div class="res-voice col-2">
             <div class="res-voice1" v-if="voice[i]">
-              음성 안정도 : {{ voice[i]['vscore'] }}
+              음성 안정도 : {{ voice[i]["vscore"] }}
             </div>
-            <div class="res-voice1" v-if="voice[i]">공백 시간 : {{voice[i]['vempty']}}초</div>
+            <div class="res-voice1" v-if="voice[i]">
+              공백 시간 : {{ voice[i]["vempty"] }}초
+            </div>
           </div>
         </div>
       </div>
@@ -69,8 +75,8 @@
         </div>
 
         <div class="resduty-summary-right">
-          <p>이름: 홍길동</p>
-          <p>날짜: 2024-07-25</p>
+          <p>이름: {{this.mname}}</p>
+          <p>날짜: {{this.resdate}}</p>
         </div>
       </div>
 
@@ -80,30 +86,14 @@
       <hr />
       <div class="res-qcon10">
         <div class="res-totalcom">
-          <div class="res-analyze6-con">
-            ○ {{efinalcmt[0]}}
-          </div>
-          <div class="res-analyze6-con">
-            ○ {{efinalcmt[1]}}
-          </div>
-          <div class="res-analyze6-con">
-            ○ {{pfinalcmt[0]}}
-          </div>
-          <div class="res-analyze6-con">
-            ○ {{pfinalcmt[1]}}
-          </div>
-          <div class="res-analyze6-con">
-            ○ {{vfinalcmt[0]}}
-          </div>
-          <div class="res-analyze6-con">
-            ○ {{vfinalcmt[1]}}
-          </div>
-          <div class="res-analyze6-con">
-            ○ {{sttfinalcmt.sttresult1}}
-          </div>
-          <div class="res-analyze6-con">
-            ○ {{sttfinalcmt.sttresult2}}
-          </div>
+          <div class="res-analyze6-con">○ {{ efinalcmt[0] }}</div>
+          <div class="res-analyze6-con">○ {{ efinalcmt[1] }}</div>
+          <div class="res-analyze6-con">○ {{ pfinalcmt[0] }}</div>
+          <div class="res-analyze6-con">○ {{ pfinalcmt[1] }}</div>
+          <div class="res-analyze6-con">○ {{ vfinalcmt[0] }}</div>
+          <div class="res-analyze6-con">○ {{ vfinalcmt[1] }}</div>
+          <div class="res-analyze6-con">○ {{ sttfinalcmt.sttresult1 }}</div>
+          <div class="res-analyze6-con">○ {{ sttfinalcmt.sttresult2 }}</div>
         </div>
       </div>
       <div class="res-subtitle3">
@@ -151,41 +141,42 @@
   </div>
 </template>
 <script>
+import axios from "axios";
 import * as echarts from "echarts";
 export default {
   data() {
     return {
       page: 1,
-      q1detail:JSON.parse(localStorage.getItem("q4detail")),
-      detail:[],  
+      q1detail: JSON.parse(localStorage.getItem("q4detail")),
+      detail: [],
       question: [],
       i: 0,
       content: 1,
       nownum: 1,
-      efinalcmt:[],
-      pfinalcmt:[],
-      vfinalcmt:[],
-      sttfinalcmt:[],
-      detailvo:{},
-      stt:[],
-      emotion:[],
-      position:[],
-      voice:[],
-      video_url:[],    
-      feedback:[],
-      detailvoList:[],
+      efinalcmt: [],
+      pfinalcmt: [],
+      vfinalcmt: [],
+      sttfinalcmt: [],
+      detailvo: {},
+      stt: [],
+      emotion: [],
+      position: [],
+      voice: [],
+      video_url: [],
+      feedback: [],
+      detailvoList: [],      
+      mname: "",
+      resdate: "",
     };
   },
   methods: {
     next() {
       this.pagechage(this.page + 1);
-      
     },
     Previous() {
       this.pagechage(this.page - 1);
     },
     pagechage(num) {
-      
       this.page = num;
       this.i = num - 1;
       if (num === 6) {
@@ -198,31 +189,35 @@ export default {
         top: 0,
         behavior: "smooth", // 부드러운 스크롤을 위해 'smooth' 옵션 사용
       });
+      if (num<5){
+        this.graph2(num);
+      }
+      
     },
     displayPage(pageNum) {
       return this.content === pageNum
         ? { display: "block" }
         : { display: "none" };
     },
-    graph2() {
+    graph2(num) {
+      const i=num-1;    
       // 임시 데이터
       const data = [];
       const time = new Date().getTime(); // 현재 시간
 
       // emotion 객체의 키를 가져오고 정렬합니다.
-      const emotionKeys = Object.keys(this.q1detail.emotion)
+      const emotionKeys = Object.keys(this.emotion[i])
         .filter((key) => key.endsWith("sec"))
         .sort((a, b) => parseInt(a) - parseInt(b));
       const numPoints = emotionKeys.length;
-      
 
       emotionKeys.forEach((key, index) => {
-        const y = this.q1detail.emotion[key];
+        const y = this.emotion[i][key];
         data.push({
           x: index * 90000, // x축의 값은 0초부터 시작
           y: y,
         });
-      });
+      });    
       Highcharts.chart("graph2", {
         chart: {
           type: "spline",
@@ -231,12 +226,12 @@ export default {
         },
 
         title: {
-          text: `스트레스율 : ${this.q1detail.emotion.escore}%`,
+          text: `스트레스율 : ${this.detailvoList[i].escore}%`,
           align: "center",
         },
 
         subtitle: {
-          text: `스트레스율 : ${this.q1detail.emotion.escore}%`,
+          text: `긍정: ${this.emotion[i].ecntgood}초, 중립: ${this.emotion[i].ecntsoso}초, 부정: ${this.emotion[i].ecntbad}초`,
           align: "center",
         },
 
@@ -368,15 +363,33 @@ export default {
         series: [
           {
             name: "vhertz",
-            data: [this.detailvoList[0].vhertz , this.detailvoList[1].vhertz ,this.detailvoList[2].vhertz ,this.detailvoList[3].vhertz ,this.detailvoList[4].vhertz],
+            data: [
+              this.detailvoList[0].vhertz,
+              this.detailvoList[1].vhertz,
+              this.detailvoList[2].vhertz,
+              this.detailvoList[3].vhertz,
+              this.detailvoList[4].vhertz,
+            ],
           },
           {
             name: "vamplit",
-            data: [this.detailvoList[0].vamplit , this.detailvoList[1].vamplit , this.detailvoList[2].vamplit ,this.detailvoList[3].vamplit ,this.detailvoList[4].vamplit],
+            data: [
+              this.detailvoList[0].vamplit,
+              this.detailvoList[1].vamplit,
+              this.detailvoList[2].vamplit,
+              this.detailvoList[3].vamplit,
+              this.detailvoList[4].vamplit,
+            ],
           },
           {
             name: "vempty",
-            data: [this.detailvoList[0].vempty , this.detailvoList[1].vempty, this.detailvoList[2].vempty, this.detailvoList[3].vempty, this.detailvoList[4].vempty],
+            data: [
+              this.detailvoList[0].vempty,
+              this.detailvoList[1].vempty,
+              this.detailvoList[2].vempty,
+              this.detailvoList[3].vempty,
+              this.detailvoList[4].vempty,
+            ],
           },
         ],
 
@@ -440,11 +453,11 @@ export default {
             data: [
               {
                 value: [
-                  this.detailvoList[0].escore, 
-                  this.detailvoList[1].escore, 
-                  this.detailvoList[2].escore, 
-                  this.detailvoList[3].escore, 
-                  this.detailvoList[4].escore, 
+                  this.detailvoList[0].escore,
+                  this.detailvoList[1].escore,
+                  this.detailvoList[2].escore,
+                  this.detailvoList[3].escore,
+                  this.detailvoList[4].escore,
                 ],
                 name: "감정 점수",
               },
@@ -454,7 +467,7 @@ export default {
       };
       myChart.setOption(option);
     },
-    barchart() {      
+    barchart() {
       Highcharts.chart("barchart", {
         chart: {
           type: "column",
@@ -494,11 +507,11 @@ export default {
           {
             name: "목 꺾임",
             data: [
-              this.detailvoList[0].pbadcnt, 
-              this.detailvoList[1].pbadcnt, 
-              this.detailvoList[2].pbadcnt, 
-              this.detailvoList[3].pbadcnt, 
-              this.detailvoList[4].pbadcnt
+              this.detailvoList[0].pbadcnt,
+              this.detailvoList[1].pbadcnt,
+              this.detailvoList[2].pbadcnt,
+              this.detailvoList[3].pbadcnt,
+              this.detailvoList[4].pbadcnt,
             ],
             color: "#A1C5FB",
           },
@@ -507,11 +520,11 @@ export default {
     },
     wordcloud() {
       const text =
-          this.detailvoList[0].answer +
-          this.detailvoList[1].answer +
-          this.detailvoList[2].answer +
-          this.detailvoList[3].answer +
-          this.detailvoList[4].answer ,
+          this.detailvoList[0].answer + " " +
+          this.detailvoList[1].answer + " " +
+          this.detailvoList[2].answer + " " +
+          this.detailvoList[3].answer + " " +
+          this.detailvoList[4].answer,
         lines = text.replace(/[():'?0-9]+/g, "").split(/[,\. ]+/g),
         data = lines.reduce((arr, word) => {
           let obj = Highcharts.find(arr, (obj) => obj.name === word);
@@ -562,66 +575,68 @@ export default {
         },
       });
     },
-    fetchData(){
-        
-        const details = ["q1detail", "q2detail", "q3detail", "q4detail", "q5detail"];
-        details.forEach(key => {
-            const storedDetail = JSON.parse(localStorage.getItem(key));
-            
-            this.stt.push(storedDetail.answer || null);            
-            this.emotion.push(storedDetail.emotion || { escore: 0 });            
-            this.position.push(storedDetail.position || { pscore: 0 });            
-            this.voice.push(storedDetail.voice || { vscore: 0 });
-            this.video_url.push(storedDetail.video_url || '');
-            this.feedback.push(storedDetail.aifeedback || '');
-        });       
+    fetchData() {
+      const details = ["q1detail", "q2detail", "q3detail", "q4detail", "q5detail"];
+      details.forEach((key) => {
+        const storedDetail = JSON.parse(localStorage.getItem(key));
 
-        // 반복문을 통해 detailvo 객체를 생성하고 detailvoList에 추가
-        for (let i = 0; i < 5; i++) {
-            this.detailvo = {                
-                qno: i + 1,
-                aiqno: i <= 4 ? JSON.parse(localStorage.getItem('questionlist'))[i].totalqno : null,
-                cnsqno: i > 4 ? JSON.parse(localStorage.getItem('questionlist'))[i].totalqno : null,
-                question: JSON.parse(localStorage.getItem('questionlist'))[i].totalq,
-                answer: this.stt[i],
-                ecntgood: this.emotion[i].ecntgood,
-                ecntsoso: this.emotion[i].ecntsoso,
-                ecntbad: this.emotion[i].ecntbad,
-                pbadcnt: this.position[i].pbadcnt,
-                vhertz: this.voice[i].vhertz,
-                vamplit: this.voice[i].vamplit,
-                vempty: this.voice[i].vempty,
-                aifeedbk: this.feedback[i],
-                escore: this.emotion[i].escore,
-                pscore: this.position[i].pscore,
-                vscore: this.voice[i].vscore                
-            };
-            
-            this.detailvoList.push(this.detailvo);
-            this.question.push(this.detailvo.question)
-        }
-        console.log('this.detailvoList => ', this.detailvoList);
-        console.log('this.question => ', this.question)
+        this.stt.push(storedDetail.answer || null);
+        this.emotion.push(storedDetail.emotion || { escore: 0 });
+        this.position.push(storedDetail.position || { pscore: 0 });
+        this.voice.push(storedDetail.voice || { vscore: 0 });
+        this.video_url.push(storedDetail.video_url || "");
+        this.feedback.push(storedDetail.aifeedback || "");
+      });
 
-        this.efinalcmt=JSON.parse(localStorage.getItem('efinalcmt'));
-        this.pfinalcmt=JSON.parse(localStorage.getItem('pfinalcmt'));
-        this.vfinalcmt=JSON.parse(localStorage.getItem('vfinalcmt'));
-        this.sttfinalcmt=JSON.parse(localStorage.getItem('sttfinalcmt'));
+      // 반복문을 통해 detailvo 객체를 생성하고 detailvoList에 추가
+      for (let i = 0; i < 5; i++) {
+        this.detailvo = {
+          qno: i + 1,
+          aiqno: i <= 4 ? JSON.parse(localStorage.getItem("questionlist"))[i].totalqno : null,
+          cnsqno: i > 4 ? JSON.parse(localStorage.getItem("questionlist"))[i].totalqno : null,
+          question: JSON.parse(localStorage.getItem("questionlist"))[i].totalq,
+          answer: this.stt[i],
+          ecntgood: this.emotion[i].ecntgood,
+          ecntsoso: this.emotion[i].ecntsoso,
+          ecntbad: this.emotion[i].ecntbad,
+          pbadcnt: this.position[i].pbadcnt,
+          vhertz: this.voice[i].vhertz,
+          vamplit: this.voice[i].vamplit,
+          vempty: this.voice[i].vempty,
+          aifeedbk: this.feedback[i],
+          escore: this.emotion[i].escore,
+          pscore: this.position[i].pscore,
+          vscore: this.voice[i].vscore,
+        };
 
-    }
+        this.detailvoList.push(this.detailvo);
+        this.question.push(this.detailvo.question);
+      }
+      console.log("this.detailvoList => ", this.detailvoList);
+      console.log("this.question => ", this.question);
+
+      this.efinalcmt = JSON.parse(localStorage.getItem("efinalcmt"));
+      this.pfinalcmt = JSON.parse(localStorage.getItem("pfinalcmt"));
+      this.vfinalcmt = JSON.parse(localStorage.getItem("vfinalcmt"));
+      this.sttfinalcmt = JSON.parse(localStorage.getItem("sttfinalcmt"));
+    },
   },
   mounted() {
     window.scrollTo(0, 0);
-    
+
     this.fetchData();
-    this.graph2();
+    this.graph2(1);
     this.wordcloud();
     this.barchart();
     this.face();
     this.voiceg();
-    
+    axios.get(`${process.env.VUE_APP_BACK_END_URL}/interview/getresnametime?memno=${localStorage.getItem("memno")}`)
+    .then((res) => {
+        console.log(res.data.mname);
+        console.log(res.data.resdate);
+        this.mname = res.data.mname;
+        this.resdate = res.data.resdate;
+    })
   },
 };
 </script>
-<style scoped>
-</style>

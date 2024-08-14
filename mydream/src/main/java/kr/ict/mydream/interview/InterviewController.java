@@ -103,4 +103,9 @@ public class InterviewController {
         interviewService.setIntFeedbk(intfeedbkvo);
     }
 
+    @GetMapping("/getresnametime")
+    public Map getResNameTime(@RequestParam("memno") int memno) {
+        return interviewService.getResNameTime(memno);
+    }
+
 }
