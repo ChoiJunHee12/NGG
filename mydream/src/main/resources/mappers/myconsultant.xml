@@ -6,7 +6,7 @@
     SELECT * 
     FROM tbmemberconsult 
     WHERE memno = #{memno}
-    ORDER BY credt DESC ) WHERE ROWNUM = 1
+    ORDER BY credt DESC ) WHERE  USEYN='Y'
  </select>
 
 
