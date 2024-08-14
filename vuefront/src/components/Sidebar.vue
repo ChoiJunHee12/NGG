@@ -78,7 +78,7 @@ export default {
       if (memno) {
         try {
           const response = await axios.get(
-            `http://192.168.0.73/mydream/membership/profile?memno=${memno}`
+            `${process.env.VUE_APP_BACK_END_URL}/membership/profile?memno=${memno}`          
           );
           console.log("response.data=>", response.data);
           this.imgname = response.data.imgname;
