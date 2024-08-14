@@ -8,5 +8,4 @@ urlpatterns=[
     path('seasontone', views.season_tone),
     path('PersonalPredict', views.personal_predict),
     path('base64toFile', views.base64toFile),
-    path('gender', views.gender),
 ]
