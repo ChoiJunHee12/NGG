@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import kr.ict.mydream.member.auth.ChangePasswordRequest;
 import kr.ict.mydream.vo.MemberVO;
 
 
@@ -57,4 +58,33 @@ public class MemberLoginService {
     public void updateImage(MemberVO member) {
         memberLoginDAO.updateImage(member);
     }
+
+
+    public boolean changePassword(int memno, ChangePasswordRequest changePasswordRequest) {
+        try {
+            String currentPasswordFromDB = memberLoginDAO.getPasswordByMemno(memno);
+            
+            // 로그 추가
+            System.out.println("Current password from DB: " + currentPasswordFromDB);
+            System.out.println("Current password from request: " + changePasswordRequest.getCurrentPassword());
+    
+            if (!passwordEncoder.matches(changePasswordRequest.getCurrentPassword(), currentPasswordFromDB)) {
+                throw new IllegalArgumentException("현재 비밀번호가 올바르지 않습니다.");
+            }
+    
+            String encodedNewPassword = passwordEncoder.encode(changePasswordRequest.getNewPassword());
+            int rowsAffected = memberLoginDAO.updatePassword(memno, encodedNewPassword);
+    
+            // 로그 추가
+            System.out.println("Rows affected by update: " + rowsAffected);
+    
+            return rowsAffected > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("비밀번호 변경 중 오류 발생", e);
+        }
+    }
+    
+    
+    
 }

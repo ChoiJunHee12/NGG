@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.ict.mydream.itvres.ItvDao">
-    <select id="itvAttitudeList" resultType="java.util.Map"> 
-        SELECT m.name AS mname, a.intno AS intno, a.memno AS memno, a.credt AS credt FROM TBMEMBER M JOIN tbintres a ON m.memno = a.memno WHERE a.inttypecd = '1' ORDER BY m.name DESC
+    <select id="itvAttitudeList" parameterType="int" resultType="java.util.Map"> 
+        SELECT m.name AS mname, a.intno AS intno, a.memno AS memno, a.credt AS credt FROM TBMEMBER M JOIN tbintres a ON m.memno = a.memno WHERE a.inttypecd = '1' and m.memno = #{memno} ORDER BY m.name DESC
     </select>
-    <select id="itvCareerList" resultType="java.util.Map">
-        SELECT m.name AS mname, a.intno AS intno, a.memno AS memno, a.credt AS credt FROM TBMEMBER M JOIN tbintres a ON m.memno = a.memno WHERE a.inttypecd = '2' ORDER BY m.name DESC
+    <select id="itvCareerList" parameterType="int" resultType="java.util.Map">
+        SELECT m.name AS mname, a.intno AS intno, a.memno AS memno, a.credt AS credt FROM TBMEMBER M JOIN tbintres a ON m.memno = a.memno WHERE a.inttypecd = '2' and m.memno = #{memno} ORDER BY m.name DESC
     </select>
 
     <select id="detail" parameterType="int" resultType="kr.ict.mydream.dto.ItvDTO">
-        SELECT m.name AS mname, a.credt AS credt, a.cnsfeedbk AS cnsfeedbk, f.efeed1 AS efeed1,f.efeed2 AS efeed2,f.pfeed1 AS pfeed1,f.pfeed2 AS pfeed2, f.vfeed1 AS vfeed1,f.vfeed2 AS vfeed2,
-            f.sttfeed1 AS sttfeed1, f.sttfeed2 AS sttfeed2, d.question AS question, a.intno AS intno, d.qno AS qno 
-            FROM tbmember m JOIN tbintres a ON m.memno = a.memno JOIN tbintdetail d ON a.intno = d.intno JOIN tbintfeedbk f ON a.intno = f.intno WHERE a.intno = #{intno}
+        SELECT m.name AS mname, a.credt AS credt, a.cnsfeedbk AS cnsfeedbk, f.efeed1 AS efeed1,f.efeed2 AS efeed2,f.pfeed1 AS pfeed1,f.pfeed2 AS pfeed2, f.vfeed1 AS vfeed1,
+            f.vfeed2 AS vfeed2, f.sttfeed1 AS sttfeed1, f.sttfeed2 AS sttfeed2, d.question AS question, a.intno AS intno, d.qno AS qno 
+            FROM tbmember m JOIN tbintres a ON m.memno = a.memno JOIN tbintdetail d ON a.intno = d.intno JOIN tbintfeedbk f ON a.intno = f.intno WHERE a.intno = #{intno} ORDER by 1 desc
     </select>
 
     <select id="faceData" parameterType="int" resultType="Integer">

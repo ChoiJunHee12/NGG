@@ -1,16 +1,25 @@
 <template>
   <div class="header" :class="{ hidden: isHidden }">
     <h1 class="header-h1">
-      <router-link to="/" style="color: white; text-decoration: none;">내가, 꿈</router-link>
+      <router-link to="/main" style="color: white; text-decoration: none"
+        >내가, 꿈</router-link
+      >
       <div>
-      <router-link to="/login" class="custom-underline">
-        <h5 class="header-h5" style="padding-right:20px;">로그아웃</h5>
-      </router-link>
+        <router-link to="/login" class="custom-underline">
+          <h5
+            class="header-h5"
+            style="padding-right: 20px"
+            @click="handleLogout"
+          >
+            로그아웃
+          </h5>
+        </router-link>
       </div>
     </h1>
   </div>
 </template>
 <script>
+import { mapActions } from "vuex";
 export default {
   data() {
     return {
@@ -25,14 +34,28 @@ export default {
     handleScroll() {
       this.isHidden = window.scrollY !== 0;
     },
+    // Map the logout action from the Vuex store
+    ...mapActions(["logout"]),
+    handleLogout() {
+      // Call the Vuex logout action
+      this.logout()
+        .then(() => {
+          // Redirect to login page after successful logout
+          this.$router.push("/login");
+        })
+        .catch((error) => {
+          // Handle any errors that occur during logout
+          console.error("Logout failed:", error.message);
+        });
+    },
   },
   mounted() {
-    window.addEventListener('scroll', this.handleScroll);
+    window.addEventListener("scroll", this.handleScroll);
   },
   beforeDestroy() {
-    window.removeEventListener('scroll', this.handleScroll);
+    window.removeEventListener("scroll", this.handleScroll);
   },
-}
+};
 </script>
 <style scoped>
 .header {
@@ -60,8 +83,8 @@ export default {
   padding: 20px 50px 15px 60px;
   height: 60px;
 }
-.header-h5{
-    display:inline;
+.header-h5 {
+  display: inline;
 }
 .custom-underline {
   color: white;

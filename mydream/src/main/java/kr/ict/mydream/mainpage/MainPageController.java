@@ -48,9 +48,11 @@ public class MainPageController {
 
     // 컨설턴트 평가 점수 조회
     @GetMapping("/consultantScore")
-    public ResponseEntity<IntResVO> getConsultantScore(@RequestParam("intno") int intno) {
-        IntResVO consultantScore = mainPageService.getConsultantScore(intno);
-        return consultantScore != null ? ResponseEntity.ok(consultantScore) : ResponseEntity.notFound().build();
+    public ResponseEntity<IntResVO> getConsultantScore(
+            @RequestParam("intno") int intno,
+            @RequestParam("memno") int memno) {
+        IntResVO consultantScore = mainPageService.getLatestConsultantScore(intno, memno);
+        return ResponseEntity.ok(consultantScore);
     }
 
     // 회원-컨설턴트 매핑 및 컨설턴트 정보 조회
@@ -104,4 +106,13 @@ public class MainPageController {
         return ResponseEntity.ok(scores);
     }
 
+    // 회원의 최근 인터뷰 정보를 가져옴
+    @GetMapping("/latestInterviewInfo")
+    public ResponseEntity<Map<String, Integer>> getLatestInterviewInfo(@RequestParam("memno") int memno) {
+        Map<String, Integer> latestInfo = mainPageService.getLatestInterviewInfo(memno);
+        if (latestInfo == null || latestInfo.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(latestInfo);
+    }
 }

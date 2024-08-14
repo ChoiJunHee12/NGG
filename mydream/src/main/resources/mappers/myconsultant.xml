@@ -2,11 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.ict.mydream.myconsultant.MyConsultDao">
  <select id="findCon" parameterType="int" resultType="memberconsultvo">
-    SELECT * FROM (
-    SELECT * 
-    FROM tbmemberconsult 
-    WHERE memno = #{memno}
-    ORDER BY credt DESC ) WHERE ROWNUM = 1
+    SELECT * FROM tbmemberconsult WHERE memno=#{memno} AND USEYN='Y'
  </select>
 
 

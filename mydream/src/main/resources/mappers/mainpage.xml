@@ -4,7 +4,7 @@
 <mapper namespace="kr.ict.mydream.mainpage.MainPageDao">
 
     <!-- 회원 정보 조회 -->
-    <select id="getMemberDetail" resultType="membervo">
+    <select id="getMemberDetail" parameterType="int" resultType="membervo">
         SELECT * FROM TBMEMBER WHERE MEMNO = #{memno}
     </select>
 
@@ -77,11 +77,16 @@
     </select>
 
     <!-- 최신 컨설턴트 평가 점수 조회 -->
-    <select id="getLatestConsultantScore" resultType="intresvo">
-        SELECT * 
+    <select id="getLatestConsultantScore" parameterType="map" resultType="IntResVO">
+        SELECT *
         FROM TBINTRES
-        WHERE intno = #{intno}
-        AND upddt = (SELECT MAX(upddt) FROM TBINTRES WHERE intno = #{intno})
+        WHERE intno = #{intno} 
+        AND memno = #{memno}
+        AND upddt = (
+            SELECT MAX(upddt) 
+            FROM TBINTRES 
+            WHERE intno = #{intno} AND memno = #{memno}
+        )
     </select>
 
     <!-- 회원 일정 조회 -->
@@ -157,4 +162,20 @@
     ORDER BY d.intno, d.qno
     ]]>
     </select>
+
+
+    <select id="getLatestInterviewInfo" resultType="java.util.Map">
+    SELECT 
+        CAST(ir.intno AS INTEGER) as "intno", 
+        CAST(mc.cnsno AS INTEGER) as "cnsno"
+    FROM (
+        SELECT intno, memno
+        FROM TBINTRES
+        WHERE memno = #{memno}
+        ORDER BY credt DESC
+    ) ir
+    LEFT JOIN TBMEMBERCONSULT mc ON ir.memno = mc.memno
+    WHERE ROWNUM = 1
+    </select>
+
 </mapper>

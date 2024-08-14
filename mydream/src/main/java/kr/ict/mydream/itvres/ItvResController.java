@@ -22,14 +22,15 @@ public class ItvResController {
     private ItvService itvService;
 
     @GetMapping("/attitude")
-    public List<Map<String, Object>> getAttitudeResults() {
-        return itvService.itvAttitudeList();
+    public List<Map<String, Object>> getAttitudeResults(
+            @RequestParam(value = "memno", required = false) Integer memno) {
+        return itvService.itvAttitudeList(memno);
 
     }
 
     @GetMapping("/career")
-    public List<Map<String, Object>> getCareerResults() {
-        return itvService.itvCareerList();
+    public List<Map<String, Object>> getCareerResults(@RequestParam(value = "memno", required = false) Integer memno) {
+        return itvService.itvCareerList(memno);
     }
 
     @GetMapping("/userData")

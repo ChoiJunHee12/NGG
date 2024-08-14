@@ -19,15 +19,14 @@
         UPDATE tbmember
         SET
         nickname = #{nickname},
-        categcd = #{categcd},
-        password = #{password},
+        categcd = #{categcd},    
         loccd = #{loccd}
         WHERE memno = #{memno}
     </update>
 
 
         <select id="mypage" parameterType="int" resultType="membervo">
-    select * from tbmember where memno = #{memno}
+            select memno, email, nickname, name, (get_cmmcdname('GENDERCD',gendercd)) as gendercd, birthymd, entymd, loccd, imgname,categcd,(get_cmmcdname('SEASONCD',seasoncd)) as seasoncd, phonenum, credt, upddt,rolecd from tbmember where memno = #{memno}
     </select>
 
     <update id="updateImage" parameterType="membervo">
@@ -36,5 +35,21 @@
         imgname = #{imgname}
         WHERE memno = #{memno}
     </update>
+
+
+     <!-- 현재 비밀번호를 가져옵니다 -->
+   <select id="getPasswordByMemno" resultType="string">
+    SELECT password
+    FROM tbmember
+    WHERE memno = #{memno}
+</select>
+
+<update id="updatePassword">
+    UPDATE tbmember
+    SET password = #{newPassword}
+    WHERE memno = #{memno}
+</update>
+
+
 
 </mapper>

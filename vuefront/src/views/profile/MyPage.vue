@@ -10,14 +10,20 @@
         <div
           class="profile-image-container"
           @click="triggerFileInput"
-          style="margin: 0; padding: 0; position: relative"
+          style="
+            margin: 0;
+            padding: 0;
+            position: relative;
+            display: inline-block;
+          "
         >
-          <i class="bi bi-camera power-icon"></i>
           <img
             class="profile-image"
             :src="`/img/upimg/${myprofile.imgname}`"
             :alt="myprofile.imgname"
+            style="display: block"
           />
+          <i class="bi bi-camera power-icon"></i>
           <input
             type="file"
             ref="fileInput"
@@ -34,9 +40,22 @@
             </h1>
             <h2 class="title">{{ myprofile.nickname }}</h2>
           </div>
+        </div>
+        <div style="margin-right: 50px">
           <button class="edit-user-profile-button" @click="handleEditClick">
             프로필 수정
           </button>
+          <button
+            class="edit-user-profile-button"
+            @click="openChangePasswordModal"
+            style="margin-top: 15px"
+          >
+            비밀번호 변경
+          </button>
+          <ChangePasswordModal
+            v-model:visible="isModalVisible"
+            @change-password="handlePasswordChange"
+          />
         </div>
       </div>
 
@@ -81,6 +100,13 @@
         </div>
       </section>
     </div>
+
+    <LoginModal
+      ref="loginModal"
+      :title="loginTitle"
+      :message="loginMessage"
+      @close="handleLoginModalClose"
+    />
 
     <div :class="['user-profile-modal', { open: isModalOpen }]">
       <div class="modal-content">
@@ -190,8 +216,15 @@
 
 <script>
 import axios from "axios";
+import { mapActions } from "vuex";
+import ChangePasswordModal from "../../components/ChangePasswordModal.vue";
+import LoginModal from "../../components/LoginModal.vue";
 
 export default {
+  components: {
+    ChangePasswordModal,
+    LoginModal,
+  },
   data() {
     return {
       memno: localStorage.getItem("memno"),
@@ -218,6 +251,9 @@ export default {
         5: "경영",
       },
       profileImageSrc: "",
+      isModalVisible: false,
+      loginTitle: "",
+      loginMessage: "",
     };
   },
   mounted() {
@@ -249,6 +285,45 @@ export default {
   },
 
   methods: {
+    openChangePasswordModal() {
+      // console.log(memno);
+      console.log(this.currentPassword);
+      console.log(this.newPassword);
+      this.isModalVisible = true;
+    },
+    handleModalClose() {
+      this.isModalVisible = false;
+    },
+    async handlePasswordChange({ currentPassword, newPassword }) {
+      console.log("Current Password:", currentPassword);
+      console.log("New Password:", newPassword);
+      try {
+        const memno = parseInt(localStorage.getItem("memno"), 10);
+        const response = await axios.put(
+          `${process.env.VUE_APP_BACK_END_URL}/membership/changePassword`,
+          {
+            memno,
+            currentPassword,
+            newPassword,
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        this.loginTitle = "";
+        this.loginMessage = "비밀번호가 변경되었습니다.";
+        this.$refs.loginModal.show();
+        this.isModalVisible = false;
+      } catch (error) {
+        console.error("비밀번호 변경 오류:", error.response.data);
+        this.loginTitle = "";
+        this.loginMessage = "비밀번호 변경실패";
+        this.$refs.loginModal.show();
+      }
+    },
+
     triggerFileInput() {
       this.$refs.fileInput.click();
     },
@@ -258,11 +333,11 @@ export default {
         this.uploadImage(file);
       }
     },
+    ...mapActions(["updateProfileImageSrc"]),
     async uploadImage(file) {
       const formData = new FormData();
       formData.append("file", file);
-      formData.append("memno", this.memno); // 회원 번호 추가
-      console.log(formData);
+      formData.append("memno", this.memno);
 
       try {
         const response = await axios.post(
@@ -272,35 +347,25 @@ export default {
             headers: {
               "Content-Type": "multipart/form-data",
             },
-            params: {
-              memno: this.memno,
-            },
           }
         );
 
         if (response.status === 200) {
-          const imgName = response.data; // 또는 response.data.imgName
-          const timestamp = new Date().getTime(); // 밀리초 단위의 타임스탬프
+          const imgName = response.data;
+          const timestamp = new Date().getTime();
 
-          // 이미지 URL에 타임스탬프 추가
-          this.profileImageSrc = `/img/upimg/${imgName}?t=${timestamp}`;
-          console.log("Image uploaded successfully:", response.data);
-
-          // Vue의 nextTick을 사용하여 DOM 업데이트 후에 이미지 소스를 강제로 변경
-          this.$nextTick(() => {
-            const img = this.$el.querySelector("img");
-            if (img) {
-              img.src = `/img/upimg/${imgName}?t=${timestamp}`; // URL 업데이트
-            }
-          });
-
-          alert("프로필 이미지가 성공적으로 업데이트되었습니다.");
+          const newImageUrl = `/img/upimg/${imgName}?t=${timestamp}`;
+          this.updateProfileImageSrc(newImageUrl);
+          window.location.reload();
         }
       } catch (error) {
         console.error("Error uploading image:", error);
-        alert("이미지 업로드 중 오류가 발생했습니다.");
+        this.loginTitle = "";
+        this.loginMessage = "사진 업로드 실패";
+        this.$refs.loginModal.show();
       }
     },
+
     fetchMemberDetails() {
       axios
         .get(
@@ -347,7 +412,10 @@ export default {
         )
         .then((response) => {
           console.log("Profile updated successfully:", response.data);
-          alert("프로필이 성공적으로 업데이트되었습니다.");
+          // alert("프로필이 성공적으로 업데이트되었습니다.");
+          this.loginTitle = "";
+          this.loginMessage = "프로필이 업데이트되었습니다.";
+          this.$refs.loginModal.show();
 
           this.myprofile = {
             ...this.tempProfile,
@@ -357,7 +425,9 @@ export default {
         })
         .catch((error) => {
           console.error("Error updating profile:", error);
-          alert("프로필 업데이트 중 오류가 발생했습니다.");
+          this.loginTitle = "";
+          this.loginMessage = "오류가 발생했습니다.";
+          this.$refs.loginModal.show();
         });
       this.isModalOpen = false;
     },
@@ -409,7 +479,7 @@ export default {
 }
 
 .user-profile-header {
-  width: 80%;
+  width: 90%;
   display: flex;
   align-items: center;
   margin-bottom: 30px;
@@ -710,7 +780,7 @@ section {
 }
 
 .user-profile-button {
-  background-color: #1659de;
+  background-color: #102669;
   color: white;
   border: none;
   padding: 10px 20px;
@@ -727,7 +797,7 @@ section {
 }
 
 .cancel-user-profile-button {
-  background-color: #de1616;
+  background-color: #6c757d;
   color: white;
   border: none;
   padding: 10px 20px;
@@ -745,9 +815,9 @@ section {
 
 .power-icon {
   position: absolute;
-  bottom: 125px; /* 하단에서 20px 떨어진 위치 */
-  left: 185px; /* 오른쪽에서 20px 떨어진 위치 */
-  font-size: 47px; /* 아이콘 크기 조정 */
+  bottom: -10px; /* 하단에서 20px 떨어진 위치 */
+  left: 170px; /* 오른쪽에서 20px 떨어진 위치 */
+  font-size: 43px; /* 아이콘 크기 조정 */
   cursor: pointer; /* 클릭 가능한 표시 */
 }
 

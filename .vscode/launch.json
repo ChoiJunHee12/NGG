@@ -16,6 +16,16 @@
             "projectName": "mydream",
             "args": "",
             "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-YourdreamApplication<yourdream>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "kr.co.ict.yourdream.YourdreamApplication",
+            "projectName": "yourdream",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
         }
     ]
 }

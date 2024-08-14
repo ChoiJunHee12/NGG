@@ -1,6 +1,7 @@
 package kr.ict.mydream.member.login;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import kr.ict.mydream.vo.MemberVO;
 
@@ -15,4 +16,7 @@ public interface MemberLoginDAO {
 
     public MemberVO mypage(int memno);    
     public void updateImage(MemberVO member);
+
+    String getPasswordByMemno(int memno);
+    int updatePassword(@Param("memno") int memno, @Param("newPassword") String newPassword);
 } 

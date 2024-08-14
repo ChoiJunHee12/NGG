@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 
 import kr.ict.mydream.vo.*;
 import java.util.Date;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -84,7 +85,7 @@ public class MainPageService {
 
                 List<IntDetailVO> latestDetails = mainPageDao.getLatestPostureDetails(params);
                 if (latestDetails.isEmpty()) {
-                        return 100; // 데이터가 없으면 최고 점수 반환
+                        return 100; // 데이터가 없으면 0 반환? 아니면 자세가 좋으니까 badcount가 0일테니까 100점 반환?
                 }
 
                 float totalBadCount = 0;
@@ -98,8 +99,11 @@ public class MainPageService {
         }
 
         // 컨설턴트 평가 점수 조회
-        public IntResVO getConsultantScore(int intno) {
-                return mainPageDao.getLatestConsultantScore(intno);
+        public IntResVO getLatestConsultantScore(int intno, int memno) {
+                Map<String, Object> params = new HashMap<>();
+                params.put("intno", intno);
+                params.put("memno", memno);
+                return mainPageDao.getLatestConsultantScore(params);
         }
 
         // 회원 일정 조회
@@ -244,4 +248,27 @@ public class MainPageService {
                 return emotionData;
         }
 
+        // 회원의 최근 인터뷰 정보를 가져옴
+        public Map<String, Integer> getLatestInterviewInfo(int memno) {
+                Map<String, Object> result = mainPageDao.getLatestInterviewInfo(memno);
+                if (result == null || result.isEmpty()) {
+                        return null;
+                }
+
+                Map<String, Integer> convertedResult = new HashMap<>();
+                for (Map.Entry<String, Object> entry : result.entrySet()) {
+                        if (entry.getValue() != null) {
+                                if (entry.getValue() instanceof Integer) {
+                                        convertedResult.put(entry.getKey(), (Integer) entry.getValue());
+                                } else if (entry.getValue() instanceof BigDecimal) {
+                                        convertedResult.put(entry.getKey(), ((BigDecimal) entry.getValue()).intValue());
+                                } else {
+                                        // 예외 처리 또는 로깅
+                                        System.out.println("Unexpected type for key " + entry.getKey() + ": "
+                                                        + entry.getValue().getClass());
+                                }
+                        }
+                }
+                return convertedResult;
+        }
 }

@@ -1,11 +1,9 @@
 <template>
-
   <div class="container">
     <div class="mainpage-title">
       <blockquote class="mainpage-profile">
         <b> <p>ONLINE AI INTERVIEW REPORT</p></b>
       </blockquote>
-
     </div>
     <div class="mains-header-container">
       <div class="mains-headers-left">
@@ -52,14 +50,20 @@
                 <div class="analysis-left">
                   스트레스
                   <div class="progress-container">
-                    <div class="progress-bar" :data-value="stressRate"></div>
+                    <div
+                      class="main-progress-bar"
+                      :data-value="stressRate"
+                    ></div>
                   </div>
                   <div class="analysis-rate">{{ stressRate }}%</div>
                 </div>
                 <div class="analysis-left">
                   음성분석
                   <div class="progress-container">
-                    <div class="progress-bar" :data-value="voiceRate"></div>
+                    <div
+                      class="main-progress-bar"
+                      :data-value="voiceRate"
+                    ></div>
                   </div>
                   <div class="analysis-rate">{{ voiceRate }}%</div>
                 </div>
@@ -67,7 +71,7 @@
                   자세분석
                   <div class="progress-container">
                     <div
-                      class="progress-bar"
+                      class="main-progress-bar"
                       :data-value="postureBadCountRate"
                     ></div>
                   </div>
@@ -77,7 +81,7 @@
                   컨설턴트 평가
                   <div class="progress-container" style="margin-left: 8.5px">
                     <div
-                      class="progress-bar"
+                      class="main-progress-bar"
                       :data-value="interviewReport.cnsscore"
                     ></div>
                   </div>
@@ -213,7 +217,7 @@
       class="tab-content"
       v-if="activeSection === 'ai-analysis'"
     >
-      <div class="mains-content">
+      <div class="mains-content chart-container">
         <div class="mains-floor-1">
           <div class="box2">
             <p class="box-text">감정 분석 결과</p>
@@ -233,14 +237,23 @@
             <p class="box-text">감성, 음성, 자세 요약</p>
             <div id="chart-4" style="margin-top: -10px"></div>
           </div>
+          <!-- 블러 오버레이 -->
+          <div v-if="showBlurOverlay" class="blur-overlay">
+            <p>
+              인터뷰 데이터가 없습니다. <br />
+              <button @click="goToAIInterview" class="apply-button">
+                AI 면접 하러가기
+              </button>
+            </p>
+          </div>
+          <!-- 블러 오버레이 끝 -->
         </div>
       </div>
     </div>
-
     <!-- 컨설팅 탭 -->
     <div
       id="consulting"
-      class="tab-content"
+      class="tab-content chart-container"
       v-if="activeSection === 'consulting'"
     >
       <div
@@ -317,6 +330,16 @@
         <p class="interview-a-p">
           {{ consultantTotalFeedback || "종합 요약 내용 없음" }}
         </p>
+        <!-- 블러 오버레이 -->
+        <div v-if="showBlurOverlay" class="blur-overlay">
+          <p>
+            인터뷰 데이터가 없습니다. <br />
+            <button @click="goToAIInterview" class="apply-button">
+              AI 면접 하러가기
+            </button>
+          </p>
+        </div>
+        <!-- 블러 오버레이 끝 -->
       </div>
     </div>
   </div>
@@ -337,6 +360,45 @@ export default {
   },
   setup() {
     const memberData = ref({});
+    const intno = ref(null);
+    const cnsno = ref(null);
+
+    // 가장 최근 인터뷰 번호와 컨설턴트 번호를 가져오는 함수
+    const fetchLatestInterviewInfo = async (memno) => {
+      try {
+        const response = await axios.get(
+          `${process.env.VUE_APP_BACK_END_URL}/mainpage/latestInterviewInfo?memno=${memno}`
+        );
+        console.log("API Response:", response.data, "Status:", response.status);
+        if (
+          response.status === 204 ||
+          !response.data ||
+          Object.keys(response.data).length === 0
+        ) {
+          console.warn("No interview data found");
+          intno.value = null;
+          cnsno.value = null;
+        } else if (response.data.intno) {
+          intno.value = response.data.intno;
+          cnsno.value = response.data.cnsno;
+        } else {
+          console.warn("Unexpected data structure:", response.data);
+          intno.value = null;
+          cnsno.value = null;
+        }
+      } catch (error) {
+        console.error("Error fetching latest interview info:", error);
+        intno.value = null;
+        cnsno.value = null;
+        throw error;
+      }
+    };
+
+    const showBlurOverlay = computed(() => {
+      console.log("intno value:", intno.value); // 디버깅을 위한 로그
+      return intno.value === null || intno.value === undefined;
+    });
+
     const categoryMap = {
       1: "IT/개발",
       2: "교육",
@@ -389,6 +451,11 @@ export default {
       router.push("/OneToOne");
     };
 
+    // 인터뷰 데이터가 없을 경우, AI면접으로 가기
+    const goToAIInterview = () => {
+      router.push("/AISetting");
+    };
+
     // 회원 데이터 변환 함수(희망직무, 거주지역)
     const transformMemberData = (data) => {
       if (data) {
@@ -416,6 +483,7 @@ export default {
           `${process.env.VUE_APP_BACK_END_URL}/mainpage/memberDetail?memno=${memno}`
         );
         memberData.value = transformMemberData(response.data);
+        // console.log("회원정보:", memberData.value);
       } catch (error) {
         console.error("Error fetching member data:", error);
       }
@@ -423,11 +491,13 @@ export default {
 
     // 스트레스율
     const fetchStressRate = async (intno, memno) => {
+      // console.log(typeof intno.value);
       try {
         const response = await axios.get(
-          `${process.env.VUE_APP_BACK_END_URL}/mainpage/stressRate?intno=${intno}&memno=${memno}`
+          `${process.env.VUE_APP_BACK_END_URL}/mainpage/stressRate?intno=${intno.value}&memno=${memno}`
         );
         stressRate.value = response.data;
+        // console.log("스트레스율: ", stressRate.value);
       } catch (error) {
         console.error("Error fetching stress rate:", error);
       }
@@ -436,7 +506,7 @@ export default {
     const fetchVoiceRate = async (intno, memno) => {
       try {
         const response = await axios.get(
-          `${process.env.VUE_APP_BACK_END_URL}/mainpage/voiceRate?intno=${intno}&memno=${memno}`
+          `${process.env.VUE_APP_BACK_END_URL}/mainpage/voiceRate?intno=${intno.value}&memno=${memno}`
         );
         voiceRate.value = response.data;
       } catch (error) {
@@ -447,22 +517,49 @@ export default {
     const fetchPostureBadCountRate = async (intno, memno) => {
       try {
         const response = await axios.get(
-          `${process.env.VUE_APP_BACK_END_URL}/mainpage/postureBadCountRate?intno=${intno}&memno=${memno}`
+          `${process.env.VUE_APP_BACK_END_URL}/mainpage/postureBadCountRate?intno=${intno.value}&memno=${memno}`
         );
         postureBadCountRate.value = response.data;
       } catch (error) {
         console.error("Error fetching posture bad count rate:", error);
       }
     };
+
     // 컨설턴트 평가점수
     const fetchConsultantScore = async (intno) => {
+      const memno = localStorage.getItem("memno"); // localStorage에서 memno를 직접 가져옵니다.
+
+      console.log("타입확인 intno:", typeof intno.value, intno.value);
+      console.log("타입확인 memno:", typeof memno, memno);
+
+      if (!intno.value || !memno) {
+        console.error("Invalid intno or memno", { intno: intno.value, memno });
+        return;
+      }
+
       try {
         const response = await axios.get(
-          `${process.env.VUE_APP_BACK_END_URL}/mainpage/consultantScore?intno=${intno}`
+          `${process.env.VUE_APP_BACK_END_URL}/mainpage/consultantScore`,
+          {
+            params: {
+              intno: intno.value,
+              memno: memno,
+            },
+          }
         );
-        interviewReport.value = response.data;
+
+        if (response.data) {
+          interviewReport.value = response.data;
+          console.log("컨설턴트 평가점수: ", interviewReport.value);
+        } else {
+          console.warn("No data received from consultantScore API");
+        }
       } catch (error) {
-        console.error("Error fetching consultant score:", error);
+        console.error("Error fetching consultant score:", error.message);
+        if (error.response) {
+          console.error("Response status:", error.response.status);
+          console.error("Response data:", error.response.data);
+        }
       }
     };
 
@@ -524,7 +621,7 @@ export default {
         const response = await axios.get(
           `${
             process.env.VUE_APP_BACK_END_URL
-          }/mainpage/consultantQuestions?intno=${intno}&qnos=${qnos.join(
+          }/mainpage/consultantQuestions?intno=${intno.value}&qnos=${qnos.join(
             "&qnos="
           )}`
         );
@@ -550,18 +647,37 @@ export default {
     // 직무면접 질문&답변별 피드백
     const fetchConsultantFeedback = async (memno, cnsno, intno, qnos) => {
       try {
+        if (cnsno.value === null || intno.value === null) {
+          console.warn("cnsno or intno is null, skipping feedback fetch");
+          return;
+        }
+
+        const qnosValue = Array.isArray(qnos) ? qnos : qnos.value || [];
+
+        console.log(
+          "Fetching feedback for memno:",
+          memno,
+          "cnsno:",
+          cnsno.value,
+          "intno:",
+          intno.value,
+          "qnos:",
+          qnosValue
+        );
+
         const response = await axios.get(
           `${process.env.VUE_APP_BACK_END_URL}/mainpage/consultantFeedback`,
           {
             params: {
-              memno,
-              cnsno,
-              intno,
-              qnos: qnos.join(","),
+              memno: memno,
+              cnsno: cnsno.value,
+              intno: intno.value,
+              qnos: qnosValue.join(","),
             },
           }
         );
         const data = response.data;
+        console.log("API response:", data);
 
         // 피드백 매핑
         const feedbackMap = {
@@ -575,9 +691,10 @@ export default {
               item.qcnsfeedbk;
           }
         });
+
+        console.log("Updated consultantfeedback:", consultantfeedback.value);
       } catch (error) {
         console.error("Error fetching consultant feedback:", error);
-        // 에러 상세 정보 로깅
         if (error.response) {
           console.error("Response data:", error.response.data);
           console.error("Response status:", error.response.status);
@@ -588,16 +705,37 @@ export default {
     // 종합피드백
     const fetchConsultantTotalFeedback = async (memno, intno) => {
       try {
+        console.log(
+          "Fetching feedback for memno:",
+          memno,
+          "intno:",
+          intno.value
+        );
+
+        // intno가 null이 아닌지 확인
+        if (intno.value === null) {
+          console.warn("intno is null, skipping feedback fetch");
+          return;
+        }
+
         const response = await axios.get(
           `${process.env.VUE_APP_BACK_END_URL}/mainpage/consultantTotalFeedback`,
           {
-            params: { memno, intno },
+            params: {
+              memno: memno,
+              intno: intno.value, // intno는 ref 객체이므로 .value 사용
+            },
           }
         );
-        // console.log("API response:", response.data); // 응답 데이터 확인
+
+        console.log("API response:", response.data); // 응답 데이터 확인
         consultantTotalFeedback.value = response.data; // 응답 값을 직접 할당
       } catch (error) {
         console.error("Error fetching consultant total feedback:", error);
+        if (error.response) {
+          console.error("Response data:", error.response.data);
+          console.error("Response status:", error.response.status);
+        }
       }
     };
 
@@ -624,19 +762,50 @@ export default {
 
     // 핵심키워드 분석
     const keywordStressLevel = computed(() => {
+      if (
+        intno.value === null ||
+        stressRate.value === null ||
+        stressRate.value === 0
+      ) {
+        return "데이터 없음";
+      }
+      // console.log("스트레스데이터:", stressRate.value);
       return stressRate.value > 40 ? "스트레스가 높음" : "스트레스 적정수준";
     });
 
     const keywordVoiceStability = computed(() => {
+      if (
+        intno.value === null ||
+        voiceRate.value === null ||
+        voiceRate.value === 0
+      ) {
+        return "데이터 없음";
+      }
+      // console.log("음성데이터:", voiceRate.value);
       return voiceRate.value > 70 ? "목소리가 불안정함" : "목소리가 안정적임";
     });
 
     const keywordPostureBalance = computed(() => {
+      if (
+        intno.value === null ||
+        postureBadCountRate.value === null ||
+        postureBadCountRate.value === 0
+      ) {
+        return "데이터 없음";
+      }
+      // console.log("자세데이터:", postureBadCountRate.value);
       return postureBadCountRate.value > 50 ? "자세가 불균형함" : "균형 잡힘";
     });
 
     const keywordConsultantMsg = computed(() => {
-      return interviewReport.value.cnsscore > 80
+      if (
+        intno.value === null ||
+        !interviewReport.value ||
+        interviewReport.value.cnsscore === undefined
+      ) {
+        return "데이터 없음";
+      }
+      return interviewReport.value.cnsscore > 70
         ? "매우 우수함"
         : "개선이 필요함";
     });
@@ -667,6 +836,9 @@ export default {
         .getDate()
         .toString()
         .padStart(2, "0")}`;
+    };
+    const display = () => {
+      return { display: "none" };
     };
 
     // 버블차트
@@ -936,27 +1108,44 @@ export default {
     // 전체 차트 끝
 
     onMounted(async () => {
-      const memno = 10; // 예시 memno 값
-      const intno = 10; // 예시 intno 값
-      const cnsno = 1001; // 예시 cnsno 값
-      await fetchMemberData(memno);
-      await fetchStressRate(intno, memno);
-      await fetchVoiceRate(intno, memno);
-      await fetchPostureBadCountRate(intno, memno);
-      await fetchConsultantScore(intno);
-      await fetchMemberSchedules(memno);
-      await fetchConsultantQuestions(intno, [6, 7]);
-      await fetchConsultantFeedback(memno, cnsno, intno, [6, 7]);
-      await fetchConsultantTotalFeedback(memno, intno);
-      await fetchConsultantDetail(memno);
-      await fetchRecentInterviewScores(memno);
+      loading.value = true;
+      error.value = null;
+      console.log(intno.value);
+      try {
+        const memno = localStorage.getItem("memno");
+        if (!memno) {
+          throw new Error("No memno found in localStorage");
+        }
 
-      // 프로그레스 바 초기화
-      const progressBars = document.querySelectorAll(".progress-bar");
-      progressBars.forEach((bar) => {
-        const value = bar.getAttribute("data-value");
-        bar.style.width = `${value}%`;
-      });
+        await fetchLatestInterviewInfo(memno);
+        console.log("Fetched intno:", intno.value); // 디버깅을 위한 로그
+
+        await Promise.all([
+          fetchMemberData(memno),
+          fetchStressRate(intno, memno),
+          fetchVoiceRate(intno, memno),
+          fetchPostureBadCountRate(intno, memno),
+          fetchConsultantScore(intno),
+          fetchMemberSchedules(memno),
+          fetchConsultantQuestions(intno, [6, 7]),
+          fetchConsultantFeedback(memno, cnsno, intno, [6, 7]),
+          fetchConsultantTotalFeedback(memno, intno),
+          fetchConsultantDetail(memno),
+          fetchRecentInterviewScores(memno),
+        ]);
+
+        // 프로그레스 바 초기화
+        const progressBars = document.querySelectorAll(".main-progress-bar");
+        progressBars.forEach((bar) => {
+          const value = bar.getAttribute("data-value");
+          bar.style.width = `${value}%`;
+        });
+      } catch (err) {
+        console.error("Error in onMounted:", err);
+        error.value = err.message;
+      } finally {
+        loading.value = false;
+      }
     });
 
     // 탭 활성화
@@ -966,6 +1155,9 @@ export default {
     };
 
     return {
+      display,
+      intno,
+      cnsno,
       memberData,
       interviewReport,
       stressRate,
@@ -986,10 +1178,38 @@ export default {
       handleImageError,
       goToConsultantInfo,
       goToConsultantChat,
+      goToAIInterview,
       profileImageUrl,
       ConsultantImageUrl,
       recentScores,
+      showBlurOverlay,
     };
   },
 };
 </script>
+
+<style scoped>
+.chart-container {
+  position: relative;
+}
+
+.blur-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(10px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+}
+
+.blur-overlay p {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #0d0d0d;
+}
+</style>

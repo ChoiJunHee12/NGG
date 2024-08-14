@@ -49,6 +49,7 @@
                   placeholder=" 대문자, 숫자, 특수문자 포함 8자리"
                   v-model="password"
                   @input="checkPwdFormat"
+                  @keyup.enter="submitForm('login')"
                 />
               </div>
               <div class="error-msg-area">
@@ -59,6 +60,13 @@
             </div>
 
             <br />
+            <!-- 로그인 폼 -->
+            <LoginModal
+              ref="loginModal"
+              :title="loginTitle"
+              :message="loginMessage"
+              @close="handleLoginModalClose"
+            />
             <div class="login-btn-area">
               <button
                 class="login-ctlbtn cancle-btn"
@@ -494,6 +502,7 @@
 
 <script>
 import SignupModal from "../components/SignupModal.vue";
+import LoginModal from "../components/LoginModal.vue";
 import { mapActions } from "vuex";
 import axios from "axios";
 import { ref, onMounted, defineComponent } from "vue";
@@ -504,6 +513,7 @@ export default defineComponent({
   components: {
     Datepicker,
     SignupModal,
+    LoginModal,
   },
   setup() {
     const email = ref("");
@@ -563,6 +573,8 @@ export default defineComponent({
       pwdError: false,
       modalTitle: "", // 모달 제목
       modalMessage: "", // 모달 메시지
+      loginTitle: "",
+      loginMessage: "",
       registrationSuccess: false, // 회원가입 성공 여부를 기록합니다.
     };
   },
@@ -697,15 +709,24 @@ export default defineComponent({
           console.log(this.password);
           this.login({ email: this.email, password: this.password })
             .then(() => {
-              alert("환영합니다.");
-              this.$router.push("/main");
+              this.loginTitle = "";
+              this.loginMessage = "로그인 성공";
+              this.$refs.loginModal.show(this.redirectToMain);
             })
             .catch((err) => {
-              console.log(err);
-              alert("이메일 형식이 올바르지 않습니다.");
+              console.log(err.message);
+              if (err.response && err.response.status === 401) {
+                this.loginTitle = "";
+                this.loginMessage = "비밀번호가 잘못되었습니다.";
+                this.$refs.loginModal.show(); // 로그인 폼에서 호출
+              } else {
+                alert("로그인에 실패했습니다.");
+              }
             });
         } else {
-          console.log("오지말아야할곳");
+          this.loginTitle = "";
+          this.loginMessage = "등록되지않은 이메일 입니다.";
+          this.$refs.loginModal.show(); // 로그인 폼에서 호출
         }
       } else if (formType === "signup") {
         // 회원가입 폼 제출
@@ -762,6 +783,9 @@ export default defineComponent({
 
     redirectToLogin() {
       window.location.href = "/login";
+    },
+    redirectToMain() {
+      window.location.href = "/main";
     },
   },
   computed: {
