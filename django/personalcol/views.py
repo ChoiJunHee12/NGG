@@ -186,16 +186,38 @@ def detect_mask(request):
 
 
 
-
+@csrf_exempt
 def season_tone(request):
-    seasons = ['spring', 'summer', 'fall', 'winter']
-    random_season = random.choice(seasons)
-    return JsonResponse({'season': seasons[3]})
+    # POST 요청인지 확인
+    if request.method != 'POST':
+        return JsonResponse({'error': '올바른 요청 방법이 아닙니다.'}, status=400)
 
-def gender(request):
-    seasons = ['남', '여']
-    random_season = random.choice(seasons)
-    return JsonResponse({'season': random_season})
+    # 이미지 파일이 있는지 확인
+    if 'imgfile' not in request.FILES:
+        return JsonResponse({'error': '이미지 파일이 제공되지 않았습니다.'}, status=400)
+
+    # 이미지 파일 읽기
+    file = request.FILES['imgfile']
+    try:
+        image_data = np.frombuffer(file.read(), np.uint8)
+        image = cv2.imdecode(image_data, cv2.IMREAD_COLOR)
+        if image is None:
+            return JsonResponse({'error': '이미지 디코딩에 실패했습니다.'}, status=400)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+    print("--------------------------------------")
+    face_detector = dlib.get_frontal_face_detector()
+    analyzer = models.PersonalColorAnalyzer(face_detector, landmark_predictor)
+    season, probabilities, skin_color, eye_color, image, face, face_mask = analyzer.analyze(image)
+    print(f"계산된 시즌: {season}")
+    print("시즌별 확률:")
+    probabilities.update({"season": season})
+    print(season)
+    # for season, prob in probabilities.items():
+    #     print(f"{season}: {prob:.1f}%")
+    # print(season)
+    return JsonResponse(probabilities)
+
 
 
 
