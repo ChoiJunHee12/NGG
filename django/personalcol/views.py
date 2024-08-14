@@ -11,10 +11,9 @@ import mediapipe as mp
 from django.views.decorators.csrf import csrf_exempt
 import base64
 from personalcol import models
-import dlib
 
 
-rPath = 'personalcol\static'  # 실제 경로로 바꿔주세요
+rPath = 'personalcol/static'  # 실제 경로로 바꿔주세요
 
 mp_face_detection = mp.solutions.face_detection
 mp_face_mesh = mp.solutions.face_mesh
@@ -22,10 +21,8 @@ mp_face_mesh = mp.solutions.face_mesh
 model_path = rPath + '/models/vgg16_Face_model.h5'
 print('model_path ===>>>',model_path)
 mask_model = tf.keras.models.load_model(model_path)
-landmark_predictor_path = rPath +'/models/shape_predictor_68_face_landmarks.dat'
-if not os.path.isfile(landmark_predictor_path):
-    raise FileNotFoundError(f"File not found: {landmark_predictor_path}")
-landmark_predictor = dlib.shape_predictor(landmark_predictor_path)
+
+
 @csrf_exempt
 def cuttingImage(request):
     try:
@@ -67,8 +64,6 @@ def cuttingImage(request):
         # PIL을 사용하여 이미지 저장
         cropped_image = Image.fromarray(cropped_face_rgb)
         cropped_image.save(cropped_face_path)
-
-
 
         # 파일로 응답
         response = FileResponse(open(cropped_face_path, 'rb'), content_type='image/jpeg')
@@ -192,40 +187,10 @@ def detect_mask(request):
 
 
 
-@csrf_exempt
 def season_tone(request):
-    # POST 요청인지 확인
-    if request.method != 'POST':
-        return JsonResponse({'error': '올바른 요청 방법이 아닙니다.'}, status=400)
-
-    # 이미지 파일이 있는지 확인
-    if 'imgfile' not in request.FILES:
-        return JsonResponse({'error': '이미지 파일이 제공되지 않았습니다.'}, status=400)
-
-    # 이미지 파일 읽기
-    file = request.FILES['imgfile']
-    try:
-        image_data = np.frombuffer(file.read(), np.uint8)
-        image = cv2.imdecode(image_data, cv2.IMREAD_COLOR)
-        if image is None:
-            return JsonResponse({'error': '이미지 디코딩에 실패했습니다.'}, status=400)
-    except Exception as e:
-        return JsonResponse({'error': str(e)}, status=400)
-    print("--------------------------------------")
-    face_detector = dlib.get_frontal_face_detector()
-    analyzer = models.PersonalColorAnalyzer(face_detector, landmark_predictor)
-    season, probabilities, skin_color, eye_color, image, face, face_mask = analyzer.analyze(image)
-    print(f"계산된 시즌: {season}")
-    print("시즌별 확률:")
-    probabilities.update({"season": season})
-    print(season)
-    # for season, prob in probabilities.items():
-    #     print(f"{season}: {prob:.1f}%")
-    # print(season)
-    return JsonResponse(probabilities)
-
-
-
+    seasons = ['spring', 'summer', 'fall', 'winter']
+    random_season = random.choice(seasons)
+    return JsonResponse({'season': seasons[3]})
 
 def gender(request):
     seasons = ['남', '여']
@@ -302,7 +267,3 @@ def personal_predict(request):
         else:
             print("Face alignment failed.")
             return JsonResponse({'error': 'Face alignment failed.'}, status=400)
-
-
-
-

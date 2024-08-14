@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -39,8 +40,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'personalcol',
-    'interview',
-    'tts',
 ]
 
 MIDDLEWARE = [
@@ -56,13 +55,6 @@ MIDDLEWARE = [
 
 CORS_ORIGIN_WHITELIST=[
     "http://localhost",
-    "http://localhost:80",
-    "http://192.168.0.33:3000",
-    "http://192.168.0.33:3001",
-    "http://192.168.0.39:3000",
-    "http://192.168.0.39:3001",
-    "http://192.168.0.221:3000",
-    "http://192.168.0.221:3001",
     "http://192.168.0.153:5500",
     "http://192.168.0.153:3000",
     "http://192.168.0.153",
@@ -74,12 +66,11 @@ CORS_ORIGIN_WHITELIST=[
     "http://192.168.0.8:3000",
     "http://192.168.0.198:3000",
     "http://192.168.0.18:3000",
-    "http://192.168.0.42:3000",
-    "http://192.168.0.73:3000",
-    "http://192.168.0.73:3001",
+
     "http://192.168.0.153:8080",
     "http://localhost:8080",
     "http://localhost:3000",
+    "http://192.168.0.42:3000",
     "http://localhost:3001",
 ]
 
@@ -155,3 +146,6 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
