@@ -36,4 +36,20 @@
         WHERE memno = #{memno}
     </update>
 
+
+     <!-- 현재 비밀번호를 가져옵니다 -->
+   <select id="getPasswordByMemno" resultType="string">
+    SELECT password
+    FROM tbmember
+    WHERE memno = #{memno}
+</select>
+
+<update id="updatePassword">
+    UPDATE tbmember
+    SET password = #{newPassword}
+    WHERE memno = #{memno}
+</update>
+
+
+
 </mapper>
