@@ -336,7 +336,7 @@
   }
   
   /* 프로그레스 바 스타일 */
-  .progress-bar {
+  .main-progress-bar {
     height: 20px; /* 원하는 높이로 설정 */
     background: linear-gradient(
       to right,

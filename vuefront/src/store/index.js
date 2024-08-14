@@ -63,7 +63,7 @@ export default createStore({
             "Login error:",
             error.response ? error.response.data : error.message
           );
-          throw new Error("Invalid credentials");
+          return Promise.reject(error);
         });
     },
     logout({ commit, state }) {

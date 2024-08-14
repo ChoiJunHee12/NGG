@@ -1,5 +1,5 @@
 <template>
-  <transition name="slide">
+  <transition :key="isVisible" name="slide">
     <div class="sidebar" v-if="isVisible">
       <div>
         <div>
@@ -44,7 +44,10 @@
           ><p class="bar-p">퍼스널컬러</p></router-link
         >
         <div style="align-items: center">
-          <i class="bi bi-power power-icon" style="font-style: normal"
+          <i
+            class="bi bi-power power-icon"
+            style="font-style: normal"
+            @click="handleLogout"
             >&nbsp;&nbsp;로그아웃</i
           >
         </div>
@@ -55,7 +58,8 @@
 
 <script>
 import axios from "axios";
-
+import { mapGetters } from "vuex";
+import { mapActions } from "vuex";
 export default {
   props: {
     isVisible: {
@@ -70,18 +74,28 @@ export default {
     };
   },
   mounted() {
+    this.imgname = "noimage.png";
     this.loadUserProfile();
+  },
+  watch: {
+    isVisible(newVal) {
+      if (newVal) {
+        this.imgname = "noimage.png";
+        this.loadUserProfile();
+      }
+    },
   },
   methods: {
     async loadUserProfile() {
+      this.imgname = "noimage.png"; // 프로필 로드 전 기본 이미지로 초기화
       const memno = localStorage.getItem("memno");
       if (memno) {
         try {
           const response = await axios.get(
-            `${process.env.VUE_APP_BACK_END_URL}/membership/profile?memno=${memno}`          
+            `${process.env.VUE_APP_BACK_END_URL}/membership/profile?memno=${memno}`
           );
           console.log("response.data=>", response.data);
-          this.imgname = response.data.imgname;
+          this.imgname = response.data.imgname || "noimage.png";
           this.name = response.data.name;
           console.log("this.imgname=> ", this.imgname);
           console.log("this.name=> ", this.name);
@@ -93,6 +107,19 @@ export default {
           console.error("사용자 프로필 로드 오류:", error);
         }
       }
+    },
+    ...mapActions(["logout"]),
+    handleLogout() {
+      // Call the Vuex logout action
+      this.logout()
+        .then(() => {
+          // Redirect to login page after successful logout
+          this.$router.push("/login");
+        })
+        .catch((error) => {
+          // Handle any errors that occur during logout
+          console.error("Logout failed:", error.message);
+        });
     },
   },
 };

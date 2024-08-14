@@ -1,7 +1,7 @@
 <template>
   <div class="header" :class="{ hidden: isHidden }">
     <h1 class="header-h1">
-      <router-link to="/" style="color: white; text-decoration: none"
+      <router-link to="/main" style="color: white; text-decoration: none"
         >내가, 꿈</router-link
       >
       <div>
