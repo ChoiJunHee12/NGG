@@ -10,14 +10,20 @@
         <div
           class="profile-image-container"
           @click="triggerFileInput"
-          style="margin: 0; padding: 0; position: relative"
+          style="
+            margin: 0;
+            padding: 0;
+            position: relative;
+            display: inline-block;
+          "
         >
-          <i class="bi bi-camera power-icon"></i>
           <img
             class="profile-image"
             :src="`/img/upimg/${myprofile.imgname}`"
             :alt="myprofile.imgname"
+            style="display: block"
           />
+          <i class="bi bi-camera power-icon"></i>
           <input
             type="file"
             ref="fileInput"
@@ -94,6 +100,13 @@
         </div>
       </section>
     </div>
+
+    <LoginModal
+      ref="loginModal"
+      :title="loginTitle"
+      :message="loginMessage"
+      @close="handleLoginModalClose"
+    />
 
     <div :class="['user-profile-modal', { open: isModalOpen }]">
       <div class="modal-content">
@@ -205,10 +218,12 @@
 import axios from "axios";
 import { mapActions } from "vuex";
 import ChangePasswordModal from "../../components/ChangePasswordModal.vue";
+import LoginModal from "../../components/LoginModal.vue";
 
 export default {
   components: {
     ChangePasswordModal,
+    LoginModal,
   },
   data() {
     return {
@@ -237,6 +252,8 @@ export default {
       },
       profileImageSrc: "",
       isModalVisible: false,
+      loginTitle: "",
+      loginMessage: "",
     };
   },
   mounted() {
@@ -295,11 +312,15 @@ export default {
             },
           }
         );
-        alert("비밀번호가 성공적으로 변경되었습니다.");
+        this.loginTitle = "";
+        this.loginMessage = "비밀번호가 변경되었습니다.";
+        this.$refs.loginModal.show();
         this.isModalVisible = false;
       } catch (error) {
         console.error("비밀번호 변경 오류:", error.response.data);
-        alert("비밀번호 변경에 실패했습니다.");
+        this.loginTitle = "";
+        this.loginMessage = "비밀번호 변경실패";
+        this.$refs.loginModal.show();
       }
     },
 
@@ -335,15 +356,16 @@ export default {
 
           const newImageUrl = `/img/upimg/${imgName}?t=${timestamp}`;
           this.updateProfileImageSrc(newImageUrl);
-
-          alert("프로필 이미지가 성공적으로 업데이트되었습니다.");
           window.location.reload();
         }
       } catch (error) {
         console.error("Error uploading image:", error);
-        alert("이미지 업로드에 실패했습니다.");
+        this.loginTitle = "";
+        this.loginMessage = "사진 업로드 실패";
+        this.$refs.loginModal.show();
       }
     },
+
     fetchMemberDetails() {
       axios
         .get(
@@ -390,7 +412,10 @@ export default {
         )
         .then((response) => {
           console.log("Profile updated successfully:", response.data);
-          alert("프로필이 성공적으로 업데이트되었습니다.");
+          // alert("프로필이 성공적으로 업데이트되었습니다.");
+          this.loginTitle = "";
+          this.loginMessage = "프로필이 업데이트되었습니다.";
+          this.$refs.loginModal.show();
 
           this.myprofile = {
             ...this.tempProfile,
@@ -400,7 +425,9 @@ export default {
         })
         .catch((error) => {
           console.error("Error updating profile:", error);
-          alert("프로필 업데이트 중 오류가 발생했습니다.");
+          this.loginTitle = "";
+          this.loginMessage = "오류가 발생했습니다.";
+          this.$refs.loginModal.show();
         });
       this.isModalOpen = false;
     },
@@ -753,7 +780,7 @@ section {
 }
 
 .user-profile-button {
-  background-color: #1659de;
+  background-color: #102669;
   color: white;
   border: none;
   padding: 10px 20px;
@@ -770,7 +797,7 @@ section {
 }
 
 .cancel-user-profile-button {
-  background-color: #de1616;
+  background-color: #6c757d;
   color: white;
   border: none;
   padding: 10px 20px;
@@ -788,9 +815,9 @@ section {
 
 .power-icon {
   position: absolute;
-  bottom: 125px; /* 하단에서 20px 떨어진 위치 */
-  left: 185px; /* 오른쪽에서 20px 떨어진 위치 */
-  font-size: 47px; /* 아이콘 크기 조정 */
+  bottom: -10px; /* 하단에서 20px 떨어진 위치 */
+  left: 170px; /* 오른쪽에서 20px 떨어진 위치 */
+  font-size: 43px; /* 아이콘 크기 조정 */
   cursor: pointer; /* 클릭 가능한 표시 */
 }
 
