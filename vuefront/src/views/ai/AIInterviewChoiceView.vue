@@ -150,12 +150,13 @@ export default {
       personalityJobSelected: false,
       selectedInterview: "",
       inttypecd:0,
-      memno:localStorage.getItem('memno'),
+      memno:0,
       cnsYnN:'',
     };
   },
   mounted() {    
     window.scrollTo(0, 0);
+    this.memno = localStorage.getItem('memno');
     // 컨설턴트 존재 여부 Y/N으로 반환
     axios.get(`${process.env.VUE_APP_BACK_END_URL}/interview/getcnsYnN?memno=${this.memno}`)   
     .then((res) => {    

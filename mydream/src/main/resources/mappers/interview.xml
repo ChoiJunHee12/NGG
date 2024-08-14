@@ -28,7 +28,7 @@
                 WHERE CNSNO = #{cnsno}
                 ORDER BY DBMS_RANDOM.VALUE
             )
-            WHERE ROWNUM <![CDATA[<]]>= 2            
+            WHERE ROWNUM <![CDATA[<]]>= 2
         </if>
         ORDER BY 3, 1
     </select>
@@ -53,7 +53,7 @@
         INSERT ALL
         <foreach collection="list" item="item" separator=" ">
             <choose>
-                <when test="item.aiqno != null">
+                <when test="item.aiqno != 0">
                     INTO TBINTDETAIL (
                         INTNO, QNO, AIQNO, QUESTION, ANSWER,
                         ECNTGOOD, ECNTSOSO, ECNTBAD, PBADCNT, VHERTZ, 
@@ -65,9 +65,9 @@
                     )
                 </when>
                 <otherwise>
-                    <if test="item.cnsqno != null">
+                    <if test="item.cnsqno != 0">
                         INTO TBINTDETAIL (
-                            INTNO, QNO, CNSNO, QUESTION, ANSWER,
+                            INTNO, QNO, CNSQNO, QUESTION, ANSWER,
                             ECNTGOOD, ECNTSOSO, ECNTBAD, PBADCNT, VHERTZ, 
                             VAMPLIT, VEMPTY, AIFEEDBK, CREDT, UPDDT, ESCORE, PSCORE, VSCORE
                         ) VALUES (
@@ -88,6 +88,8 @@
         VALUES(seq_feedno.nextval, #{intno}, #{efeed1},#{efeed2},#{pfeed1},#{pfeed2},#{vfeed1},#{vfeed2},#{sttfeed1},#{sttfeed2}, SYSDATE, SYSDATE)
     </insert>
 
-
+    <select id="getResNameTime" parameterType="int" resultType="java.util.Map" >
+        SELECT NAME AS "mname" ,(SELECT TO_CHAR(SYSDATE, 'yyyy-mm-dd') FROM dual) AS "resdate" FROM tbmember WHERE memno=#{memno}
+    </select>
 
 </mapper>

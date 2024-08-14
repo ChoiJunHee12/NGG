@@ -1,583 +1,660 @@
 <template>
-    <div class="resduty-container">
-
+  <div class="resduty-container">
     <div class="resduty-btncon row">
-        <div @click="pagechage(1)" class=" col-1" :class="{'resduty-lbutton':true,'resduty-qactive':nownum===1}">Q1</div>
-        <div @click="pagechage(2)" class=" col-1" :class="{'resduty-button':true,'resduty-qactive':nownum===2}">Q2</div>
-        <div @click="pagechage(3)" class=" col-1" :class="{'resduty-button':true,'resduty-qactive':nownum===3}">Q3</div>
-        <div @click="pagechage(4)" class=" col-1" :class="{'resduty-button':true,'resduty-qactive':nownum===4}">Q4</div>
-        <div @click="pagechage(5)" class=" col-1" :class="{'resduty-button':true,'resduty-qactive':nownum===5}">Q5</div>
-        <div @click="pagechage(6)" class=" col-1" :class="{'resduty-button':true,'resduty-qactive':nownum===6}">Q6</div>
-        <div @click="pagechage(7)" class=" col-1" :class="{'resduty-button':true,'resduty-qactive':nownum===7}">Q7</div>
-        <div @click="pagechage(8)" class=" col-1" :class="{'resduty-rbutton':true,'resduty-qactive':nownum===8}">종합 평가</div>
+      <div @click="pagechage(1)" class="col-1" :class="{ 'resduty-lbutton': true, 'resduty-qactive': nownum === 1 }" > Q1 </div>
+      <div @click="pagechage(2)" class="col-1" :class="{ 'resduty-button': true, 'resduty-qactive': nownum === 2 }" > Q2 </div>
+      <div @click="pagechage(3)" class="col-1" :class="{ 'resduty-button': true, 'resduty-qactive': nownum === 3 }" > Q3 </div>
+      <div @click="pagechage(4)" class="col-1" :class="{ 'resduty-button': true, 'resduty-qactive': nownum === 4 }" > Q4 </div>
+      <div @click="pagechage(5)" class="col-1" :class="{ 'resduty-button': true, 'resduty-qactive': nownum === 5 }" > Q5 </div>
+      <div @click="pagechage(6)" class="col-1" :class="{ 'resduty-button': true, 'resduty-qactive': nownum === 6 }" > Q6 </div>
+      <div @click="pagechage(7)" class="col-1" :class="{ 'resduty-button': true, 'resduty-qactive': nownum === 7 }" > Q7 </div>
+      <div @click="pagechage(8)" class="col-1" :class="{ 'resduty-rbutton': true, 'resduty-qactive': nownum === 8 }" > 종합 평가 </div>
     </div>
     <div :style="displayPage(1)" class="resduty-con row">
-        <div class="resduty-qcon">
+      <div class="resduty-qcon">
         <div class="resduty-q">
-            <div class="resduty-qnum">Q{{ i+1 }}.</div>
-            <div class="resduty-question">{{ Question[i] }}</div>
+          <div class="resduty-qnum">Q{{ i + 1 }}.</div>          
+          <div v-if="i<5" class="resduty-question">{{ this.question[i] }}</div>
+          <div v-if="i>=5" class="resduty-question">[직무 질문] {{ this.question[i] }}</div>
         </div>
-    </div>
-        <div class="resduty-qcon2">
-            <div class="resduty-vdiv">
-            <img class="resduty-video" src="\img\res_demovideo.png">
-            </div>
-            
-            <div class="resduty-dgraph">
-                <div id="graph2"></div>
-                <div class="resduty-stress">스트레스 : 80(%)</div>
-            </div>
-   
-        </div>
-        <div class="resduty-qcon3">
-            
-            <div class="resduty-dcontent row">
-                <div class="resduty-vcon col-1">
-                <img class="resduty-voicew" src="\img\res_demovoice.png">
-                </div>
-                <div class="resduty-voice col-2">
-                    <div class="resduty-voice1">
-                    음성 안정도 : 90점
-                </div>
-                <div class="resduty-voice1">
-                    공백 시간 : 12초
-                </div>
-                </div>
-            </div>
-        </div>
-        <div class="resduty-qcon4">
-            <div class="resduty-qcontent1">
-                <div class="resduty-subtitle1 row">
-                    <div class="resduty-subtitle2 col-1">면접 대답</div>
-                    <div class="resduty-qcontent2">{{this.Comment[i]}}</div>
-                </div>
-            </div>
-        </div>
-        <div class="resduty-qcon4" v-if="feedback[i]">
-            <div class="resduty-qcontent1">
-                <div class="resduty-subtitle1 row">
-                    <div class="resduty-subtitle2 col-1">피드백</div>
-                    <div class="resduty-qcontent2">{{feedback[i]}}</div>
-                </div>
-            </div>
-        </div>
-        <button v-if="page>1" class="resduty-nextbtn col-1" @click="Previous">이전 문항</button>
-        <button class="resduty-nextbtn col-1" @click="next">다음 문항</button>
-    </div>
-
-
-
-  <!--          종합 평가                       -->  
-    <div :style="displayPage(8)" class="resduty-con row">
-        <div class="resduty-summary">
-            <div class="resduty-total-t row"><div class="resduty-total-title col-1">종합 분석</div>
-            <div class="resduty-total-subtitle col-1">- 직무 면접</div>
-        </div>
-            
-            <div class="resduty-summary-right">
-        <p>이름: 홍길동</p>
-        <p>날짜: 2024-07-25</p>
       </div>
-        </div>
+      <div class="resduty-qcon2">
+        <video class="res-video" controls :key="i">
+          <source :src="video_url[i]" type="video/webm" />
+        </video>
 
-        <div class="resduty-subtitle3 col-1"><div class="resduty-subtitlecon3">종합 평가</div></div>
-        <hr>
-        <div class="resduty-qcon10">
-            <div class="resduty-totalcom">
-                <div class="resduty-analyze6-con">○ 시간이 지날수록 자세가 불안정함이 보여 좀 더 집중도를 올려야합니다!</div>
-                <div class="resduty-analyze6-con">○ 회원님의 자세 흐트러짐은 평균보다 높아요.</div>
-                <div class="resduty-analyze6-con">○ 시간이 지날수록 자세가 불안정함이 보여 좀 더 집중도를 올려야합니다!</div>
-                <div class="resduty-analyze6-con">○ 전체적으로 자세를 유지하는 시간이 길지 않으며, 집중도가 떨어짐을 확인할 수 있다.</div>
-                <div class="resduty-analyze6-con">○ 너무 같은 단어를 반복하여 말했습니다.</div>
-                <div class="resduty-analyze6-con">○ 이력서와 면접 질문과 유사도가 떨어집니다.</div>
-                
-            </div>
-
-
+        <div class="resduty-dgraph">
+          <div id="graph2"></div>
+          <div class="resduty-stress">스트레스 : 80(%)</div>
         </div>
-        <div class="resduty-subtitle3"><div class="resduty-subtitlecon3">표정 분석 / 자세 분석</div></div>
-        <hr>
-        <div class="resduty-qcon5">
-            <div class="resduty-face"> 
-                <div id="face" style="width: 400px;height:400px;"></div>
-
+      </div>
+      <div class="resduty-qcon3">
+        <div class="resduty-dcontent row">
+          <div class="resduty-vcon col-1">
+            <img
+              class="res-voicew"
+              v-if="voice[i]"
+              :src="voice[i]['vhertzimg']"
+            />
+          </div>
+          <div class="res-voice col-2">
+            <div class="res-voice1" v-if="voice[i]">
+              음성 안정도 : {{ voice[i]["vscore"] }}
             </div>
-            <div class="resduty-face-com">
-                <div id="barchart"></div>
-        </div>
-        </div>
-        <div class="resduty-subtitle3"><div class="resduty-subtitlecon3">유사도 측정  /  음성 분석</div></div>
-        <hr>
-        <div class="resduty-qcon8">
-            
-            
-            <div class="resduty-similarbox">
-                <figure class="highcharts-figure">
-                <div id="wordcloud1">
-
-                </div>
-            </figure>
+            <div class="res-voice1" v-if="voice[i]">
+              공백 시간 : {{ voice[i]["vempty"] }}초
             </div>
-            <div class="resduty-similarbox2">
-                <figure class="highcharts-figure">
-                <div id="voiceg">
-                </div>
-            </figure>
-            </div>
+          </div>
         </div>
-        <div class="resduty-qcon9">
-            <div class="resduty-similartip">
-                <img class="resduty-tipicon" src="\img\res_tip.png">
-                <div class="resduty-ti">회원님이 작성한 이력서의 기반으로 키워드를 추출하여 면접 내용과 비교하여 유사도를 ...</div>
-            </div>
+      </div>
+      <div class="resduty-qcon4">
+        <div class="resduty-qcontent1">
+          <div class="resduty-subtitle1 row">
+            <div class="resduty-subtitle2 col-1">면접 대답</div>
+            <div class="resduty-qcontent2">{{ this.stt[i] }}</div>
+          </div>
         </div>
-        <router-link to="/Main"><button class="resduty-homebtn col-1" >홈으로 돌아가기</button></router-link>
+      </div>
+      <div class="resduty-qcon4" v-if="feedback[i]">
+        <div class="resduty-qcontent1">
+          <div class="resduty-subtitle1 row">
+            <div class="resduty-subtitle2 col-1">AI피드백</div>
+            <div class="resduty-qcontent2">{{ feedback[i] }}</div>
+          </div>
+        </div>
+      </div>
+      <button v-if="page > 1" class="resduty-nextbtn col-1" @click="Previous">
+        이전 문항
+      </button>
+      <button class="resduty-nextbtn col-1" @click="next">다음 문항</button>
     </div>
+
+    <!--          종합 평가                       -->
+    <div :style="displayPage(8)" class="resduty-con row">
+      <div class="resduty-summary">
+        <div class="resduty-total-t row">
+          <div class="resduty-total-title col-1">종합 분석</div>
+          <div class="resduty-total-subtitle col-1">- 직무 면접</div>
+        </div>
+
+        <div class="resduty-summary-right">
+          <p>이름: {{this.mname}}</p>
+          <p>날짜: {{this.resdate}}</p>
+        </div>
+      </div>
+
+      <div class="resduty-subtitle3 col-1">
+        <div class="resduty-subtitlecon3">종합 평가</div>
+      </div>
+      <hr />
+      <div class="res-qcon10">
+        <div class="res-totalcom">
+          <div class="res-analyze6-con">○ {{ efinalcmt[0] }}</div>
+          <div class="res-analyze6-con">○ {{ efinalcmt[1] }}</div>
+          <div class="res-analyze6-con">○ {{ pfinalcmt[0] }}</div>
+          <div class="res-analyze6-con">○ {{ pfinalcmt[1] }}</div>
+          <div class="res-analyze6-con">○ {{ vfinalcmt[0] }}</div>
+          <div class="res-analyze6-con">○ {{ vfinalcmt[1] }}</div>
+          <div class="res-analyze6-con">○ {{ sttfinalcmt.sttresult1 }}</div>
+          <div class="res-analyze6-con">○ {{ sttfinalcmt.sttresult2 }}</div>
+        </div>
+      </div>
+      <div class="resduty-subtitle3">
+        <div class="resduty-subtitlecon3">표정 분석 / 자세 분석</div>
+      </div>
+      <hr />
+      <div class="resduty-qcon5">
+        <div class="resduty-face">
+          <div id="face" style="width: 400px; height: 400px"></div>
+        </div>
+        <div class="resduty-face-com">
+          <div id="barchart"></div>
+        </div>
+      </div>
+      <div class="resduty-subtitle3">
+        <div class="resduty-subtitlecon3">유사도 측정 / 음성 분석</div>
+      </div>
+      <hr />
+      <div class="resduty-qcon8">
+        <div class="resduty-similarbox">
+          <figure class="highcharts-figure">
+            <div id="wordcloud1"></div>
+          </figure>
+        </div>
+        <div class="resduty-similarbox2">
+          <figure class="highcharts-figure">
+            <div id="voiceg"></div>
+          </figure>
+        </div>
+      </div>
+      <div class="resduty-qcon9">
+        <div class="resduty-similartip">
+          <img class="resduty-tipicon" src="\img\res_tip.png" />
+          <div class="resduty-ti">
+            회원님이 작성한 이력서의 기반으로 키워드를 추출하여 면접 내용과
+            비교하여 유사도를 ...
+          </div>
+        </div>
+      </div>
+      <router-link to="/Main"
+        ><button class="resduty-homebtn col-1">
+          홈으로 돌아가기
+        </button></router-link
+      >
     </div>
-       
-    
+  </div>
 </template>
 <script>
-import * as echarts from 'echarts';
+import axios from 'axios';
+import * as echarts from "echarts";
 export default {
-    data() {
-        return {
-            page:1,
-            Q1 : [],
-            Question:['자신에 대하여 소개해주세요.',
-                '자신의 강점, 단점을 지원 분야와 관련지어 말해주세요.',
-                '성공했던 혹은 실패했던 사례는 무엇인가요?',
-                '자랑할 만한 성과는 무엇이 있나요?',
-                '본인만의 업무상 경쟁력은 무엇인가요?',
-                '우리 회사의 (해당 직무)에서 가장 중요하다고 생각하는 업무는 무엇이며, \n 그 업무를 수행하기 위해 필요한 역량은 무엇이라고 생각하십니까?',
-                '(해당 직무)와 관련된 최근 트렌드나 기술 동향에 대해 어떻게 생각하시나요? \n 이러한 변화가 우리 회사와 해당 직무에 어떤 영향을 미칠 것으로 예상하십니까?'
-            ],
-            Comment:['Q1번에 대한 답변을 STT로 표현 해주시고 back연결후에 data에 있는 Comment기본값을 지워주시면 됩니다.',
-            'Q2번에 대한 답변을 STT로 표현 해주시고 back연결후에 data에 있는 Comment기본값을 지워주시면 됩니다.',
-            'Q3번에 대한 답변을 STT로 표현 해주시고 back연결후에 data에 있는 Comment기본값을 지워주시면 됩니다.',
-            'Q4번에 대한 답변을 STT로 표현 해주시고 back연결후에 data에 있는 Comment기본값을 지워주시면 됩니다.',
-            'Q5번에 대한 답변을 STT로 표현 해주시고 back연결후에 data에 있는 Comment기본값을 지워주시면 됩니다.'],
-            feedback:['피드백 존재시 v-if로 보이게 해주시면 됩니다.',
-                '현재 Q2. 까지만 보이게 설정했습니다.'
-            ],
-            i:0,
-            content:1,
-            nownum:1,
+  data() {
+    return {
+      page: 1,
+      i: 0,
+      content: 1,
+      nownum: 1,      
+      question: [],
+      detailvo: {},
+      stt: [],
+      emotion: [],
+      position: [],
+      voice: [],
+      video_url: [],
+      feedback: [],
+      detailvoList: [],
+      efinalcmt: [],
+      pfinalcmt: [],
+      vfinalcmt: [],
+      sttfinalcmt: [],
+      mname: "",
+      resdate: "",
 
-        }
+    };
+  },
+  methods: {
+    next() {
+      this.pagechage(this.page + 1);
     },
-    methods: {
-        next(){
-            this.pagechage(this.page+1);
-        },
-        Previous(){
-            this.pagechage(this.page-1);
-        },
-        pagechage(num){
-            console.log(num)
-            this.page=num;
-            this.i=num-1;
-            if(num===8){
-                this.content=8
-            }else{
-                this.content=1
-            }
-            this.nownum=num;
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth' // 부드러운 스크롤을 위해 'smooth' 옵션 사용
-            });
-        },
-        displayPage(pageNum) {
-            
-            return this.content === pageNum ? { display: 'block' } : { display: 'none' };
-        },
-        graph2(){
-            // 임시 데이터
-            const data = [];
-            const time = (new Date()).getTime();
-            let y = 0;
+    Previous() {
+      this.pagechage(this.page - 1);
+    },
+    pagechage(num) {
+      console.log(num);
+      this.page = num;
+      this.i = num - 1;
+      if (num === 8) {
+        this.content = 8;
+      } else {
+        this.content = 1;
+      }
+      this.nownum = num;
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth", // 부드러운 스크롤을 위해 'smooth' 옵션 사용
+      });
+      if (num<8){
+        this.graph2(num)
+      }
+    },
+    displayPage(pageNum) {
+      return this.content === pageNum
+        ? { display: "block" }
+        : { display: "none" };
+    },
+    graph2(num) {
+      const i=num-1;    
+      // 임시 데이터
+      const data = [];
+      const time = new Date().getTime(); // 현재 시간
 
-            for (let i = -9; i <= 0; i++) {
-                // Change y to -1 occasionally
-                if (Math.random() < 0.1) {
-                    y = -1;
-                } else {
-                    y = Math.random() > 0.5 ? 1 : 0;
-                }
+      // emotion 객체의 키를 가져오고 정렬합니다.
+      const emotionKeys = Object.keys(this.emotion[i])
+        .filter((key) => key.endsWith("sec"))
+        .sort((a, b) => parseInt(a) - parseInt(b));
+      const numPoints = emotionKeys.length;
 
-                data.push({
-                    x: time + i * 90000, // 90,000 milliseconds = 1 minute 30 seconds
-                    y: y
-                });
-            }
-            Highcharts.chart('graph2', {
-            chart: {
-                type: 'spline',
-                height: 320, // Height of the chart
-                width: 480,   // Width of the chart
-                
-            },
-
-            title: {
-                text: "",
-                align: 'left'
-            },
-
-            subtitle: {
-                text: '',
-                align: 'left'
-            },
-
-            xAxis: {
-                type: 'datetime',
-                title: {
-                    text: '시간'
-                }
-            },
-
-            yAxis: [{
-                title: {
-                    text: '감정 인식'
-                },
-                min: -1,
-                max: 1,
-                tickPositions: [-1, 0, 1],
-                labels: {
-                    formatter: function () {
-                        return this.value === -1 ? '부정' :
-                            this.value === 0 ? '중립' :
-                            this.value === 1 ? '긍정' : '';
-                    }
-                },
-            }],
-
-            plotOptions: {
-                series: {
-                    animation: {
-                        duration: 1000
-                    },
-                    marker: {
-                        enabled: false
-                    },
-                    lineWidth: 3
-                }
-            },
-
-            series: [{
-                name: '감정 라인',
-                data: data,
-                color: '#08AD94' // 라인 색상 변경
-            }],
-            
-            responsive: {
-                rules: [{
-                    condition: {
-                        maxWidth: 300
-                    },
-                    chartOptions: {
-                        yAxis: [{
-                            tickAmount: 2,
-                            title: {
-                                x: 15,
-                                reserveSpace: false
-                            }
-                        }]
-                    }
-                }]
-            }
+      emotionKeys.forEach((key, index) => {
+        const y = this.emotion[i][key];
+        data.push({
+          x: index * 90000, // x축의 값은 0초부터 시작
+          y: y,
         });
-
-
+      });    
+      Highcharts.chart("graph2", {
+        chart: {
+          type: "spline",
+          height: 320, // Height of the chart
+          width: 480, // Width of the chart
         },
 
+        title: {
+          text: `스트레스율 : ${this.detailvoList[i].escore}%`,
+          align: "center",
+        },
 
+        subtitle: {
+          text: `긍정: ${this.emotion[i].ecntgood}초, 중립: ${this.emotion[i].ecntsoso}초, 부정: ${this.emotion[i].ecntbad}초`,
+          align: "center",
+        },
 
+        xAxis: {
+          type: "datetime",
+          title: {
+            text: "시간",
+          },
+          min: 0, // x축의 시작점을 0으로 설정
+          labels: {
+            formatter: function () {
+              const seconds = Math.round(this.value / 90000); // 90,000 milliseconds = 1 minute 30 seconds
+              return `${seconds}초`; // Label formatting to show '0sec', '1sec', etc.
+            },
+          },
+        },
 
-        face(){
-            const chartContainer = document.getElementById('face');
-    chartContainer.style.width = '300px';
-    chartContainer.style.height = '400px';
+        yAxis: [
+          {
+            title: {
+              text: "감정 인식",
+            },
+            min: -1,
+            max: 1,
+            tickPositions: [-1, 0, 1],
+            labels: {
+              formatter: function () {
+                return this.value === -1
+                  ? "부정"
+                  : this.value === 0
+                  ? "중립"
+                  : this.value === 1
+                  ? "긍정"
+                  : "";
+              },
+            },
+          },
+        ],
 
-    // ECharts 초기화
-    var myChart = echarts.init(chartContainer);
-var option = {
-  title: {
-    text: '감정 점수'
-  },
-  tooltip: {
-    trigger: 'axis'
-  },
-  legend: {
-    left: 'left',
-    data: [
-      '점',
+        plotOptions: {
+          series: {
+            animation: {
+              duration: 1000,
+            },
+            marker: {
+              enabled: false,
+            },
+            lineWidth: 3,
+          },
+        },
 
-    ]
-  },
-  radar: [
-    {
-      indicator: [
-        { text: 'Q1', max: 100 },
-        { text: 'Q2', max: 100 },
-        { text: 'Q3', max: 100 },
-        { text: 'Q4', max: 100 },
-        { text: 'Q5', max: 100}
-      ],
-      center: ['50%', '50%'],
-      radius: 80
+        series: [
+          {
+            name: "감정 라인",
+            data: data,
+          },
+        ],
+
+        responsive: {
+          rules: [
+            {
+              condition: {
+                maxWidth: 300,
+              },
+              chartOptions: {
+                yAxis: [
+                  {
+                    tickAmount: 2,
+                    title: {
+                      x: 15,
+                      reserveSpace: false,
+                    },
+                  },
+                ],
+              },
+            },
+          ],
+        },
+      });
     },
 
+    face() {
+      const chartContainer = document.getElementById("face");
+      chartContainer.style.width = "300px";
+      chartContainer.style.height = "400px";
 
-  ],
-  series: [
-    {
-      type: 'radar',
-      tooltip: {
-        trigger: 'item'
-      },
-      areaStyle: {
-              color: '#08AD94' // 영역 색상 변경
+      // ECharts 초기화
+      var myChart = echarts.init(chartContainer);
+      var option = {
+        title: {
+          text: "감정 점수",
+        },
+        tooltip: {
+          trigger: "axis",
+        },
+        legend: {
+          left: "left",
+          data: ["점"],
+        },
+        radar: [
+          {
+            indicator: [
+              { text: "Q1", max: 100 },
+              { text: "Q2", max: 100 },
+              { text: "Q3", max: 100 },
+              { text: "Q4", max: 100 },
+              { text: "Q5", max: 100 },
+              { text: "Q6", max: 100 },
+              { text: "Q7", max: 100 },
+            ],
+            center: ["50%", "50%"],
+            radius: 80,
+          },
+        ],
+        series: [
+          {
+            type: "radar",
+            tooltip: {
+              trigger: "item",
+            },
+            areaStyle: {
+              color: "#08AD94", // 영역 색상 변경
             },
             itemStyle: {
-              color: '#0A6065' // 데이터 포인트 색상 변경
+              color: "#0A6065", // 데이터 포인트 색상 변경
             },
-      data: [
-        {
-          value: [60, 73, 85, 40,65],
-          name: '감정 점수'
-        }
-      ]
+            data: [
+              {
+                value: [
+                    this.emotion[0].escore, 
+                    this.emotion[1].escore, 
+                    this.emotion[2].escore, 
+                    this.emotion[3].escore, 
+                    this.emotion[4].escore, 
+                    this.emotion[5].escore, 
+                    this.emotion[6].escore, 
+                    ],
+                name: "감정 점수",
+              },
+            ],
+          },
+        ],
+      };
+      myChart.setOption(option);
     },
-    
-  ]
-};
-myChart.setOption(option);
+    barchart() {
+      Highcharts.chart("barchart", {
+        chart: {
+          type: "column",
+          height: "380px",
         },
-        barchart(){
-            Highcharts.chart('barchart', {
-    chart: {
-        type: 'column',
-        height:'380px'
-    },
-    title: {
-        text: '자세 흐트러짐',
-        align: 'left'
-    },
-    subtitle: {
-        text:
-            '',
-        align: 'left'
-    },
-    xAxis: {
-        categories: ['Q1', 'Q2'],
-        crosshair: true,
-        accessibility: {
-            description: 'Countries'
-        }
-    },
-    yAxis: {
-        min: 0,
         title: {
-            text: 'Count'
-        }
-    },
-    tooltip: {
-        valueSuffix: '(회)'
-    },
-    plotOptions: {
-        column: {
+          text: "자세 흐트러짐",
+          align: "left",
+        },
+        subtitle: {
+          text: "",
+          align: "left",
+        },
+        xAxis: {
+          categories: ["Q1", "Q2", "Q3", "Q4", "Q5", "Q6", "Q7"],
+          crosshair: true,
+          accessibility: {
+            description: "Countries",
+          },
+        },
+        yAxis: {
+          min: 0,
+          title: {
+            text: "Count",
+          },
+        },
+        tooltip: {
+          valueSuffix: "(회)",
+        },
+        plotOptions: {
+          column: {
             pointPadding: 0.2,
-            borderWidth: 0
-        }
+            borderWidth: 0,
+          },
+        },
+        series: [
+          {
+            name: "목 꺽임",
+            data: [
+                this.position[0].pbadcnt, 
+                this.position[1].pbadcnt, 
+                this.position[2].pbadcnt, 
+                this.position[3].pbadcnt, 
+                this.position[4].pbadcnt, 
+                this.position[5].pbadcnt, 
+                this.position[6].pbadcnt, 
+                ],
+            color: "#08AD94",
+          },
+        ],
+      });
     },
-    series: [
-        {
-            name: '목 꺽임',
-            data: [8, 3],
-            color:'#08AD94'
-        },
-        
-        
-    ]
-});
-        },
 
-        wordcloud(){
-        const text =
-        'Chapter 1. Down the Rabbit-Hole ' +
-        'Alice was beginning to get very tired of sitting by her sister on ' +
-        'the bank, and of having nothing to do: ' +
-        'once or twice she had peeped into the book her sister was reading, ' +
-        'but it had no pictures or conversations ' +
-        'in it, \'and what is the use of a book,\' thought Alice ' +
-        '\'without pictures or conversation?\'' +
-        'So she was considering in her own mind (as well as she could, for ' +
-        'the hot day made her feel very sleepy ' +
-        'and stupid), whether the pleasure of making a daisy-chain would be ' +
-        'worth the trouble of getting up and picking ' +
-        'the daisies, when suddenly a White Rabbit with pink eyes ran close ' +
-        'by her.',
-    lines = text.replace(/[():'?0-9]+/g, '').split(/[,\. ]+/g),
-    data = lines.reduce((arr, word) => {
-        let obj = Highcharts.find(arr, obj => obj.name === word);
-        if (obj) {
+    wordcloud() {
+      const text =
+          this.stt[0] + " " +
+          this.stt[1] + " " +
+          this.stt[2] + " " +
+          this.stt[3] + " " +
+          this.stt[4] + " " +
+          this.stt[5] + " " +
+          this.stt[6],          
+        lines = text.replace(/[():'?0-9]+/g, "").split(/[,\. ]+/g),
+        data = lines.reduce((arr, word) => {
+          let obj = Highcharts.find(arr, (obj) => obj.name === word);
+          if (obj) {
             obj.weight += 1;
-        } else {
+          } else {
             obj = {
-                name: word,
-                weight: 1
+              name: word,
+              weight: 1,
             };
             arr.push(obj);
-        }
-        return arr;
-    }, []);
+          }
+          return arr;
+        }, []);
 
-Highcharts.chart('wordcloud1', {
-    chart: {
-            height: 380, // Height of the chart
-            width: 470,   // Width of the chart
-
+      Highcharts.chart("wordcloud1", {
+        chart: {
+          height: 380, // Height of the chart
+          width: 470, // Width of the chart
         },
-    accessibility: {
-        screenReaderSection: {
-            beforeChartFormat: '<h5>{chartTitle}</h5>' +
-                '<div>{chartSubtitle}</div>' +
-                '<div>{chartLongdesc}</div>' +
-                '<div>{viewTableButton}</div>'
-        }
-    },
-    series: [{
-        type: 'wordcloud',
-        data,
-        name: 'Occurrences'
-    }],
-    title: {
-        text: '이력서 키워드 유사도 카운트',
-        align: 'left'
-    },
-    subtitle: {
-        text: '',
-        align: 'left'
-    },
-    tooltip: {
-        headerFormat: '<span style="font-size: 16px"><b>{point.key}</b>' +
-            '</span><br>'//커서 내용
-    }
-});
-    },
-    voiceg(){
-    Highcharts.chart('voiceg', {
-chart:{
-    height: 380, // Height of the chart
-    width: 470,   // Width of the chart
-},
-title: {
-    text: '음성 떨림',
-    align: 'left'
-},
-
-subtitle: {
-    text: '',
-    align: 'left'
-},
-
-yAxis: {
-    title: {
-        text: '누적 목소리 떨림 횟수'
-    }
-},
-
-xAxis: {
-    title:{
-        text:'(초)'
-    },
-    accessibility: {
-        rangeDescription: '(초)'
-    }
-},
-
-legend: {
-    layout: 'vertical',
-    align: 'right',
-    verticalAlign: 'middle'
-},
-
-plotOptions: {
-    series: {
-        label: {
-            connectorAllowed: false
+        accessibility: {
+          screenReaderSection: {
+            beforeChartFormat:
+              "<h5>{chartTitle}</h5>" +
+              "<div>{chartSubtitle}</div>" +
+              "<div>{chartLongdesc}</div>" +
+              "<div>{viewTableButton}</div>",
+          },
         },
-        pointStart: 0,
-        pointInterval: 5
-    }
-},
-
-series: [{
-    name: 'Q1',
-    data: [
-        0, 0, 1, 2, 2, 2,2,
-        3, 3, 3
-    ]
-},
-{
-    name: 'Q2',
-    data: [
-        0, 1, 2, 3, 3, 3,3,
-        3, 4, 4
-    ]
-},
-{
-    name: 'Q3',
-    data: [
-        0, 0, 1, 1, 1, 1,1,
-        2, 2, 2
-    ]
-},
-{
-    name: 'Q4',
-    data: [
-        0, 0, 1, 2, 2, 2,2,
-        3, 4, 5
-    ]
-},
-{
-    name: 'Q5',
-    data: [
-        0, 0, 0, 0, 0, 0,0,
-        1, 1, 1
-    ]
-}
-],
-
-responsive: {
-    rules: [{
-        condition: {
-            maxWidth: 500
+        series: [
+          {
+            type: "wordcloud",
+            data,
+            name: "Occurrences",
+          },
+        ],
+        title: {
+          text: "이력서 키워드 유사도 카운트",
+          align: "left",
         },
-        chartOptions: {
-            legend: {
-                layout: 'horizontal',
-                align: 'center',
-                verticalAlign: 'bottom'
-            }
-        }
-    }]
-}
+        subtitle: {
+          text: "",
+          align: "left",
+        },
+        tooltip: {
+          headerFormat:
+            '<span style="font-size: 16px"><b>{point.key}</b>' + "</span><br>", //커서 내용
+        },
+      });
+    },
+    voiceg() {
+      Highcharts.chart("voiceg", {
+        chart: {
+          height: 380, // Height of the chart
+          width: 470, // Width of the chart
+        },
+        title: {
+          text: "음성 데이터",
+          align: "left",
+        },
 
-});
-},
+        subtitle: {
+          text: "",
+          align: "left",
+        },
+
+        yAxis: {
+          title: {
+            text: "",
+          },
+        },
+
+        xAxis: {
+          title: {
+            text: "(문제)",
+          },
+          accessibility: {
+            rangeDescription: "(문제)",
+          },
+        },
+
+        legend: {
+          layout: "vertical",
+          align: "right",
+          verticalAlign: "middle",
+        },
+        plotOptions: {
+          series: {
+            label: {
+              connectorAllowed: false,
+            },
+            pointStart: 1,
+            pointInterval: 1,
+          },
+        },
+        series: [
+          {
+            name: "vhertz",
+            data: [
+              this.detailvoList[0].vhertz,
+              this.detailvoList[1].vhertz,
+              this.detailvoList[2].vhertz,
+              this.detailvoList[3].vhertz,
+              this.detailvoList[4].vhertz,
+              this.detailvoList[5].vhertz,
+              this.detailvoList[6].vhertz,
+            ],
+          },
+          {
+            name: "vamplit",
+            data: [
+              this.detailvoList[0].vamplit,
+              this.detailvoList[1].vamplit,
+              this.detailvoList[2].vamplit,
+              this.detailvoList[3].vamplit,
+              this.detailvoList[4].vamplit,
+              this.detailvoList[5].vamplit,
+              this.detailvoList[6].vamplit,
+            ],
+          },
+          {
+            name: "vempty",
+            data: [
+              this.detailvoList[0].vempty,
+              this.detailvoList[1].vempty,
+              this.detailvoList[2].vempty,
+              this.detailvoList[3].vempty,
+              this.detailvoList[4].vempty,
+              this.detailvoList[5].vempty,
+              this.detailvoList[6].vempty,
+            ],
+          },
+        ],
+        responsive: {
+          rules: [
+            {
+              condition: {
+                maxWidth: 500,
+              },
+              chartOptions: {
+                legend: {
+                  layout: "horizontal",
+                  align: "center",
+                  verticalAlign: "bottom",
+                },
+              },
+            },
+          ],
+        },
+      });
     },
-    mounted() {
-        // this.graph1();
-        this.graph2();
-        this.wordcloud();
-        this.barchart();
-        this.face();
-        this.voiceg();
-    },
-}
+    fetchData(){
+        const details = ["q1detail", "q2detail", "q3detail", "q4detail", "q5detail", "q6detail", "q7detail"];
+        details.forEach((key) => {
+            const storedDetail = JSON.parse(localStorage.getItem(key));
+
+            this.stt.push(storedDetail.answer || null);
+            this.emotion.push(storedDetail.emotion || { escore: 0 });
+            this.position.push(storedDetail.position || { pscore: 0 });
+            this.voice.push(storedDetail.voice || { vscore: 0 });
+            this.video_url.push(storedDetail.video_url || "");
+            this.feedback.push(storedDetail.aifeedback || "");
+        });
+
+        // 반복문을 통해 detailvo 객체를 생성하고 detailvoList에 추가
+        for (let i = 0; i < 7; i++) {
+            this.detailvo = {
+            qno: i + 1,
+            aiqno: i <= 4 ? JSON.parse(localStorage.getItem("questionlist"))[i].totalqno : null,
+            cnsqno: i > 4 ? JSON.parse(localStorage.getItem("questionlist"))[i].totalqno : null,
+            question: JSON.parse(localStorage.getItem("questionlist"))[i].totalq,
+            answer: this.stt[i],
+            ecntgood: this.emotion[i].ecntgood,
+            ecntsoso: this.emotion[i].ecntsoso,
+            ecntbad: this.emotion[i].ecntbad,
+            pbadcnt: this.position[i].pbadcnt,
+            vhertz: this.voice[i].vhertz,
+            vamplit: this.voice[i].vamplit,
+            vempty: this.voice[i].vempty,
+            aifeedbk: this.feedback[i],
+            escore: this.emotion[i].escore,
+            pscore: this.position[i].pscore,
+            vscore: this.voice[i].vscore,
+            };
+
+            this.detailvoList.push(this.detailvo);
+            this.question.push(this.detailvo.question);
+        }
+        console.log("this.detailvoList => ", this.detailvoList);
+        console.log("this.question => ", this.question);
+
+        this.efinalcmt = JSON.parse(localStorage.getItem("efinalcmt"));
+        this.pfinalcmt = JSON.parse(localStorage.getItem("pfinalcmt"));
+        this.vfinalcmt = JSON.parse(localStorage.getItem("vfinalcmt"));
+        this.sttfinalcmt = JSON.parse(localStorage.getItem("sttfinalcmt"));
+    }
+  },
+  mounted() {
+    window.scrollTo(0, 0);
+    this.fetchData();
+    this.graph2(1);
+    this.wordcloud();
+    this.barchart();
+    this.face();
+    this.voiceg();
+    axios.get(`${process.env.VUE_APP_BACK_END_URL}/interview/getresnametime?memno=${localStorage.getItem("memno")}`)
+    .then((res) => {
+        console.log(res.data.mname);
+        console.log(res.data.resdate);
+        this.mname = res.data.mname;
+        this.resdate = res.data.resdate;
+    })
+  },
+};
 </script>
-<style scoped>
-
-</style>

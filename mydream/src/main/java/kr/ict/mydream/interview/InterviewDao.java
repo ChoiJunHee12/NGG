@@ -25,4 +25,6 @@ public interface InterviewDao {
     public void setIntDetail(List<IntDetailVO> indetailvoList);
 
     public void setIntFeedbk(IntFeedbkVO intfeedbkvo);
+
+    public Map getResNameTime(int memno);
 }

@@ -70,4 +70,8 @@ public class InterviewService {
     public void setIntFeedbk(IntFeedbkVO intfeedbkvo) {
         interviewDao.setIntFeedbk(intfeedbkvo);
     }
+
+    public Map getResNameTime(int memno) {
+        return interviewDao.getResNameTime(memno);
+    }
 }

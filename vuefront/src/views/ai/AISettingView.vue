@@ -136,7 +136,7 @@ export default {
       this.$router.push({ name: "AIInterviewChoice" });
     },
     triggerCheckbox(device) {
-      console.log(device);
+      // console.log(device);
       device.checked = !device.checked;
     },
   },
