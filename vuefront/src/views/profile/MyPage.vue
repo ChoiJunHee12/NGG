@@ -53,7 +53,8 @@
             비밀번호 변경
           </button>
           <ChangePasswordModal
-            v-model:visible="isModalVisible"
+            :visible="isModalVisible"
+            @update:visible="isModalVisible = $event"
             @change-password="handlePasswordChange"
           />
         </div>
@@ -814,9 +815,10 @@ section {
 }
 
 .power-icon {
+
   position: absolute;
-  bottom: -10px; /* 하단에서 20px 떨어진 위치 */
-  left: 170px; /* 오른쪽에서 20px 떨어진 위치 */
+  bottom: -24px; /* 하단에서 20px 떨어진 위치 */
+  left: 190px; /* 오른쪽에서 20px 떨어진 위치 */
   font-size: 43px; /* 아이콘 크기 조정 */
   cursor: pointer; /* 클릭 가능한 표시 */
 }

@@ -1,5 +1,5 @@
 <template>
-  <div v-if="visible" class="modal-overlay" @click.self="hide">
+  <div v-if="visible" class="modal-overlay">
     <div class="modal-content">
       <button class="modal-close" @click="hide">&times;</button>
       <h5 class="modal-title">비밀번호 변경</h5>
