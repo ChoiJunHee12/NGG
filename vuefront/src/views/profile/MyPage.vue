@@ -190,6 +190,7 @@
 
 <script>
 import axios from "axios";
+import { mapActions } from "vuex";
 
 export default {
   data() {
@@ -258,11 +259,11 @@ export default {
         this.uploadImage(file);
       }
     },
+    ...mapActions(["updateProfileImageSrc"]),
     async uploadImage(file) {
       const formData = new FormData();
       formData.append("file", file);
-      formData.append("memno", this.memno); // 회원 번호 추가
-      console.log(formData);
+      formData.append("memno", this.memno);
 
       try {
         const response = await axios.post(
@@ -272,33 +273,22 @@ export default {
             headers: {
               "Content-Type": "multipart/form-data",
             },
-            params: {
-              memno: this.memno,
-            },
           }
         );
 
         if (response.status === 200) {
-          const imgName = response.data; // 또는 response.data.imgName
-          const timestamp = new Date().getTime(); // 밀리초 단위의 타임스탬프
+          const imgName = response.data;
+          const timestamp = new Date().getTime();
 
-          // 이미지 URL에 타임스탬프 추가
-          this.profileImageSrc = `/img/upimg/${imgName}?t=${timestamp}`;
-          console.log("Image uploaded successfully:", response.data);
-
-          // Vue의 nextTick을 사용하여 DOM 업데이트 후에 이미지 소스를 강제로 변경
-          this.$nextTick(() => {
-            const img = this.$el.querySelector("img");
-            if (img) {
-              img.src = `/img/upimg/${imgName}?t=${timestamp}`; // URL 업데이트
-            }
-          });
+          const newImageUrl = `/img/upimg/${imgName}?t=${timestamp}`;
+          this.updateProfileImageSrc(newImageUrl);
 
           alert("프로필 이미지가 성공적으로 업데이트되었습니다.");
+          window.location.reload();
         }
       } catch (error) {
         console.error("Error uploading image:", error);
-        alert("이미지 업로드 중 오류가 발생했습니다.");
+        alert("이미지 업로드에 실패했습니다.");
       }
     },
     fetchMemberDetails() {
