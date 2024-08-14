@@ -38,7 +38,7 @@ title.cvwrite-container{
     text-align: left;
 }
 .form-container{
-    background: #9a9a9a1f;
+    /* background: #9a9a9a1f; */
     margin-top: 1%;
     border-radius: 8px;
     padding: 3% 3%;
@@ -86,11 +86,12 @@ title.cvwrite-container{
 
 .cvwrite-input-file-button:hover{
     width: 135px;
-    padding: 9px 37px;
+    padding: 12px 40px;
     margin-bottom: 20px;
-    border: 3px solid #11045e;;
+    /* border: 3px solid #11045e; */
     background-color: #fff;
     color: #11045e;
+    
 
 }
 
@@ -133,6 +134,7 @@ title.cvwrite-container{
     margin-left: 30px;
     font-size: 1.2em;
     font-weight: bold;
+    margin-left: 20px;
 }
 
 
@@ -219,6 +221,11 @@ title.cvwrite-container{
     height: 35px;
     font-size: 14px;
     font-weight: bold;
+    transition: background-color 0.5s, color 0.5s;
+}
+
+.cvwrite-delbtn:hover{
+    background-color: #d22f2f;
 }
 .cvwrite-add-button {
     padding: 10px 20px;
@@ -228,8 +235,12 @@ title.cvwrite-container{
     color: white;
     cursor: pointer;
     font-weight: bold;
-    margin-right: 60px;
+    /* margin-right: 20px; */
     margin-top: 24px;
+    transition: background-color 0.5s, color 0.5s;
+}
+.cvwrite-add-button:hover {
+background-color: #11045e;
 }
 .cvwrite-add-button-img {
     padding: 10px 20px;
@@ -247,9 +258,10 @@ title.cvwrite-container{
     margin-left: 60px;
     font-size: 1.2em;
     width: 150px;
-    margin-top: 20px;
+    margin-top: 34px;
     margin-bottom: 5px;
     font-weight: bold;
+    margin-left: 20px;
 }
 .cvwrite-cv2-table{
     width: 100%;
@@ -301,14 +313,15 @@ title.cvwrite-container{
 
 .cvwrite-cv3-title{
     align-items: left;
-
+    
     width: 150px;
-    margin-top: 20px;
+    margin-top: 34px;
     margin-bottom: 5px;
     text-align: left;
     margin-left: 60px;
     font-size: 1.2em;
     font-weight: bold;
+    margin-left: 20px;
 }
 .cvwrite-cv3-table{
     width: 100%;
@@ -364,12 +377,13 @@ title.cvwrite-container{
 .cvwrite-cv4-title{
     align-items: left;
     width: 200px;
-    margin-top: 20px;
+    margin-top: 34px;
     margin-bottom: 5px;
     text-align: left;
     margin-left: 60px;
     font-size: 1.2em;
     font-weight: bold;
+    margin-left: 20px;
 }
 .cvwrite-cv4-table{
     width: 100%;
@@ -416,23 +430,36 @@ title.cvwrite-container{
 
 .cvwrite-button-container {
     display: flex;
-    justify-content: flex-end;
     margin: 20px;
+    justify-content: center;
+    align-items: center;
 }
 .cvwrite-save, .cvwrite-remove {
     padding: 10px 20px;
-    margin-left: 10px;
+    margin-left: 20px;
+    margin-top: 10px;
     background-color: #08877D;
     border: none;
     border-radius: 4px;
     color: white;
     cursor: pointer;
+    width: 150px;
+    height: 50px;
+    font-weight: bold;
+    transition: background-color 0.5s, color 0.5s;
+}
+.cvwrite-remove:hover{
+    background-color: #135f59;
 }
 .cvwrite-save {
     background-color: #1241A4;
     margin-right: 40px;
+    font-weight: bold;
+    transition: background-color 0.5s, color 0.5s;
 }
-
+.cvwrite-save:hover{
+    background-color: #11045e;
+}
 .cvwrite-cv-input-half-top{
     width: 100%;
     height: 30%;
