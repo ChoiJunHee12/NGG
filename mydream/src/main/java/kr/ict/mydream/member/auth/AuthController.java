@@ -1,5 +1,6 @@
 package kr.ict.mydream.member.auth;
 
+import java.util.Date;
 import java.util.UUID;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -23,6 +24,7 @@ import kr.ict.mydream.member.jwt.AuthenticationRequest;
 import kr.ict.mydream.member.jwt.AuthenticationResponse;
 import kr.ict.mydream.member.jwt.JwtTokenProvider;
 import kr.ict.mydream.member.login.MemberLoginService;
+import kr.ict.mydream.vo.LoginVO;
 import kr.ict.mydream.vo.MemberVO;
 
 
@@ -39,6 +41,7 @@ public class AuthController {
     private JwtTokenProvider jwtTokenProvider;
     @Autowired
     private MemberLoginService memberLoginService;
+    
 
 
     private final static String filePath = Paths.get(System.getProperty("user.dir"))
@@ -59,7 +62,7 @@ public class AuthController {
     }
     }
 
-    @PostMapping("/login")
+@PostMapping("/login")
 public ResponseEntity<?> authenticateUser(@RequestBody AuthenticationRequest authenticationRequest) {
     try {
         // 이메일과 비밀번호로 인증 시도
@@ -82,11 +85,24 @@ public ResponseEntity<?> authenticateUser(@RequestBody AuthenticationRequest aut
         System.out.println(member.getEmail());
         System.out.println(member.getPassword());
 
+
         int memno = member.getMemno(); 
         String rolecd = member.getRolecd(); 
 
+         // 로그인 기록 삽입
+        LoginVO loginVO = new LoginVO();
+        loginVO.setMemno(member.getMemno());
+        loginVO.setLogindt(new Date()); // 로그인 시간을 현재 시간으로 설정
+        memberLoginService.insertLoginRecord(loginVO); // 로그인 기록 삽입
+
+         // 로그 출력
+         
+
+         // 로그인 기록에서 생성된 logno 가져오기
+         int logno = loginVO.getLogno();
+         System.out.println("Inserted login record with logno: " + loginVO.getLogno());
         // 성공 시 JWT 토큰과 사용자 정보 반환
-        return ResponseEntity.ok(new AuthenticationResponse(jwt, memno, rolecd));
+        return ResponseEntity.ok(new AuthenticationResponse(jwt, memno, rolecd,logno));
 
     } catch (BadCredentialsException ex) {
         // 인증 실패 시 비밀번호가 잘못되었다는 메시지 반환
@@ -99,9 +115,17 @@ public ResponseEntity<?> authenticateUser(@RequestBody AuthenticationRequest aut
     
     
     @GetMapping("/logout")
-    public ResponseEntity<?> logoutUser() {
-        SecurityContextHolder.clearContext();
-        return ResponseEntity.ok("Logout successful");
+    public ResponseEntity<?> logoutUser(@RequestParam(name = "logno") int logno) {
+        try {
+            // 로그아웃 기록 업데이트
+            memberLoginService.updateLogoutRecord(logno);
+
+            // 로그아웃 처리
+            SecurityContextHolder.clearContext();
+            return ResponseEntity.ok("Logout successful");
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("로그아웃 중 오류가 발생했습니다.");
+        }
     }
 
 
