@@ -13,12 +13,84 @@ interface CapitalData {
   color: string;
   z?: number; // z 속성 추가
 }
-
+const categoryNameMapping: { [key: string]: string } = {
+  "1": "IT",
+  "2": "교육",
+  "3": "마케팅",
+  "4": "기획",
+  "5": "경영",
+};
 const User = () => {
+  const [totalMembers, setTotalMembers] = useState<number | null>(null); //총회원수
+  const [dailyVisitors, setDailyVisitors] = useState<number | null>(null); // 일일방문자수
+  const [totalIntnos, setTotalIntnos] = useState<number | null>(null); // 총 면접수
+  const [totalMemCon, setTotalMemCon] = useState<number | null>(null); // 총 면접수
+
+  const [chartData, setChartData] = useState({
+    xAxisData: [] as string[], // x축 데이터
+    seriesData: [] as number[], // y축 데이터
+  });
+
   const [topologyData, setTopologyData] = useState<any>(null);
   const [capitalsData, setCapitalsData] = useState<CapitalData[]>([]);
 
+  // 총 회원수를 가져오는 함수
+  const fetchTotalMembers = async () => {
+    try {
+      const response = await axios.get(
+        "http://192.168.0.73:81/yourdream/api/members/count"
+      );
+      setTotalMembers(response.data);
+    } catch (error) {
+      console.error("Failed to fetch total members", error);
+    }
+  };
+
+  // 일일방문자수
+  const fetchDailyVisitors = async () => {
+    try {
+      const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD 형식으로 오늘 날짜 가져오기
+      const response = await axios.get(
+        `http://192.168.0.73:81/yourdream/api/members/daily-visit-count?date=${today}`
+      );
+      setDailyVisitors(response.data);
+    } catch (err) {
+      console.error("일일방문자수 에러", err);
+    }
+  };
+
+  //총 인터뷰수
+  const fetchTotalIntnos = async () => {
+    try {
+      const response = await axios.get(
+        "http://192.168.0.73:81/yourdream/api/members/int-count"
+      );
+      setTotalIntnos(response.data);
+    } catch (err) {
+      console.error("총면접수 에러", err);
+    }
+  };
+
+  const fetchTotalMemCon = async () => {
+    try {
+      const response = await axios.get(
+        "http://192.168.0.73:81/yourdream/api/members/con-count"
+      );
+      setTotalMemCon(response.data);
+    } catch (err) {
+      console.error("총매칭수 에러", err);
+    }
+  };
+
+  const [categoryChartData, setCategoryChartData] = useState<
+    { value: number; name: string }[]
+  >([]);
+
   useEffect(() => {
+    fetchTotalMembers();
+    fetchDailyVisitors();
+    fetchTotalIntnos();
+    fetchTotalMemCon();
     const fetchData = async () => {
       try {
         // 한국지도 요청
@@ -87,6 +159,37 @@ const User = () => {
           },
         ];
 
+        // 새로운 API 요청 (일별 회원 수)
+        const endDate = new Date();
+
+        // 일주일 전 날짜 구하기
+        const startDate = new Date();
+        startDate.setDate(endDate.getDate() - 7);
+        const formatDate = (date: Date) => {
+          const year = date.getFullYear();
+          const month = String(date.getMonth() + 1).padStart(2, "0");
+          const day = String(date.getDate()).padStart(2, "0");
+          return `${year}-${month}-${day}`;
+        };
+        const formattedStartDate = formatDate(startDate);
+        const formattedEndDate = formatDate(endDate);
+        const dailyCountsResponse = await axios.get(
+          "http://192.168.0.73:81/yourdream/api/members/dailyCounts",
+          {
+            params: {
+              startDate: formattedStartDate,
+              endDate: formattedEndDate,
+            },
+          }
+        );
+        const data = dailyCountsResponse.data;
+        const labels = Object.keys(data);
+        const values = Object.values(data);
+        setChartData({
+          xAxisData: labels.map((date) => `${date.split("월")[1]}`), // x축 데이터
+          seriesData: values as number[], // y축 데이터
+        });
+
         // Process data
         capitals.forEach((p) => {
           p.z = p.population;
@@ -99,6 +202,29 @@ const User = () => {
     };
 
     fetchData();
+  }, []);
+  // 카테고리 데이터 가져오기
+  useEffect(() => {
+    const fetchCategoryData = async () => {
+      try {
+        const response = await axios.get(
+          "http://192.168.0.73:81/yourdream/api/members/categcdCounts"
+        );
+        const data = response.data;
+
+        // 데이터를 카테고리 차트 형식에 맞게 변환
+        const formattedCategoryData = Object.keys(data).map((key) => ({
+          value: data[key],
+          name: categoryNameMapping[key] || `Category ${key}`, // 카테고리 이름 설정
+        }));
+
+        setCategoryChartData(formattedCategoryData); // 카테고리 차트 데이터 설정
+      } catch (error) {
+        console.error("Error fetching category data:", error);
+      }
+    };
+
+    fetchCategoryData();
   }, []);
 
   const chartOptions = {
@@ -157,14 +283,14 @@ const User = () => {
     xAxis: {
       type: "category",
       boundaryGap: false,
-      data: ["20일", "21일", "22일", "23일", "24일", "25일", "26일"],
+      data: chartData.xAxisData,
     },
     yAxis: {
       type: "value",
     },
     series: [
       {
-        data: [320, 632, 301, 1334, 890, 1330, 1320],
+        data: chartData.seriesData,
         type: "line",
         areaStyle: {},
       },
@@ -173,7 +299,7 @@ const User = () => {
   const chartpie = {
     series: [
       {
-        name: "Access From",
+        name: "Category Distribution",
         type: "pie",
         radius: ["40%", "70%"],
         avoidLabelOverlap: false,
@@ -202,13 +328,7 @@ const User = () => {
         labelLine: {
           show: false,
         },
-        data: [
-          { value: 1048, name: "IT" },
-          { value: 735, name: "사무직" },
-          { value: 580, name: "제조업" },
-          { value: 484, name: "의료" },
-          { value: 300, name: "회계" },
-        ],
+        data: categoryChartData, // API에서 받아온 카테고리 데이터
       },
     ],
   };
@@ -346,7 +466,11 @@ const User = () => {
           <div>
             <h3 className="user-info-text">누적 회원수</h3>
             <div>
-              <p className="user-info-textinfo">13,285명</p>
+              <p className="user-info-textinfo">
+                {totalMembers !== null
+                  ? `${totalMembers.toLocaleString()}명`
+                  : "로딩 중..."}
+              </p>
             </div>
           </div>
           <div className="user-info2">
@@ -357,7 +481,11 @@ const User = () => {
           <div>
             <h3 className="user-info-text">일일 방문자</h3>
             <div>
-              <p className="user-info-textinfo">85명</p>
+              <p className="user-info-textinfo">
+                {dailyVisitors !== null
+                  ? `${dailyVisitors.toLocaleString()}명`
+                  : "로딩 중..."}
+              </p>
             </div>
           </div>
           <div className="user-info2">
@@ -368,7 +496,11 @@ const User = () => {
           <div>
             <h3 className="user-info-text">AI면접 횟수</h3>
             <div>
-              <p className="user-info-textinfo">4,292번</p>
+              <p className="user-info-textinfo">
+                {totalIntnos !== null
+                  ? `${totalIntnos.toLocaleString()}번`
+                  : "로딩 중..."}
+              </p>
             </div>
           </div>
           <div className="user-info2">
@@ -379,7 +511,11 @@ const User = () => {
           <div>
             <h3 className="user-info-text">컨설팅 신청횟수</h3>
             <div>
-              <p className="user-info-textinfo">1,329번</p>
+              <p className="user-info-textinfo">
+                {totalMemCon !== null
+                  ? `${totalMemCon.toLocaleString()}번`
+                  : "로딩 중..."}
+              </p>
             </div>
           </div>
           <div className="user-info2">
