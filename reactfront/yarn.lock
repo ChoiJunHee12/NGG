@@ -3341,11 +3341,7 @@ clean-css@^5.2.2:
     "@types/react-dom" "^18.0.0"
     "@types/styled-components" "^5.1.34"
     axios "^1.7.3"
-<<<<<<< HEAD
-    client "file:../../../AppData/Local/Yarn/Cache/v6/npm-client-0.1.0-320412d4-eaec-4b75-ba25-4c1ec25dc4fa-1723521337651/node_modules/client"
-=======
-    client "file:C:/Users/ict03-08/AppData/Local/Yarn/Cache/v6/npm-client-0.1.0-a9d23f98-ac4f-42d8-b59b-1658563dea75-1723521985442/node_modules/client"
->>>>>>> origin/develop
+    client "file:../../../AppData/Local/Yarn/Cache/v6/npm-client-0.1.0-f64caec7-2fa9-4ecd-9d9e-2c269a774546-1723729102646/node_modules/client"
     echarts "^5.5.1"
     echarts-for-react "^3.0.2"
     highcharts "^11.4.6"
