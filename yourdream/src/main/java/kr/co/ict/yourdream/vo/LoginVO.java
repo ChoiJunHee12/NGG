@@ -7,6 +7,7 @@ import java.util.Date;
 @Getter
 @Setter
 public class LoginVO {
+    
     private int logno;
     private int memno;
     private Date logindt;
