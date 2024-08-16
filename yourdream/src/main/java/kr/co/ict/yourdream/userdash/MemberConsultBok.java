@@ -14,8 +14,8 @@ import jakarta.persistence.Table;
 @Setter
 @Entity
 @Table(name = "tbmemberconsult")
-@IdClass(MemberConsultId.class)
-public class MemberConsultDTO {
+@IdClass(MemberConsultIdBok.class)
+public class MemberConsultBok {
 
     @Column
     @Id
