@@ -10,10 +10,6 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class DailyMemberCountDTO {
-
     private Date date;
     private long count;
-
-    
-    
 }

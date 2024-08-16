@@ -39,12 +39,12 @@ public class ConsultProfileController {
         }
     }
 
-    // 새 컨설턴트 프로필 생성
-    @PostMapping
-    public ResponseEntity<ConsultVO> createConsultProfile(@RequestBody ConsultVO consultVO) {
-        ConsultVO createdProfile = consultProfileService.createConsultProfile(consultVO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdProfile);
-    }
+    // // 새 컨설턴트 프로필 생성
+    // @PostMapping
+    // public ResponseEntity<ConsultVO> createConsultProfile(@RequestBody ConsultVO consultVO) {
+    //     ConsultVO createdProfile = consultProfileService.createConsultProfile(consultVO);
+    //     return ResponseEntity.status(HttpStatus.CREATED).body(createdProfile);
+    // }
 
     // 컨설턴트 프로필 정보 업데이트
     @PostMapping("/{cnsno}")
@@ -58,12 +58,12 @@ public class ConsultProfileController {
         }
     }
 
-    // 컨설턴트 프로필 삭제
-    @DeleteMapping("/{cnsno}")
-    public ResponseEntity<Void> deleteConsultProfile(@PathVariable("cnsno") int cnsno) {
-        boolean deleted = consultProfileService.deleteConsultProfile(cnsno);
-        return deleted ? ResponseEntity.ok().build() : ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-    }
+    // // 컨설턴트 프로필 삭제
+    // @DeleteMapping("/{cnsno}")
+    // public ResponseEntity<Void> deleteConsultProfile(@PathVariable("cnsno") int cnsno) {
+    //     boolean deleted = consultProfileService.deleteConsultProfile(cnsno);
+    //     return deleted ? ResponseEntity.ok().build() : ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    // }
 
     // 프로필 이미지 업로드
     @PostMapping("/uploadProfileImage")

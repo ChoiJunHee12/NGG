@@ -14,8 +14,8 @@ import OTO_main from "./OneToOne/OTO_main";
 import Feedback from "./feedback/feedback";
 import FeedbackDetail from "./feedback/feedbackDetail";
 import AddId from "./admin/AddId";
-import MemberList from "./member/MemberList";
-import MemberModal from "./member/MemberModal";
+import MemberList from "./admin/member/MemberList";
+import MemberModal from "./admin/member/MemberModal";
 
 const App: React.FC = () => {
   const [isSidebarVisible, setIsSidebarVisible] = useState(true);
