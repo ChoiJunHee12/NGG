@@ -12,10 +12,7 @@ import org.hibernate.jpa.QueryHints;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -24,9 +21,6 @@ public class ConsultProfileService {
 
     @Autowired
     private ConsultProfileRepository consultProfileRepository;
-
-    @Autowired
-    private CnsCareerRepository cnsCareerRepository;
 
     @Autowired
     private EntityManager entityManager;
@@ -50,26 +44,9 @@ public class ConsultProfileService {
                 "SELECT cp FROM ConsultProfile cp LEFT JOIN FETCH cp.cnscareerList WHERE cp.cnsno = :cnsno",
                 ConsultProfile.class);
         query.setParameter("cnsno", cnsno);
-        query.setHint(QueryHints.HINT_READONLY, true);
+        // query.setHint(QueryHints.HINT_READONLY, true);
         ConsultProfile profile = query.getSingleResult();
         return convertToVO(profile);
-    }
-
-    // 새로운 컨설턴트 프로필을 생성하는 메서드
-    @Transactional
-    public ConsultVO createConsultProfile(ConsultVO consultVO) {
-        ConsultProfile consultProfile = convertToEntity(consultVO);
-        ConsultProfile savedProfile = consultProfileRepository.save(consultProfile);
-
-        if (consultVO.getCnscareerVO() != null) {
-            for (CnsCareerVO careerVO : consultVO.getCnscareerVO()) {
-                CnsCareer career = convertCnsCareerToEntity(careerVO);
-                career.setConsultProfile(savedProfile);
-                cnsCareerRepository.save(career);
-            }
-        }
-
-        return convertToVO(savedProfile);
     }
 
     // 기존 컨설턴트 프로필을 업데이트하는 메서드
@@ -83,16 +60,6 @@ public class ConsultProfileService {
                     return convertToVO(updatedProfile);
                 })
                 .orElseThrow(() -> new RuntimeException("프로필을 찾을 수 없습니다: " + cnsno));
-    }
-
-    // 컨설턴트 프로필을 삭제하는 메서드
-    @Transactional
-    public boolean deleteConsultProfile(int cnsno) {
-        if (consultProfileRepository.existsById(cnsno)) {
-            consultProfileRepository.deleteById(cnsno);
-            return true;
-        }
-        return false;
     }
 
     // 프로필 이미지 파일을 업로드하는 메서드
@@ -142,13 +109,6 @@ public class ConsultProfileService {
                 .map(this::convertCnsCareerToVO)
                 .collect(Collectors.toList()));
         return vo;
-    }
-
-    // ConsultVO를 ConsultProfile 엔티티로 변환하는 내부 헬퍼 메서드
-    private ConsultProfile convertToEntity(ConsultVO vo) {
-        ConsultProfile profile = new ConsultProfile();
-        BeanUtils.copyProperties(vo, profile);
-        return profile;
     }
 
     // CnsCareer 엔티티를 CnsCareerVO로 변환하는 내부 헬퍼 메서드

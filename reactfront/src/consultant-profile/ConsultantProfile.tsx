@@ -187,7 +187,7 @@ const ConsultantProfile: React.FC = () => {
                 alt={profileData.name}
             /><UploadImage src="/img/camera.png" alt="프로필 사진 수정" onClick={handleUploadClick} />
                 <HeaderInfo>
-                     <div>
+                    <div>
                         <Name as="h1">
                             {profileData.name} <Gender>({getGenderText(profileData.gendercd)})</Gender>
                         </Name>
@@ -295,7 +295,7 @@ const ConsultantProfile: React.FC = () => {
                                     type="text"
                                     id="categcd"
                                     name="categcd"
-                                    value={editedProfile?.categcd || ''}
+                                    value={getCategoryText(editedProfile?.categcd || '')}
                                     onChange={handleInputChange}
                                     disabled
                                 />

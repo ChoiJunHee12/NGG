@@ -35,8 +35,8 @@ export const ProfileImage = styled.img`
 
 export const UploadImage = styled.img`
   && {
-    margin-left: -60px;
-    margin-top: 90px;
+    margin-left: -70px;
+    margin-top: 100px;
     cursor: pointer;
   }
 `;
@@ -55,7 +55,7 @@ export const Name = styled.div`
     font-size: 1.5rem;
     font-weight: bold;
     color: #2c3e50;
-    margin: 0 0 5px 0;
+    margin: 0 0 15px 0;
   }
 `;
 
@@ -71,7 +71,7 @@ export const Title = styled.div`
     font-size: 1.2rem;
     font-weight: bold;
     color: #34495e;
-    margin: 0;
+    margin-left: 20px;
   }
 `;
 
