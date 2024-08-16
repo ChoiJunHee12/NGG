@@ -33,6 +33,14 @@ export const ProfileImage = styled.img`
   }
 `;
 
+export const UploadImage = styled.img`
+  && {
+    margin-left: -70px;
+    margin-top: 100px;
+    cursor: pointer;
+  }
+`;
+
 export const HeaderInfo = styled.div`
   && {
     display: flex;
@@ -47,7 +55,7 @@ export const Name = styled.div`
     font-size: 1.5rem;
     font-weight: bold;
     color: #2c3e50;
-    margin: 0 0 5px 0;
+    margin: 0 0 15px 0;
   }
 `;
 
@@ -63,7 +71,7 @@ export const Title = styled.div`
     font-size: 1.2rem;
     font-weight: bold;
     color: #34495e;
-    margin: 0;
+    margin-left: 20px;
   }
 `;
 
@@ -321,6 +329,7 @@ export const Label = styled.label`
 `;
 
 export const Input = styled.input`
+  && {
     width: 100%;
     padding: 0.5em;
     border: 1px solid #ccc;
@@ -328,6 +337,39 @@ export const Input = styled.input`
     box-sizing: border-box;
     font-size: 1em;
     font-family: sans-serif;
+  }
+`;
+
+export const FileInput = styled.input`
+  && {
+    width: 100%;
+    padding: 0.5em;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 1em;
+    font-family: sans-serif;
+    background-color: #ffffff;
+    cursor: pointer;
+  }
+`;
+
+export const UploadButton = styled.button`
+  && {
+    background-color: #1659de;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+
+    &:hover {
+      background-color: #003d8c;
+    }
+  }
 `;
 
 export const Button = styled.button`
@@ -360,6 +402,7 @@ export const CancelButton = styled(Button)`
 `;
 
 export const Textarea = styled.textarea`
+  && {
     width: 100%;
     padding: 0.5em;
     border: 1px solid #ccc;
@@ -368,4 +411,5 @@ export const Textarea = styled.textarea`
     font-size: 1em;
     resize: vertical;  // 세로로만 크기 조절 가능
     min-height: 100px; // 기본 높이 설정
+  }
 `;

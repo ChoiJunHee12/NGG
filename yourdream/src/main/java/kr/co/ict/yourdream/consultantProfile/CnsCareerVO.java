@@ -1,4 +1,4 @@
-package kr.co.ict.yourdream.vo;
+package kr.co.ict.yourdream.consultantProfile;
 
 import java.util.Date;
 
