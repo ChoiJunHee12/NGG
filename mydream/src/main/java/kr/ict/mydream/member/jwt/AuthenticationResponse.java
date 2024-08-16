@@ -14,4 +14,5 @@ public class AuthenticationResponse {
     private String accessToken;
     private int memno;    
     private String rolecd;
+    private int logno; // 추가된 필드
 }

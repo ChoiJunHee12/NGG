@@ -9,7 +9,7 @@
                 담당 컨설턴트와의 <span class="highlight">1:1</span> 상담
               </p></b
             >
-          </blockquote>
+           </blockquote>
         </div>
       </div>
     </div>
