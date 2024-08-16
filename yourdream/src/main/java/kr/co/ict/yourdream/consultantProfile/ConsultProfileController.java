@@ -17,17 +17,6 @@ public class ConsultProfileController {
     @Autowired
     private ConsultProfileService consultProfileService;
 
-    // 특정 컨설턴트 프로필 조회 (기본 정보만)
-    @GetMapping("/{cnsno}/basic")
-    public ResponseEntity<ConsultVO> getBasicConsultProfileById(@PathVariable("cnsno") int cnsno) {
-        try {
-            ConsultVO profileVO = consultProfileService.getBasicConsultProfileById(cnsno);
-            return ResponseEntity.ok(profileVO);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        }
-    }
-
     // 특정 컨설턴트 프로필 조회 (전체 정보)
     @GetMapping("/{cnsno}")
     public ResponseEntity<ConsultVO> getConsultProfileById(@PathVariable("cnsno") int cnsno) {
@@ -37,13 +26,6 @@ public class ConsultProfileController {
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
-    }
-
-    // 새 컨설턴트 프로필 생성
-    @PostMapping
-    public ResponseEntity<ConsultVO> createConsultProfile(@RequestBody ConsultVO consultVO) {
-        ConsultVO createdProfile = consultProfileService.createConsultProfile(consultVO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdProfile);
     }
 
     // 컨설턴트 프로필 정보 업데이트
@@ -56,13 +38,6 @@ public class ConsultProfileController {
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
-    }
-
-    // 컨설턴트 프로필 삭제
-    @DeleteMapping("/{cnsno}")
-    public ResponseEntity<Void> deleteConsultProfile(@PathVariable("cnsno") int cnsno) {
-        boolean deleted = consultProfileService.deleteConsultProfile(cnsno);
-        return deleted ? ResponseEntity.ok().build() : ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
     // 프로필 이미지 업로드

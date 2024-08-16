@@ -83,7 +83,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isVisible }) => {
           <p className="bar-p">Consultant DashBoard</p>
         </Link>
         <hr />
-        <Link to="/admin/AddId" className="main-router">
+        <Link to="/admin-consultant/ConsultantAdmin" className="main-router">
           <p className="bar-p">Consultant Admin DashBoard</p>
         </Link>
         <hr />
