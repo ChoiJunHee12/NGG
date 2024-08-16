@@ -56,6 +56,7 @@ const User = () => {
   const fetchDailyVisitors = async () => {
     try {
       const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD 형식으로 오늘 날짜 가져오기
+      console.log("오늘", today);
       const response = await axios.get(
         `http://192.168.0.73:81/yourdream/api/members/daily-visit-count?date=${today}`
       );

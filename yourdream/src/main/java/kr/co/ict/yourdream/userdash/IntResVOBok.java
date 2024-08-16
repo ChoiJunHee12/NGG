@@ -18,8 +18,7 @@ import jakarta.persistence.TemporalType;
 @Table(name = "tbintres") // 테이블 이름을 지정 (선택 사항)
 @Getter
 @Setter
-public class IntResBok { 
-    
+public class IntResVOBok { 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_intno")
     @SequenceGenerator(name = "seq_intno", sequenceName = "seq_intno", allocationSize = 1)

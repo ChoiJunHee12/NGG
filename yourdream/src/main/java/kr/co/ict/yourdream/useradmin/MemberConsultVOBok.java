@@ -1,4 +1,4 @@
-package kr.co.ict.yourdream.userdash;
+package kr.co.ict.yourdream.useradmin;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -15,7 +15,7 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "tbmemberconsult")
 @IdClass(MemberConsultIdBok.class)
-public class MemberConsultBok {
+public class MemberConsultVOBok {
 
     @Column
     @Id
