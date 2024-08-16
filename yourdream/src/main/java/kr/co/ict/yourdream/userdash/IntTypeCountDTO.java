@@ -6,14 +6,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
+
 @Getter
 @Setter
 @AllArgsConstructor
-public class DailyMemberCount {
-
-    private Date date;
-    private long count;
-
-    
-    
+public class IntTypeCountDTO {
+    private Date credt; // 날짜
+    private long count; // 카운트
 }

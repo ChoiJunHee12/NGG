@@ -15,7 +15,7 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "tbmemberconsult")
 @IdClass(MemberConsultId.class)
-public class MemberConsultDTO {
+public class MemberConsultBok {
 
     @Column
     @Id
