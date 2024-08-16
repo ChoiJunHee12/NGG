@@ -50,6 +50,22 @@
     WHERE memno = #{memno}
 </update>
 
+    <!-- 로그인 기록 삽입 -->
+    <insert id="insertLoginRecord" parameterType="loginvo">
+    INSERT INTO tblogin (logno, memno, logindt)
+    VALUES (SEQ_LOGNO.NEXTVAL, #{memno}, SYSDATE)
+</insert>
+
+<select id="selectLastInsertId" resultType="int">
+    SELECT SEQ_LOGNO.CURRVAL FROM dual
+</select>
+
+    <!-- 로그아웃 기록 업데이트 -->
+    <update id="updateLogoutRecord" parameterType="int">
+        UPDATE tblogin
+        SET logoutdt = sysdate
+        WHERE logno = #{logno}
+    </update>
 
 
 </mapper>

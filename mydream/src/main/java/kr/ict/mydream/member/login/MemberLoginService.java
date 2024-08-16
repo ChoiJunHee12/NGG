@@ -5,6 +5,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import kr.ict.mydream.member.auth.ChangePasswordRequest;
+import kr.ict.mydream.vo.LoginVO;
 import kr.ict.mydream.vo.MemberVO;
 
 
@@ -85,6 +86,19 @@ public class MemberLoginService {
         }
     }
     
+
+    // 로그인 기록 삽입
+    public void insertLoginRecord(LoginVO login) {
+       memberLoginDAO.insertLoginRecord(login);
+       int logno = memberLoginDAO.selectLastInsertId();
+       login.setLogno(logno);
+    }
+
+    // 로그아웃 기록 업데이트
+    public void updateLogoutRecord(int logno) {
+        memberLoginDAO.updateLogoutRecord(logno);
+    }
     
+
     
 }
