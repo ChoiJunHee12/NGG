@@ -22,7 +22,7 @@ import jakarta.persistence.TemporalType;
 @Data
 @Entity
 @Table(name = "tbmember")
-public class MemberDTO {
+public class MemberBok {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_memno")

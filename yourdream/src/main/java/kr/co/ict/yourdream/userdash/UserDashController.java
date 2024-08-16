@@ -67,13 +67,13 @@ public class UserDashController {
         }
 
         // Get the list of counts from the service
-        List<DailyMemberCount> counts = userDashService.getDailyMemberCounts(startDate, endDate);
+        List<DailyMemberCountDTO> counts = userDashService.getDailyMemberCounts(startDate, endDate);
 
         // Convert the list to a map with dates as keys
         Map<String, Long> countMap = counts.stream()
                 .collect(Collectors.toMap(
                         count -> DISPLAY_FORMAT.format(count.getDate()), // Format the date as "M월 d일"
-                        DailyMemberCount::getCount, // Map the count
+                        DailyMemberCountDTO::getCount, // Map the count
                         Long::sum // Merge function to sum up counts for the same date
                 ));
 
@@ -116,5 +116,23 @@ public class UserDashController {
         }
 
         return formattedData;
+    }
+    
+
+    @GetMapping("/loccdCounts")
+    public Map<String, Integer> getLoccdCounts() {
+        return userDashService.getLoccdCounts();
+    }
+
+
+    @GetMapping("/daily-interview")
+    public Map<String, Long> getDailyIntTypeCounts(
+            @RequestParam("startDate") String startDateStr,
+            @RequestParam("endDate") String endDateStr) throws ParseException {
+
+        Date startDate = DATE_FORMAT.parse(startDateStr);
+        Date endDate = DATE_FORMAT.parse(endDateStr);
+
+        return userDashService.getDailyIntTypeCounts(startDate, endDate);
     }
 }

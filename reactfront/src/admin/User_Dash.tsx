@@ -3,6 +3,7 @@ import "./user.css";
 import ReactEcharts from "echarts-for-react";
 import Highcharts from "highcharts/highmaps";
 import HighchartsReact from "highcharts-react-official";
+
 import axios from "axios";
 
 interface CapitalData {
@@ -12,6 +13,7 @@ interface CapitalData {
   population: number;
   color: string;
   z?: number; // z 속성 추가
+  locCd: string;
 }
 const categoryNameMapping: { [key: string]: string } = {
   "1": "IT",
@@ -27,6 +29,10 @@ const User = () => {
   const [totalMemCon, setTotalMemCon] = useState<number | null>(null); // 총 면접수
 
   const [chartData, setChartData] = useState({
+    xAxisData: [] as string[], // x축 데이터
+    seriesData: [] as number[], // y축 데이터
+  });
+  const [chartData2, setChartData2] = useState({
     xAxisData: [] as string[], // x축 데이터
     seriesData: [] as number[], // y축 데이터
   });
@@ -86,93 +92,126 @@ const User = () => {
     { value: number; name: string }[]
   >([]);
 
+  // 1. 지도 차트 데이터
   useEffect(() => {
-    fetchTotalMembers();
-    fetchDailyVisitors();
-    fetchTotalIntnos();
-    fetchTotalMemCon();
-    const fetchData = async () => {
+    const fetchMapData = async () => {
       try {
-        // 한국지도 요청
+        // 한국 지도 데이터 요청
         const topologyResponse = await axios.get(
           "https://code.highcharts.com/mapdata/countries/kr/kr-all.topo.json"
         );
         setTopologyData(topologyResponse.data);
 
-        // 데이터를 back에서 요청해서 받아서 하시면 됩니다.
+        const locCdCountsResponse = await axios.get(
+          "http://192.168.0.73:81/yourdream/api/members/loccdCounts"
+        );
+        const locCdCounts = locCdCountsResponse.data;
+
+        // 도시 데이터 설정
         const capitals: CapitalData[] = [
           {
             name: "서울",
             lat: 37.5665,
             lon: 126.978,
+            locCd: "1", // 서울
             population: 9720846,
             color: "#FF0000",
           },
           {
-            name: "부산",
-            lat: 35.1796,
-            lon: 129.0756,
+            name: "경기도",
+            lat: 37.4138,
+            lon: 127.5183,
+            locCd: "2", // 경기도
             population: 3413841,
             color: "#00FF00",
           },
           {
-            name: "대구",
-            lat: 35.8714,
-            lon: 128.6014,
+            name: "충청도",
+            lat: 36.6581,
+            lon: 127.648,
+            locCd: "3", // 충청도
             population: 2466052,
             color: "#0000FF",
           },
           {
-            name: "인천",
-            lat: 37.7563,
-            lon: 128.3052,
+            name: "전라도",
+            lat: 34.8679,
+            lon: 126.991,
+            locCd: "4", // 전라도
             population: 2947217,
             color: "#FFFF00",
           },
           {
-            name: "광주",
-            lat: 35.4595,
-            lon: 126.9526,
+            name: "경상도",
+            lat: 35.5384,
+            lon: 128.0,
+            locCd: "5", // 경상도
             population: 1476974,
             color: "#00FFFF",
           },
           {
-            name: "대전",
-            lat: 36.4504,
-            lon: 127.2845,
+            name: "강원도",
+            lat: 37.8228,
+            lon: 128.1555,
+            locCd: "6", // 강원도
             population: 1486849,
             color: "#FF00FF",
           },
           {
-            name: "울산",
-            lat: 35.5384,
-            lon: 129.3114,
-            population: 1143694,
-            color: "#800080",
-          },
-          {
-            name: "제주",
-            lat: 33.4,
-            lon: 126.4983,
+            name: "제주도",
+            lat: 33.4996,
+            lon: 126.5312,
+            locCd: "7", // 제주도
             population: 675883,
             color: "#008000",
           },
         ];
 
-        // 새로운 API 요청 (일별 회원 수)
+        // locCdCounts 데이터를 각 도시에 매핑
+        capitals.forEach((capital) => {
+          const locCd = capital.locCd;
+          const count = locCdCounts[locCd];
+          if (count) {
+            capital.population = count; // 또는 원하는 대로 데이터를 추가하거나 변경
+            capital.z = count; // 예시: z 값에 인구 대신 locCdCounts의 값을 설정
+          }
+        });
+
+        setCapitalsData(capitals);
+      } catch (error) {
+        console.error("Error fetching map data:", error);
+      }
+    };
+
+    fetchMapData();
+  }, []);
+
+  // 2. 일별 회원 수 데이터를 가져오는 useEffect
+  useEffect(() => {
+    fetchTotalMembers();
+    fetchDailyVisitors();
+    fetchTotalIntnos();
+    fetchTotalMemCon();
+    const fetchDailyCounts = async () => {
+      try {
         const endDate = new Date();
 
         // 일주일 전 날짜 구하기
         const startDate = new Date();
         startDate.setDate(endDate.getDate() - 7);
+
+        // 날짜 포맷팅 함수
         const formatDate = (date: Date) => {
           const year = date.getFullYear();
           const month = String(date.getMonth() + 1).padStart(2, "0");
           const day = String(date.getDate()).padStart(2, "0");
           return `${year}-${month}-${day}`;
         };
+
         const formattedStartDate = formatDate(startDate);
         const formattedEndDate = formatDate(endDate);
+
+        // 일별 회원 수 데이터 요청
         const dailyCountsResponse = await axios.get(
           "http://192.168.0.73:81/yourdream/api/members/dailyCounts",
           {
@@ -182,27 +221,24 @@ const User = () => {
             },
           }
         );
+
         const data = dailyCountsResponse.data;
         const labels = Object.keys(data);
         const values = Object.values(data);
+
+        // 차트 데이터 설정
         setChartData({
           xAxisData: labels.map((date) => `${date.split("월")[1]}`), // x축 데이터
           seriesData: values as number[], // y축 데이터
         });
-
-        // Process data
-        capitals.forEach((p) => {
-          p.z = p.population;
-        });
-
-        setCapitalsData(capitals);
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error("Error fetching daily counts:", error);
       }
     };
 
-    fetchData();
+    fetchDailyCounts();
   }, []);
+
   // 카테고리 데이터 가져오기
   useEffect(() => {
     const fetchCategoryData = async () => {
@@ -227,12 +263,50 @@ const User = () => {
     fetchCategoryData();
   }, []);
 
+  useEffect(() => {
+    const fetchDailyInterview = async () => {
+      try {
+        const endDate = new Date();
+        const startDate = new Date();
+        startDate.setDate(endDate.getDate() - 7);
+        const formatDate = (date: Date) => {
+          const year = date.getFullYear();
+          const month = String(date.getMonth() + 1).padStart(2, "0");
+          const day = String(date.getDate()).padStart(2, "0");
+          return `${year}-${month}-${day}`;
+        };
+        const formattedStartDate = formatDate(startDate);
+        const formattedEndDate = formatDate(endDate);
+        const dailyintresponse = await axios.get(
+          "http://192.168.0.73:81/yourdream/api/members/daily-interview",
+          {
+            params: {
+              startDate: formattedStartDate,
+              endDate: formattedEndDate,
+            },
+          }
+        );
+        const data = dailyintresponse.data;
+        const labels = Object.keys(data);
+        const values = Object.values(data);
+
+        // 차트 데이터 설정
+        setChartData2({
+          xAxisData: labels.map((date) => `${date.split("월")[1]}`), // x축 데이터
+          seriesData: values as number[], // y축 데이터
+        });
+      } catch (error) {
+        console.error("컨설팅면접수에러", error);
+      }
+    };
+
+    fetchDailyInterview();
+  }, []);
+  /* 지도차트 */
   const chartOptions = {
-    chart: {
-      backgroundColor: "rgb(255, 255, 255)", //배경색
-    },
+    //지도차트
     title: {
-      text: "", //제목
+      text: "", // 제목
       style: {
         fontFamily: "Jua",
       },
@@ -266,19 +340,17 @@ const User = () => {
               "Latitude {point.lat:.2f}, longitude {point.lon:.2f}.",
           },
         },
-        name: "이이잉",
+        name: "",
         data: capitalsData,
-        maxSize: "12%",
+        maxSize: "10%",
         color: Highcharts.getOptions().colors,
         tooltip: {
-          pointFormat:
-            "{point.name}<br>회원명 또는 비율을 여기에 써주세요!: {point.population}",
+          pointFormat: "{point.name}<br>유저수: {point.population}",
         },
       },
     ],
   };
-  /* 하이차트 */
-
+  /* 유저수 차트 */
   const option1 = {
     xAxis: {
       type: "category",
@@ -288,6 +360,10 @@ const User = () => {
     yAxis: {
       type: "value",
     },
+    tooltip: {
+      trigger: "axis", // 'axis'로 설정하여 x축과 y축의 데이터를 기준으로 툴팁 표시
+      // 기본 툴팁 포맷을 사용하여 마우스 오버 시 자동으로 표시됩니다.
+    },
     series: [
       {
         data: chartData.seriesData,
@@ -296,7 +372,16 @@ const User = () => {
       },
     ],
   };
+  /* 카테고리차트 */
   const chartpie = {
+    tooltip: {
+      trigger: "item",
+      formatter: "{b}: {c}", // {b}는 항목 이름, {c}는 값
+      backgroundColor: "rgba(50, 50, 50, 0.7)", // 툴팁 배경색
+      textStyle: {
+        color: "#fff", // 툴팁 텍스트 색상
+      },
+    },
     series: [
       {
         name: "Category Distribution",
@@ -332,127 +417,34 @@ const User = () => {
       },
     ],
   };
-  const chartbar = {
-    tooltip: {
-      trigger: "axis",
-      axisPointer: {
-        type: "cross",
-        crossStyle: {
-          color: "#999",
-        },
-      },
-    },
-
-    xAxis: [
-      {
-        type: "category",
-        data: ["IT", "사무직", "제조업", "의료", "회계"],
-        axisPointer: {
-          type: "shadow",
-        },
-      },
-    ],
-    yAxis: [
-      {
-        type: "value",
-
-        min: 0,
-        max: 100,
-        interval: 25,
-        axisLabel: {
-          formatter: "{value} 점",
-        },
-      },
-      {
-        type: "value",
-        min: 0,
-        max: 100,
-        interval: 25,
-        axisLabel: {
-          formatter: "{value} 점",
-        },
-      },
-    ],
-    series: [
-      {
-        name: "인성면접",
-        type: "bar",
-        tooltip: {
-          valueFormatter: function (value: number) {
-            return (value as number) + " 점";
-          },
-        },
-        data: [
-          52.0, 64.9, 67.0, 53.2, 65.6, 46.7, 96.6, 62.2, 32.6, 40.0, 96.4,
-          63.3,
-        ],
-      },
-      {
-        name: "직무면접",
-        type: "bar",
-        tooltip: {
-          valueFormatter: function (value: number) {
-            return (value as number) + " 점";
-          },
-        },
-        data: [
-          72.6, 65.9, 59.0, 96.4, 48.7, 30.7, 75.6, 82.2, 98.7, 38.8, 76.0,
-          42.3,
-        ],
-      },
-      {
-        name: "Temperature",
-        type: "line",
-        yAxisIndex: 1,
-        tooltip: {
-          valueFormatter: function (value: number) {
-            return (value as number) + "점";
-          },
-        },
-        data: [
-          2.0, 2.2, 3.3, 4.5, 6.3, 10.2, 20.3, 23.4, 23.0, 16.5, 12.0, 6.2,
-        ],
-      },
-    ],
-  };
-  let base = +new Date(1988, 9, 3);
-  let oneDay = 24 * 3600 * 1000;
-  let data = [[base, Math.random() * 300]];
-  for (let i = 1; i < 20000; i++) {
-    let now = new Date((base += oneDay));
-    data.push([+now, Math.round((Math.random() - 0.5) * 20 + data[i - 1][1])]);
-  }
-  const chartzi = {
+  /* 주간컨설팅면접 */
+  const barchartOption = {
     xAxis: {
-      type: "time",
-      boundaryGap: true,
+      type: "category",
+      data: chartData2.xAxisData, // x축 데이터
     },
     yAxis: {
       type: "value",
-      boundaryGap: [0, "100%"],
     },
-    dataZoom: [
-      {
-        type: "inside",
-        start: 0,
-        end: 20,
-      },
-      {
-        start: 0,
-        end: 20,
-      },
-    ],
+    tooltip: {
+      trigger: "axis", // axis의 데이터를 기준으로 툴팁 표시
+      // formatter를 생략하면 기본적으로 값이 표시됩니다.
+    },
     series: [
       {
-        name: "Fake Data",
-        type: "line",
-        smooth: true,
-        symbol: "none",
-        areaStyle: {},
-        data: data,
+        data: chartData2.seriesData, // y축 데이터
+        type: "bar",
       },
     ],
   };
+
+  // let base = +new Date(1988, 9, 3);
+  // let oneDay = 24 * 3600 * 1000;
+  // let data = [[base, Math.random() * 300]];
+  // for (let i = 1; i < 20000; i++) {
+  //   let now = new Date((base += oneDay));
+  //   data.push([+now, Math.round((Math.random() - 0.5) * 20 + data[i - 1][1])]);
+  // }
   return (
     <div className="user-container">
       <div className="user-header">
@@ -555,9 +547,9 @@ const User = () => {
             </div>
           </div>
           <div className="user-chart-row" style={{ width: "800px" }}>
-            <div className="chart-name">누적 컨설팅횟수</div>
+            <div className="chart-name">주간 컨설팅횟수</div>
             <ReactEcharts
-              option={chartzi}
+              option={barchartOption}
               style={{ height: "400px", width: "100%" }}
             />
           </div>
