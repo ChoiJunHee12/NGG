@@ -13,9 +13,11 @@ import OTO_detail from "./OneToOne/OTO_detail";
 import OTO_main from "./OneToOne/OTO_main";
 import Feedback from "./feedback/feedback";
 import FeedbackDetail from "./feedback/feedbackDetail";
-import AddId from "./admin/AddId";
-import MemberList from "./admin/member/MemberList";
-import MemberModal from "./admin/member/MemberModal";
+
+import ConsultantAdmin from "./admin-consultant/ConsultantAdmin";
+import MemberList from "./member/MemberList";
+import MemberModal from "./member/MemberModal";
+
 
 const App: React.FC = () => {
   const [isSidebarVisible, setIsSidebarVisible] = useState(true);
@@ -51,7 +53,7 @@ const App: React.FC = () => {
             <Route path="/member/MemberList" element={<MemberList />} />
 
             {/* Consultant Admin */}
-            <Route path="/admin/AddId" element={<AddId />} />
+            <Route path="/admin-consultant/ConsultantAdmin" element={<ConsultantAdmin />} />
 
             {/*<Route path="/mypage" element={<YourMypageComponent />} />
             <Route path="/InterviewRes" element={<YourInterviewResComponent />} /> */}

@@ -325,6 +325,7 @@ export const Label = styled.label`
     flex: 5 0 30%;
     justify-content: flex-start;
     align-items: center;
+    font-size: 1.1rem;
   }
 `;
 
@@ -335,7 +336,7 @@ export const Input = styled.input`
     border: 1px solid #ccc;
     border-radius: 4px;
     box-sizing: border-box;
-    font-size: 1em;
+    font-size: 1.1rem;
     font-family: sans-serif;
   }
 `;

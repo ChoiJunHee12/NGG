@@ -26,6 +26,7 @@ const ConsultantProfile: React.FC = () => {
         fetchProfileData();
     }, []);
 
+    // 컨설턴트 번호 임의로! 나중에 로그인 연동시 바꿔야함!
     const cnsno = 1001;
 
     const fetchProfileData = async () => {
@@ -66,7 +67,7 @@ const ConsultantProfile: React.FC = () => {
             case '4':
                 return '기획/전략';
             default:
-                return '기타';
+                return '경영';
         }
     };
 
