@@ -1,12 +1,11 @@
 package kr.co.ict.yourdream.adminConsultant;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import kr.co.ict.yourdream.consultantProfile.ConsultVO;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/adminConsult")
@@ -21,7 +20,7 @@ public class AdminConsultController {
         return adminConsultService.getAllConsultProfiles();
     }
 
-    // 새 컨설턴트 프로필 생성
+    // 새 컨설턴트 프로필 생성(컨설턴트 추가)
     @PostMapping("/addConsultant")
     public ResponseEntity<ConsultVO> createConsultProfile(@RequestBody ConsultVO consultVO) {
         ConsultVO createdProfile = adminConsultService.createConsultProfile(consultVO);
@@ -36,7 +35,7 @@ public class AdminConsultController {
     }
 
     // 컨설턴트 프로필 정보 업데이트
-    @PutMapping("/{cnsno}/updateConsultant")
+    @PostMapping("/{cnsno}/updateConsultant")
     public ResponseEntity<ConsultVO> updateConsultProfile(@PathVariable("cnsno") int cnsno,
             @RequestBody ConsultVO consultVO) {
         try {
@@ -46,5 +45,4 @@ public class AdminConsultController {
             return ResponseEntity.notFound().build();
         }
     }
-
 }

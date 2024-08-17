@@ -8,12 +8,21 @@ interface Career {
   term: string;
   content: string;
   detail: string;
-  careerdiv: string;
+  careerdiv: '1' | '2'; // '1' for education, '2' for career
   credt: string;
   upddt: string;
 }
 
-interface User {
+interface CareerWithoutDates {
+  cnsno: number;
+  seqno: number;
+  term: string;
+  content: string;
+  detail: string;
+  careerdiv: string;
+}
+
+interface Consult {
   cnsno: number;
   password: string;
   name: string;
@@ -25,25 +34,43 @@ interface User {
   cnscareer: string;
   cnsproject: string;
   cnscareer_vo: Career[];
+  imgname: string;
+  rolecd: string;
+}
+
+interface ConsultWithoutDates {
+  cnsno: number;
+  password: string;
+  name: string;
+  gendercd: string;
+  categcd: string;
+  phonenum: string;
+  email: string;
+  birthymd: string;
+  cnscareer: string;
+  cnsproject: string;
+  cnscareer_vo: CareerWithoutDates[];
+  imgname: string;
+  rolecd: string;
 }
 
 const ConsultantAdmin: React.FC = () => {
-  const [users, setUsers] = useState<User[]>([]);
+  const [consultants, setConsultants] = useState<Consult[]>([]);
   const [showModal, setShowModal] = useState(false);
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [currentConsultant, setCurrentConsultant] = useState<Consult | null>(null);
   const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
-    fetchUsers();
+    fetchConsultants();
   }, []);
 
-  const fetchUsers = () => {
+  const fetchConsultants = () => {
     fetch(`${process.env.REACT_APP_BACK_END_URL}/adminConsult`, {
       method: 'GET',
     })
       .then(response => response.json())
       .then(data => {
-        setUsers(data);
+        setConsultants(data);
       })
       .catch(error => {
         console.error('Error fetching data:', error);
@@ -51,7 +78,7 @@ const ConsultantAdmin: React.FC = () => {
   };
 
   const handleAddClick = () => {
-    setCurrentUser({
+    setCurrentConsultant({
       cnsno: 0,
       password: '',
       name: '',
@@ -63,13 +90,15 @@ const ConsultantAdmin: React.FC = () => {
       cnscareer: '',
       cnsproject: '',
       cnscareer_vo: [],
+      imgname: 'noimage.png',
+      rolecd: 'C',
     });
     setIsEditing(false);
     setShowModal(true);
   };
 
-  const handleEditClick = (user: User) => {
-    setCurrentUser(user);
+  const handleEditClick = (consultant: Consult) => {
+    setCurrentConsultant(consultant);
     setIsEditing(true);
     setShowModal(true);
   };
@@ -78,44 +107,56 @@ const ConsultantAdmin: React.FC = () => {
     setShowModal(false);
   };
 
-  const handleSaveUser = (user: User) => {
+  const handleSaveConsultant = (consultant: ConsultWithoutDates) => {
     const url = isEditing
-      ? `${process.env.REACT_APP_BACK_END_URL}/adminConsult/${user.cnsno}/updateConsultant`
+      ? `${process.env.REACT_APP_BACK_END_URL}/adminConsult/${consultant.cnsno}/updateConsultant`
       : `${process.env.REACT_APP_BACK_END_URL}/adminConsult/addConsultant`;
 
-    const method = isEditing ? 'PUT' : 'POST';
-
     fetch(url, {
-      method: method,
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(user),
+      body: JSON.stringify(consultant),
     })
-      .then(response => response.json())
+      .then(response => {
+        if (!response.ok) {
+          return response.text().then(text => {
+            throw new Error(text || 'Network response was not ok');
+          });
+        }
+        return response.json();
+      })
       .then(data => {
-        fetchUsers();  // 사용자 목록 새로고침
+        fetchConsultants();
         setShowModal(false);
       })
       .catch(error => {
         console.error('Error saving consultant:', error);
+        alert(`컨설턴트 저장 중 오류가 발생했습니다: ${error.message}`);
       });
   };
 
-  const handleDeleteUser = (cnsno: number) => {
-    fetch(`${process.env.REACT_APP_BACK_END_URL}/adminConsult/${cnsno}/delConsultant`, {
-      method: 'DELETE',
-    })
-      .then(response => {
-        if (response.ok) {
-          fetchUsers();  // 사용자 목록 새로고침
-        } else {
-          throw new Error('Failed to delete consultant');
-        }
+  const handleDeleteConsultant = (cnsno: number) => {
+    if (window.confirm('정말로 이 컨설턴트를 삭제하시겠습니까? 모든 관련 정보(경력, 학력 포함)가 삭제됩니다.')) {
+      fetch(`${process.env.REACT_APP_BACK_END_URL}/adminConsult/${cnsno}/delConsultant`, {
+        method: 'DELETE',
       })
-      .catch(error => {
-        console.error('Error deleting consultant:', error);
-      });
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Failed to delete consultant');
+          }
+          return response.text();  // 응답이 비어있을 수 있으므로 text()로 처리
+        })
+        .then(data => {
+          fetchConsultants();
+          alert('컨설턴트와 관련 정보가 성공적으로 삭제되었습니다.');
+        })
+        .catch(error => {
+          console.error('Error deleting consultant:', error);
+          alert('컨설턴트 삭제 중 오류가 발생했습니다. 모든 관련 정보가 삭제되지 않았을 수 있습니다.');
+        });
+    }
   };
 
   const getGenderText = (gendercd: string) => {
@@ -152,8 +193,6 @@ const ConsultantAdmin: React.FC = () => {
       <button className='btn-add' onClick={handleAddClick}>➕ Consultant 추가</button>
       <table className="user-table">
         <thead>
-        </thead>
-        <tbody>
           <tr>
             <th>번호</th>
             <th>컨설턴트번호</th>
@@ -167,52 +206,51 @@ const ConsultantAdmin: React.FC = () => {
             <th>프로젝트수행</th>
             <th>수정/삭제</th>
           </tr>
-          {users.map((user, index) => {
-            const educationItems = user.cnscareer_vo.filter(item => item.careerdiv === '1');
-            const careerItems = user.cnscareer_vo.filter(item => item.careerdiv === '2');
+        </thead>
+        <tbody>
+          {consultants.map((consultant, index) => {
+            const educationItems = consultant.cnscareer_vo.filter(item => item.careerdiv === '1');
+            const careerItems = consultant.cnscareer_vo.filter(item => item.careerdiv === '2');
 
             return (
-              <React.Fragment key={user.cnsno}>
-                {/* 기본 정보 */}
+              <React.Fragment key={consultant.cnsno}>
                 <tr>
                   <td rowSpan={educationItems.length + careerItems.length + 3}>{index + 1}</td>
-                  <td>{user.cnsno}</td>
-                  <td>{user.name}</td>
-                  <td>{getGenderText(user.gendercd)}</td>
-                  <td>{getCategoryText(user.categcd)}</td>
-                  <td>{user.phonenum}</td>
-                  <td>{user.email}</td>
-                  <td>{user.birthymd}</td>
-                  <td>{user.cnscareer}</td>
-                  <td>{user.cnsproject}</td>
+                  <td>{consultant.cnsno}</td>
+                  <td>{consultant.name}</td>
+                  <td>{getGenderText(consultant.gendercd)}</td>
+                  <td>{getCategoryText(consultant.categcd)}</td>
+                  <td>{consultant.phonenum}</td>
+                  <td>{consultant.email}</td>
+                  <td>{consultant.birthymd}</td>
+                  <td>{consultant.cnscareer}</td>
+                  <td>{consultant.cnsproject}</td>
                   <td rowSpan={educationItems.length + careerItems.length + 3}>
-                    <button className='btn-up' onClick={() => handleEditClick(user)}>수정</button>
-                    <button className='btn-del' onClick={() => handleDeleteUser(user.cnsno)}>삭제</button>
+                    <button className='btn-up' onClick={() => handleEditClick(consultant)}>수정</button>
+                    <button className='btn-del' onClick={() => handleDeleteConsultant(consultant.cnsno)}>삭제</button>
                   </td>
                 </tr>
 
-                {/* 학력사항 */}
                 {educationItems.length > 0 && (
                   <tr className="education">
                     <td colSpan={9}><strong>학력사항</strong></td>
                   </tr>
                 )}
                 {educationItems.map(item => (
-                  <tr key={`edu-${user.cnsno}-${item.seqno}`}>
+                  <tr key={`edu-${consultant.cnsno}-${item.seqno}`}>
                     <td colSpan={3}>{item.term}</td>
                     <td colSpan={2}>{item.content}</td>
                     <td colSpan={4}>{item.detail}</td>
                   </tr>
                 ))}
 
-                {/* 경력사항 */}
                 {careerItems.length > 0 && (
                   <tr className="career">
                     <td colSpan={9}><strong>경력사항</strong></td>
                   </tr>
                 )}
                 {careerItems.map(item => (
-                  <tr key={`career-${user.cnsno}-${item.seqno}`}>
+                  <tr key={`car-${consultant.cnsno}-${item.seqno}`}>
                     <td colSpan={3}>{item.term}</td>
                     <td colSpan={2}>{item.content}</td>
                     <td colSpan={4}>{item.detail}</td>
@@ -223,13 +261,12 @@ const ConsultantAdmin: React.FC = () => {
           })}
         </tbody>
       </table>
-      {showModal && currentUser && (
+
+      {showModal && currentConsultant && (
         <ConsultantAdminModal
-          show={showModal}
-          handleClose={handleCloseModal}
-          handleSave={handleSaveUser}
-          user={currentUser}
-          setUser={setCurrentUser}
+          consultant={currentConsultant}
+          onSave={handleSaveConsultant}
+          onClose={handleCloseModal}
         />
       )}
     </div>
