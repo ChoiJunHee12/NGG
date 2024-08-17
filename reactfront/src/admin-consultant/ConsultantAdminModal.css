@@ -59,6 +59,7 @@ input, select {
   padding: 8px;
   border: 1px solid #ccc;
   border-radius: 4px;
+  font-size: 1.1rem;
 }
 
 .career-item {
@@ -122,6 +123,7 @@ input, select {
   transition: background-color 0.3s, color 0.3s;
   font-size: 1.1rem;
   font-weight: bolder;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 .form-actions button:last-child:hover{
