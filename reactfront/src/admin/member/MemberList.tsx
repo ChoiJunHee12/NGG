@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import MemberModal from "./MemberModal";
 import "./Member.css"; // CSS 파일을 불러옴
+import axios from "axios";
 
 export interface MemberType {
   memno: number;
@@ -77,6 +78,30 @@ const MemberList: React.FC = () => {
 
     fetchMembers();
   }, []);
+
+  const handleDelete = async (memno: number) => {
+    const confirmDelete = window.confirm("정말 삭제하시겠습니까?");
+    if (confirmDelete) {
+      try {
+        console.log(memno);
+        setLoading(true);
+        const response = await axios.delete(
+          `http://192.168.0.73:81/yourdream/api/memadmin/del/${memno}`
+        );
+        if (response.status === 204) {
+          alert("멤버가 성공적으로 삭제되었습니다.");
+          setMembers(members.filter((member) => member.memno !== memno));
+        } else {
+          alert("멤버 삭제에 실패했습니다.");
+        }
+      } catch (error) {
+        console.error("멤버 삭제 중 오류가 발생했습니다:", error);
+        alert("멤버 삭제 중 오류가 발생했습니다.");
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
 
   const formatDate = (dateString: string): string => {
     const date = new Date(dateString);
@@ -157,6 +182,7 @@ const MemberList: React.FC = () => {
                     <button
                       className="btn btn-danger btn-sm"
                       style={{ width: "80px", height: "40px" }}
+                      onClick={() => handleDelete(member.memno)}
                     >
                       삭제
                     </button>
