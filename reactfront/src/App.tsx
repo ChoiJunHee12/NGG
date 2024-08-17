@@ -15,9 +15,8 @@ import Feedback from "./feedback/feedback";
 import FeedbackDetail from "./feedback/feedbackDetail";
 
 import ConsultantAdmin from "./admin-consultant/ConsultantAdmin";
-import MemberList from "./member/MemberList";
-import MemberModal from "./member/MemberModal";
-
+import MemberList from "./admin/member/MemberList";
+import MemberModal from "./admin/member/MemberModal";
 
 const App: React.FC = () => {
   const [isSidebarVisible, setIsSidebarVisible] = useState(true);
@@ -47,13 +46,19 @@ const App: React.FC = () => {
             <Route path="/admin/User_Dash" element={<User_Dash />} />
 
             {/* Consultant DashBoard */}
-            <Route path="/admin/Consultant_Dash" element={<Consultant_Dash />} />
+            <Route
+              path="/admin/Consultant_Dash"
+              element={<Consultant_Dash />}
+            />
 
             {/* Member Admin DashBoard */}
             <Route path="/member/MemberList" element={<MemberList />} />
 
             {/* Consultant Admin */}
-            <Route path="/admin-consultant/ConsultantAdmin" element={<ConsultantAdmin />} />
+            <Route
+              path="/admin-consultant/ConsultantAdmin"
+              element={<ConsultantAdmin />}
+            />
 
             {/*<Route path="/mypage" element={<YourMypageComponent />} />
             <Route path="/InterviewRes" element={<YourInterviewResComponent />} /> */}
