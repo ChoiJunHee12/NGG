@@ -325,7 +325,7 @@ const ConsultantAdminModal: React.FC<ConsultantAdminModalProps> = ({ consultant,
           </div>
           <div className="form-actions">
             <button type="button" onClick={handleSave}>저장</button>
-            <button type="button" onClick={onClose}>닫기</button>
+            <button type="button" onClick={onClose}>취소</button>
           </div>
         </form>
       </div>
