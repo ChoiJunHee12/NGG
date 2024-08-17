@@ -166,7 +166,7 @@ export const Tag = styled.span`
     background-color: #1659de;
     color: #ffffff;
     padding: 5px 10px;
-    border-radius: 8px;
+    border-radius: 4px;
   }
 `;
 
@@ -224,13 +224,14 @@ export const EditButton = styled.button`
     color: white;
     border: none;
     padding: 12px 25px;
-    border-radius: 8px;
+    border-radius: 4px;
     font-size: 1.1rem;
     font-weight: 600;
     width: 150px;
     cursor: pointer;
     transition: background-color 0.3s ease;
     margin-right: 40px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 
     &:hover {
       background-color: #003d8c;
@@ -361,11 +362,12 @@ export const UploadButton = styled.button`
     color: white;
     border: none;
     padding: 10px 20px;
-    border-radius: 8px;
+    border-radius: 4px;
     font-size: 1rem;
     font-weight: 600;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 
     &:hover {
       background-color: #003d8c;
@@ -379,11 +381,12 @@ export const Button = styled.button`
     color: white;
     border: none;
     padding: 10px 20px;
-    border-radius: 8px;
+    border-radius: 4px;
     font-size: 1rem;
     font-weight: 600;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     margin-left: 10px;
 
     &:hover {
