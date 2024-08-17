@@ -63,6 +63,7 @@ const ConsultantAdminModal: React.FC<ConsultantAdminModalProps> = ({ consultant,
   const [localConsultant, setLocalConsultant] = useState<Consult>(consultant);
   const [isCustomCareer, setIsCustomCareer] = useState<boolean>(false);
   const [isCustomProject, setIsCustomProject] = useState<boolean>(false);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
 
   const careerOptions = ['1년~3년', '3년~5년', '5년~10년', '10년 이상'];
   const projectOptions = ['10회 이상', '30회 이상', '50회 이상', '100회 이상'];
@@ -139,6 +140,10 @@ const ConsultantAdminModal: React.FC<ConsultantAdminModalProps> = ({ consultant,
     return null;
   }
 
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
   return (
     <div className="modal-overlay">
       <div className="modal-content">
@@ -153,7 +158,18 @@ const ConsultantAdminModal: React.FC<ConsultantAdminModalProps> = ({ consultant,
             </div>
             <div className="form-group">
               <label htmlFor="password">비밀번호</label>
-              <input type="password" id="password" name="password" value={localConsultant.password || ''} onChange={handleChange} />
+              <div className="password-input-container">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  id="password"
+                  name="password"
+                  value={localConsultant.password || ''}
+                  onChange={handleChange}
+                />
+                <button type="button" onClick={togglePasswordVisibility} className="password-toggle">
+                  {showPassword ? '숨기기' : '표시'}
+                </button>
+              </div>
             </div>
           </div>
           <div className="form-row">

@@ -152,3 +152,28 @@ input, select {
 .form-group > button:hover {
   background-color: #2e6e31;
 }
+
+.password-input-container {
+  display: flex;
+  align-items: center;
+}
+
+.password-input-container input {
+  flex: 1;
+  margin-right: 10px;
+}
+
+.password-toggle {
+  padding: 8px 12px;
+  background-color: #1659de;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  color: white;
+  font-weight: 600;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.password-toggle:hover {
+  background-color: #0d2452;
+}
