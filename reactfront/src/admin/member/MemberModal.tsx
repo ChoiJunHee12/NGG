@@ -133,14 +133,14 @@ const MemberModal: React.FC<MemberModalProps> = ({
   };
 
   return (
-    <div className="modal-overlay">
-      <div className="modal-content">
-        <button className="close-button" onClick={onClose}>
+    <div className="modal-overlay99">
+      <div className="modal-content99">
+        <button className="close-button99" onClick={onClose}>
           X
         </button>
         <h2>회원 정보 수정</h2>
         <form>
-          <div className="form-group">
+          <div className="form-group99">
             <label>이메일</label>
             <input
               type="text"
@@ -148,7 +148,7 @@ const MemberModal: React.FC<MemberModalProps> = ({
               onChange={(e) => setEmail(e.target.value)}
             />
           </div>
-          <div className="form-group">
+          <div className="form-group99">
             <label>이름</label>
             <input
               type="text"
@@ -156,7 +156,7 @@ const MemberModal: React.FC<MemberModalProps> = ({
               onChange={(e) => setName(e.target.value)}
             />
           </div>
-          <div className="form-group">
+          <div className="form-group99">
             <label>닉네임</label>
             <input
               type="text"
@@ -164,7 +164,7 @@ const MemberModal: React.FC<MemberModalProps> = ({
               onChange={(e) => setNickname(e.target.value)}
             />
           </div>
-          <div className="form-group">
+          <div className="form-group99">
             <label>성별</label>
             <select value={gendercd} onChange={handleGenderChange}>
               {Object.entries(genderMapping).map(([key, value]) => (
@@ -174,7 +174,7 @@ const MemberModal: React.FC<MemberModalProps> = ({
               ))}
             </select>
           </div>
-          <div className="form-group">
+          <div className="form-group99">
             <label>전화번호</label>
             <input
               type="text"
@@ -182,7 +182,7 @@ const MemberModal: React.FC<MemberModalProps> = ({
               onChange={(e) => setPhonenum(e.target.value)}
             />
           </div>
-          <div className="form-group">
+          <div className="form-group99">
             <label>카테고리</label>
             <select value={categcd} onChange={handleCategcdChange}>
               {Object.entries(categoryNameMapping).map(([key, value]) => (
@@ -192,7 +192,7 @@ const MemberModal: React.FC<MemberModalProps> = ({
               ))}
             </select>
           </div>
-          <div className="form-group">
+          <div className="form-group99">
             <label>지역</label>
             <select value={loccd} onChange={handleLoccdChange}>
               {Object.entries(loccdNameMapping).map(([key, value]) => (
@@ -202,19 +202,19 @@ const MemberModal: React.FC<MemberModalProps> = ({
               ))}
             </select>
           </div>
-          <div className="form-group">
+          <div className="form-group99">
             <label>생년월일</label>
             <input type="text" value={formatDate(birthymd)} disabled />
           </div>
-          <div className="form-group">
+          <div className="form-group99">
             <label>가입날짜</label>
             <input type="text" value={credt} readOnly disabled />
           </div>
-          <div className="form-group">
-            <button type="button" className="form-btn1" onClick={handleSave}>
+          <div className="form-group99">
+            <button type="button" className="form-btn99" onClick={handleSave}>
               저장
             </button>
-            <button type="button" className="form-btn2" onClick={onClose}>
+            <button type="button" className="form-btn98" onClick={onClose}>
               닫기
             </button>
           </div>
