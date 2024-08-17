@@ -65,7 +65,7 @@ public class ConsultProfile {
     @Column(name = "ROLECD")
     private String rolecd;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "consultProfile")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "consultProfile", cascade = CascadeType.ALL, orphanRemoval = true)
     @BatchSize(size = 10)
     private List<CnsCareer> cnscareerList;
 }
