@@ -18,7 +18,7 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "tblogin")
-public class LoginDTO {
+public class LoginVOBok {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_logno")
     @SequenceGenerator(name = "seq_logno", sequenceName = "seq_logno", allocationSize = 1)

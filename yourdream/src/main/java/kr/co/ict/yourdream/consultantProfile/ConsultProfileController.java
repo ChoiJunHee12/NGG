@@ -28,6 +28,7 @@ public class ConsultProfileController {
         }
     }
 
+
     // 컨설턴트 프로필 정보 업데이트
     @PostMapping("/{cnsno}")
     public ResponseEntity<ConsultVO> updateConsultProfile(@PathVariable("cnsno") int cnsno,
@@ -39,6 +40,7 @@ public class ConsultProfileController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
+
 
     // 프로필 이미지 업로드
     @PostMapping("/uploadProfileImage")

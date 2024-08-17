@@ -12,30 +12,45 @@ import jakarta.transaction.Transactional;
 
 @Repository
 @Transactional
-public interface UserDashRepository extends JpaRepository<MemberDTO,Integer>{
+public interface UserDashRepository extends JpaRepository<MemberVOBoks,Integer>{
     
-    @Query("SELECT COUNT(m.memno) FROM MemberDTO m")
+    @Query("SELECT COUNT(m.memno) FROM MemberVOBoks m")
     long countTotalMembers();
 
     @Query(value = "SELECT COUNT(*) FROM tblogin WHERE TRUNC(logindt) = TRUNC(:today)", nativeQuery = true)
     long countDailyVisitors(@Param("today") Date today);
 
-    @Query("SELECT COUNT(i.intno) FROM IntResDTO i")
+    @Query("SELECT COUNT(i.intno) FROM IntResVOBok i")
     long countTotalIntnos();
 
-    @Query("SELECT COUNT(mc) FROM MemberConsultDTO mc")
+    @Query("SELECT COUNT(mc) FROM MemberConsultBok mc")
     long countTotal();
 
-    @Query("SELECT new kr.co.ict.yourdream.userdash.DailyMemberCount(m.credt, COUNT(m)) " +
-           "FROM MemberDTO m " +
+    @Query("SELECT new kr.co.ict.yourdream.userdash.DailyMemberCountDTO(m.credt, COUNT(m)) " +
+           "FROM MemberVOBoks m " +
            "WHERE m.credt BETWEEN :startDate AND :endDate " +
            "GROUP BY m.credt " +
            "ORDER BY m.credt")
-    List<DailyMemberCount> findDailyCounts(@Param("startDate") Date startDate, @Param("endDate") Date endDate);
+    List<DailyMemberCountDTO> findDailyCounts(@Param("startDate") Date startDate, @Param("endDate") Date endDate);
 
 
     @Query("SELECT m.categcd as categCd, COUNT(m) as count " +
-           "FROM MemberDTO m " +
+           "FROM MemberVOBoks m " +
            "GROUP BY m.categcd")
     List<Map<String, Object>> findMemberCountByCategcd();
+
+
+    @Query("SELECT m.loccd as locCd, COUNT(m) as count " +
+           "FROM MemberVOBoks m " +
+           "GROUP BY m.loccd")
+    List<Map<String, Object>> findMemberCountByLoccd();
+
+    @Query("SELECT new kr.co.ict.yourdream.userdash.IntTypeCountDTO(m.credt, COUNT(m)) " +
+           "FROM IntResVOBok m " +
+           "WHERE m.inttypecd = '2' AND m.credt BETWEEN :startDate AND :endDate " +
+           "GROUP BY m.credt " +
+           "ORDER BY m.credt")
+    List<IntTypeCountDTO> findDailyIntTypeCounts(@Param("startDate") Date startDate, @Param("endDate") Date endDate);
+
+
 } 

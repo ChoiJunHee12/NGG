@@ -1,16 +1,24 @@
 package kr.co.ict.yourdream.userdash;
 
-import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import java.util.Date;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
+
+@Entity
+@Table(name = "tbintres") // 테이블 이름을 지정 (선택 사항)
 @Getter
 @Setter
-@Entity
-@Table(name = "tbintres") // 데이터베이스 테이블 이름과 맞춰야 합니다.
-public class IntResDTO {
-
+public class IntResVOBok { 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_intno")
     @SequenceGenerator(name = "seq_intno", sequenceName = "seq_intno", allocationSize = 1)
