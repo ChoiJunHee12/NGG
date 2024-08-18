@@ -350,9 +350,9 @@ export default {
       this.uploadRecordedVideo(); // Upload the recorded video
     },
     uploadRecordedVideo() {
-      this.isInterviewCompleted = true;
+      
       if (this.recordedChunks.length > 0) {
-        
+        this.isInterviewCompleted = true;
         const recordedBlob = new Blob(this.recordedChunks, { type: 'video/webm' });
         // Prepare FormData to send the recorded video
         const formData = new FormData();

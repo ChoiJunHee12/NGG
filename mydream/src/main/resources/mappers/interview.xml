@@ -45,7 +45,7 @@
         </selectKey>
         
         <!-- INSERT 문에서 intno 값을 사용 -->
-        INSERT INTO TBINTRES (INTNO, MEMNO, INTTYPECD, INTENDDT, CREDT, UPDDT) 
+        INSERT INTO TBINTRES (INTNO, MEMNO, INTTYPECD, REVIEWDT, CREDT, UPDDT) 
         VALUES (#{intno}, #{memno}, #{inttypecd}, sysdate, sysdate, sysdate)
     </insert>
 
