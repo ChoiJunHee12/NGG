@@ -29,19 +29,20 @@ public interface UserAdminRepository extends JpaRepository<MemberVOBok,Integer> 
         List<MemberListDTO> findAllMemberDetailsWithConsultName();
 
 
-        @Modifying
-@Query("UPDATE MemberVOBok m SET m.email = :email, m.name = :name, m.nickname = :nickname, " +
-       "m.gendercd = :gendercd, m.categcd = :categcd, m.loccd = :loccd, m.phonenum = :phonenum " +
-       "WHERE m.memno = :memno")
-void updateMember(
-    @Param("memno") Integer memno,  // Integer로 변경
-    @Param("email") String email,
-    @Param("name") String name,
-    @Param("nickname") String nickname,
-    @Param("gendercd") String gendercd,
-    @Param("categcd") String categcd,
-    @Param("loccd") String loccd,
-    @Param("phonenum") String phonenum);
+    @Modifying
+    @Query("UPDATE MemberVOBok m SET m.email = :email, m.name = :name, m.nickname = :nickname, " +
+        "m.gendercd = :gendercd, m.categcd = :categcd, m.loccd = :loccd, m.phonenum = :phonenum " +
+        "WHERE m.memno = :memno")
+    void updateMember(
+        @Param("memno") Integer memno,  // Integer로 변경
+        @Param("email") String email,
+        @Param("name") String name,
+        @Param("nickname") String nickname,
+        @Param("gendercd") String gendercd,
+        @Param("categcd") String categcd,
+        @Param("loccd") String loccd,
+        @Param("phonenum") String phonenum);
 
 
+    
 }

@@ -78,14 +78,14 @@
 }
 .feedback-con{
     background-color: white;
+    width: 100%;
     padding:40px;
     border: 4px solid #033a3d;
-    margin: 0px 10px;
     /* min-height: 1200px; */
     border-radius: 0px 3px 3px 3px;
     display: flex;
-            flex-direction: column; /* 수직 정렬 */
-            gap: 20px; /* 두 요소 간의 간격 */
+    flex-direction: row; /* 수직 정렬 */
+    gap: 20px; /* 두 요소 간의 간격 */
 }
 .feedback-qcon {
     display: flex;
@@ -445,28 +445,147 @@
     margin-left: 20px; 
 }
 
-.feedback-totalcom {
-    padding: 16px;
-    width: auto;
-    border: 2px solid #A5CABB;
-    margin: 30px;
-    text-align: left;
-    word-wrap: break-word; /* 단어가 너무 길면 줄 바꿈 */
-    background-color: #CEE5DF;
-    font-size: 17px;
-}
 .feedback-homebtn{
-    width: 150px;
+    width: 100px;
     height: 55px;
+    margin: 30px;
     background-color: #08877D;
     border:1px solid #01665e;
     border-radius: 3px;
     color: #FFFCFC;
-    font-size: 17px;
+    font-size: 18px;
     transition: background-color 0.3s ease
 }
 /* 호버 상태에서 배경색 변경 */
 .feedback-homebtn:hover {
     background-color: #01665e;
     
+}
+
+.feedback-chart-container3{
+    border: 2px solid #A5CABB;
+    padding: 12px;
+    width: 500px;
+    border-radius:3px;
+    height: 400px;
+    margin: auto;
+    margin-right: 30px;
+    background-color: white;
+    text-align: left;
+}
+
+.feedback-chart-container4{
+    border: 2px solid #A5CABB;
+    padding: 12px;
+    width: 500px;
+    border-radius:3px;
+    height: 400px;
+    margin: auto;
+    margin-left: 30px;
+}
+
+.feedback-chart-container2 {
+    border: 2px solid #A5CABB;
+    background-color: white;
+    flex-grow: 1; /* 남은 공간을 차지 */
+    height: 100%; /* 부모 요소의 높이에 맞춤 */
+    font-size: 17px;
+    align-items: center;
+    justify-content: center;
+    margin:30px;
+    text-align: left;
+    flex-direction: column;
+    padding: 0px;
+}
+
+.feedback-chart-container1 {
+    border: 2px solid #A5CABB;
+    display: flex;
+    height: 400px;
+    flex-direction: column; /* 요소들을 수직으로 정렬 */
+    align-items: center; /* 수평 중앙 정렬 */
+    justify-content: center; /* 수직 중앙 정렬 */
+    flex-shrink: 0; /* 자식 요소에 의해 크기가 줄어들지 않도록 설정 */
+    padding: 10px; /* 요소들 간의 여백을 줍니다 */
+    margin:30px;
+  }
+
+  .feedback-totalcom {
+    padding: 16px;
+    width: 93%;
+    border: 2px solid #A5CABB;
+    margin: auto;
+    text-align: left;
+    word-wrap: break-word; /* 단어가 너무 길면 줄 바꿈 */
+    background-color: #CEE5DF;
+    font-size: 17px;
+}
+
+.feedback-analyze6-con{
+    margin: 3px;
+    
+}
+
+.feedback-qcon5 {
+    display: flex;
+    justify-content: space-between; /* 요소들 사이에 공간을 배치 */
+    align-items: center; /* 수직 중앙 정렬 */
+    height: 400px;
+    width: 1250px;
+    margin-bottom: 40px;
+}
+
+.feedback-qcon8{
+    display: flex;
+    align-items: center; /* 수직 중앙 정렬 */
+    height: 400px;
+    width:1250px;
+}
+
+.feedback-btncon{
+    margin: 0px;
+    
+}
+
+.feedback-active {
+    background-color: #033a3d;
+    color: white;
+    /* border-top: 3px solid #033a3d; */
+    height: 60px;
+    width: 90px;
+    align-content: center;
+    font-size: 18px;
+    text-align: center;           /* 텍스트를 중앙에 정렬 */
+    line-height: 60px;            /* 버튼의 높이와 같게 설정하여 텍스트 수직 중앙 정렬 */
+    cursor: pointer;              /* 마우스 커서를 포인터로 변경 */
+    transition: background-color 0.3s ease, box-shadow 0.3s ease; /* 배경색과 그림자 변경에 부드러운 전환 효과 추가 */
+}
+
+.feedback-textarea {
+    background-color: #CEE5DF;
+    border: hidden;
+}
+
+.feedback-submit{
+    width: 100px;
+    height: 35px;
+    margin: 10px;
+    margin-left: 90%;
+    background-color: #08877D;
+    border:1px solid #01665e;
+    border-radius: 3px;
+    color: #FFFCFC;
+    font-size: 18px;
+    transition: background-color 0.3s ease
+}
+
+.feedback-submit:hover {
+    background-color: #01665e;
+    
+}
+
+.feedback-textarea-ct {
+    background-color: #CEE5DF;
+    border: hidden;
+    width: 100%;
 }

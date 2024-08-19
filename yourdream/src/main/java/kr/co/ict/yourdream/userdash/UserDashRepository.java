@@ -23,7 +23,7 @@ public interface UserDashRepository extends JpaRepository<MemberVOBoks,Integer>{
     @Query("SELECT COUNT(i.intno) FROM IntResVOBok i")
     long countTotalIntnos();
 
-    @Query("SELECT COUNT(mc) FROM MemberConsultBok mc")
+    @Query("SELECT COUNT(mc) FROM IntResVOBok mc where mc.inttypecd = '2'")
     long countTotal();
 
     @Query("SELECT new kr.co.ict.yourdream.userdash.DailyMemberCountDTO(m.credt, COUNT(m)) " +

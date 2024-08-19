@@ -398,10 +398,10 @@ const Consultant = () => {
     const maxComplete = Math.max(...completeData);
     const max = Math.max(maxApply, maxComplete);
 
-    return { applyData, completeData, max };
+    return { daysOfWeek, applyData, completeData, max };
   };
 
-  const { applyData, completeData, max } = getChartData();
+  const { daysOfWeek, applyData, completeData, max } = getChartData();
 
   const twobar = {
     tooltip: {
@@ -427,7 +427,7 @@ const Consultant = () => {
     xAxis: [
       {
         type: 'category',
-        data: ['월요일', '화요일', '수요일', '목요일', '금요일', '토요일', '일요일'],
+        data: daysOfWeek,
         axisPointer: {
           type: 'shadow'
         }
@@ -514,7 +514,7 @@ const Consultant = () => {
       <div className="consultant-chart">
         <div className="consultant-chart-col">
           <div className="consultant-chart-row" style={{ width: "800px"}}>
-            <div className="consultant-chart-name">완료 횟수 </div>
+            <div className="consultant-chart-name">컨설팅 횟수 </div>
             <ReactEcharts
               option={twobar}
               style={{ height: "400px", width: "100%" }}
@@ -525,7 +525,7 @@ const Consultant = () => {
             /> */}
           </div>
           <div className="consultant-chart-row" style={{ width: "480px" }}>
-            <div className="consultant-chart-name">컨설턴트 분포도</div>
+            <div className="consultant-chart-name">전문분야 분포도</div>
             <ReactEcharts
               option={chartpie}
               style={{ height: "400px", width: "100%" }}
@@ -534,7 +534,7 @@ const Consultant = () => {
         </div>
         <div className="consultant-chart-col">
           <div className="consultant-chart-row" style={{ width: "480px" }}>
-            <div className="consultant-chart-name">점수 분포도</div>
+            <div className="consultant-chart-name">평점 분포도</div>
             {/* <ReactEcharts
               option={chartbar}
               style={{ height: "400px", width: "100%" }}
@@ -545,7 +545,7 @@ const Consultant = () => {
             />
           </div>
           <div className="consultant-chart-row" style={{ width: "800px" }}>
-            <div className="consultant-chart-name">컨설팅 월평균점수</div>
+            <div className="consultant-chart-name">컨설팅 일 평균점수</div>
             <ReactEcharts
               option={monavg}
               style={{ height: "400px", width: "100%" }}

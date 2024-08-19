@@ -32,4 +32,10 @@ public class UserAdminService {
             memberUpdateDTO.getPhonenum()
         );
     }
+
+    @Transactional
+    public void deleteMemberByMemno(int memno) {
+        // 특정 memno를 가진 멤버 삭제
+    userAdminRepository.deleteById(memno);
+    }
 }

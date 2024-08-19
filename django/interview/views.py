@@ -1,20 +1,23 @@
 import json
 import random
-
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import base64
 import io
 from PIL import Image
-import cv2
 import numpy as np
-import tensorflow as tf
-from pydub import AudioSegment
 
-from interview.models import perform_face_detection, stt_models, save_video, get_encoded_image, get_image_url
+
+from interview.models import perform_face_detection, stt_models, save_video, get_encoded_image, get_image_url, \
+    convert_webm_to_mp4, extract_frames_from_video, analyze_pose
 
 rPath = 'interview/static'
 model_path = rPath + '/models/vgg16_Face_model.h5'
+video_path = 'media/videos'
+
+
+
+
 
 @csrf_exempt
 def face_detect(request):
@@ -65,16 +68,32 @@ def question_detail(request):
     if request.method == 'POST':
         # 업로드된 비디오 파일을 가져옵니다.
         video_file = request.FILES.get('video')
-        video_url=save_video(video_file)
-        print(video_file)
-        print(type(video_file))
+        mp4_url, unique_file_name=save_video(video_file)
+        print('mp4_url=> ',mp4_url)
+        webm_path = video_path + '/webm/' + unique_file_name + '.webm'
+        mp4_path = video_path + '/mp4/' + unique_file_name + '.mp4'
+        convert_webm_to_mp4(webm_path, mp4_path)
+        frames = extract_frames_from_video(mp4_path)
+        badcount = 0
+        # 예를 들어 첫 번째 프레임을 처리하는 방법
+        if frames:
+
+            for frame in frames:
+                annotated_frame, frame_badcount = analyze_pose(frame)
+                badcount += frame_badcount
+
+            print("Total bad count:", badcount)
+
+
+
+
     json_q_detail = {
         "answer": "질문에 대한 면접자의 답변입니다!!",
         "emotion": {
             'escore': 67,
         },
         "position": {
-            "pbadcnt": 22,
+            "pbadcnt": badcount,
             "pscore": 38,
         },
         "voice": {
@@ -85,7 +104,7 @@ def question_detail(request):
             "vhertzimg": "base64로 인코딩(String타입)",
             "vamplitimg": "(주파수만으로 충분할것같으면 생략)",
         },
-        "video_url": video_url,  # 비디오 파일의 URL을 추가합니다
+        "video_url": mp4_url,  # 비디오 파일의 URL을 추가합니다
         "aifeedback": "ai가 피드백 해준 문장입니다."
     }
 
@@ -129,3 +148,6 @@ def interview_result(request):
         return JsonResponse(response_data, status=200)
 
     return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+
+
