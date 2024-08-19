@@ -145,18 +145,18 @@ const ConsultantAdminModal: React.FC<ConsultantAdminModalProps> = ({ consultant,
   };
 
   return (
-    <div className="modal-overlay">
-      <div className="modal-content">
-        <button className="modal-close" onClick={onClose}>&times;</button>
-        <h2>⚙️ Consultant 정보 수정</h2>
+    <div className="consult-modal-overlay">
+      <div className="consult-modal-content">
+        <button className="consult-modal-close" onClick={onClose}>&times;</button>
+        <h2>⚙️ Consultant 정보 입력</h2>
         <hr />
-        <form className="modal-form">
-          <div className="form-row">
-            <div className="form-group">
+        <form className="consult-modal-form">
+          <div className="consult-form-row">
+            {/* <div className="consult-form-group">
               <label htmlFor="cnsno">컨설턴트 번호</label>
               <input type="number" id="cnsno" name="cnsno" value={localConsultant.cnsno || ''} onChange={handleChange} />
-            </div>
-            <div className="form-group">
+            </div> */}
+            {/* <div className="form-group">
               <label htmlFor="password">비밀번호</label>
               <div className="password-input-container">
                 <input
@@ -170,14 +170,14 @@ const ConsultantAdminModal: React.FC<ConsultantAdminModalProps> = ({ consultant,
                   {showPassword ? '숨기기' : '표시'}
                 </button>
               </div>
-            </div>
+            </div> */}
           </div>
-          <div className="form-row">
-            <div className="form-group">
+          <div className="consult-form-row">
+            <div className="consult-form-group">
               <label htmlFor="name">이름</label>
               <input type="text" id="name" name="name" value={localConsultant.name || ''} onChange={handleChange} />
             </div>
-            <div className="form-group">
+            <div className="consult-form-group">
               <label htmlFor="gendercd">성별</label>
               <select id="gendercd" name="gendercd" value={localConsultant.gendercd || ''} onChange={handleChange}>
                 <option value="">선택</option>
@@ -186,8 +186,8 @@ const ConsultantAdminModal: React.FC<ConsultantAdminModalProps> = ({ consultant,
               </select>
             </div>
           </div>
-          <div className="form-row">
-            <div className="form-group">
+          <div className="consult-form-row">
+            <div className="consult-form-group">
               <label htmlFor="categcd">전문분야</label>
               <select id="categcd" name="categcd" value={localConsultant.categcd || ''} onChange={handleChange}>
                 <option value="">선택</option>
@@ -198,23 +198,23 @@ const ConsultantAdminModal: React.FC<ConsultantAdminModalProps> = ({ consultant,
                 <option value="5">경영</option>
               </select>
             </div>
-            <div className="form-group">
+            <div className="consult-form-group">
               <label htmlFor="phonenum">연락처</label>
               <input type="text" id="phonenum" name="phonenum" value={localConsultant.phonenum || ''} onChange={handleChange} />
             </div>
           </div>
-          <div className="form-row">
-            <div className="form-group">
+          <div className="consult-form-row">
+            <div className="consult-form-group">
               <label htmlFor="email">이메일</label>
               <input type="text" id="email" name="email" value={localConsultant.email || ''} onChange={handleChange} />
             </div>
-            <div className="form-group">
+            <div className="consult-form-group">
               <label htmlFor="birthymd">생년월일</label>
               <input type="text" id="birthymd" name="birthymd" value={localConsultant.birthymd || ''} onChange={handleChange} />
             </div>
           </div>
-          <div className="form-row">
-            <div className="form-group">
+          <div className="consult-form-row">
+            <div className="consult-form-group">
               <label htmlFor="cnscareer">컨설팅경력</label>
               <select
                 id="cnscareer"
@@ -237,7 +237,7 @@ const ConsultantAdminModal: React.FC<ConsultantAdminModalProps> = ({ consultant,
                 />
               )}
             </div>
-            <div className="form-group">
+            <div className="consult-form-group">
               <label htmlFor="cnsproject">컨설팅 프로젝트 수</label>
               <select
                 id="cnsproject"
@@ -261,11 +261,11 @@ const ConsultantAdminModal: React.FC<ConsultantAdminModalProps> = ({ consultant,
               )}
             </div>
           </div>
-          <div className="form-group">
+          <div className="consult-form-group">
             <hr />
             <label>경력 사항</label>
             {localConsultant.cnscareer_vo.filter(c => c.careerdiv === '2').map((career, index) => (
-              <div key={index} className="career-item">
+              <div key={index} className="consult-career-item">
                 <input
                   type="text"
                   name="term"
@@ -292,11 +292,11 @@ const ConsultantAdminModal: React.FC<ConsultantAdminModalProps> = ({ consultant,
             ))}
             <button type="button" onClick={() => handleAddCareerItem('career')}>➕ 경력 추가</button>
           </div>
-          <div className="form-group">
+          <div className="consult-form-group">
             <hr />
             <label>학력 사항</label>
             {localConsultant.cnscareer_vo.filter(c => c.careerdiv === '1').map((career, index) => (
-              <div key={index} className="career-item">
+              <div key={index} className="consult-career-item">
                 <input
                   type="text"
                   name="term"
@@ -323,7 +323,7 @@ const ConsultantAdminModal: React.FC<ConsultantAdminModalProps> = ({ consultant,
             ))}
             <button type="button" onClick={() => handleAddCareerItem('education')}>➕ 학력 추가</button>
           </div>
-          <div className="form-actions">
+          <div className="consult-form-actions">
             <button type="button" onClick={handleSave}>저장</button>
             <button type="button" onClick={onClose}>취소</button>
           </div>
