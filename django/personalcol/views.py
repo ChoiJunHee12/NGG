@@ -11,7 +11,7 @@ import mediapipe as mp
 from django.views.decorators.csrf import csrf_exempt
 import base64
 from personalcol import models
-
+import dlib
 
 rPath = 'personalcol/static'  # 실제 경로로 바꿔주세요
 
@@ -21,6 +21,12 @@ mp_face_mesh = mp.solutions.face_mesh
 model_path = rPath + '/models/vgg16_Face_model.h5'
 print('model_path ===>>>',model_path)
 mask_model = tf.keras.models.load_model(model_path)
+
+landmark_predictor_path = rPath +'/models/shape_predictor_68_face_landmarks.dat'
+if not os.path.isfile(landmark_predictor_path):
+    raise FileNotFoundError(f"File not found: {landmark_predictor_path}")
+landmark_predictor = dlib.shape_predictor(landmark_predictor_path)
+
 
 
 @csrf_exempt

@@ -6,8 +6,11 @@ from django.conf import settings
 import uuid
 import cv2
 import mediapipe as mp
+from django.http import JsonResponse
+from pydub import AudioSegment
 from google.cloud import speech
 import os
+import io
 
 from config.settings import BASE_DIR
 
@@ -18,6 +21,9 @@ mp_drawing = mp.solutions.drawing_utils
 # stt json
 SERVICE_ACCOUNT_JSON = 'interview/static/json/your_key_path.json'
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = SERVICE_ACCOUNT_JSON
+
+#ffpeg.exe 경로 설정 각 위치에 맞게 설정
+AudioSegment.converter = 'D:/ICTEDU/...경로써주세요/static/ffmpeg/ffmpeg.exe'
 
 # MediaPipe Pose 모델 초기화
 mp_pose = mp.solutions.pose
@@ -30,13 +36,31 @@ mp_drawing = mp.solutions.drawing_utils
 
 
 def stt_models(audio_file):
+    print('stt입장')
+    # 오디오 파일을 메모리 내에서 처리
+    try:
+        audio_file.seek(0)
+        audio = AudioSegment.from_file(audio_file)
+        print('오디오 변환 성공')
+    except Exception as e:
+        print(f"오디오 파일 로드 실패: {e}")
+        return JsonResponse({'error': f"오디오 파일 로드 실패: {e}"}, status=400)
+    # 16비트 샘플로 변환
+    audio = audio.set_sample_width(2)  # 2 bytes per sample = 16 bit
+    audio = audio.set_channels(1)
+    print('채널1 완료')
+    # 변환된 오디오 파일을 메모리 내에서 처리
+    mono_audio_io = io.BytesIO()
+    audio.export(mono_audio_io, format="wav")
+    mono_audio_io.seek(0)
     print('1')
     # Google Cloud Speech-to-Text 클라이언트 생성
     client = speech.SpeechClient()
     print('2')
-
+    sample_rate = audio.frame_rate
+    print('sample_rate',sample_rate)
     # 음성 파일을 바이너리 데이터로 읽기
-    content = audio_file.read()
+    content = mono_audio_io.read()
     print('3')
 
     # 오디오 설정 (이 부분은 필요한 대로 변경 가능)
@@ -44,7 +68,7 @@ def stt_models(audio_file):
     print('4')
     config = speech.RecognitionConfig(
         encoding=speech.RecognitionConfig.AudioEncoding.LINEAR16,
-        sample_rate_hertz=48000,
+        sample_rate_hertz=sample_rate,
         language_code="ko-KR",  # 한국어 설정 (필요한 언어로 변경 가능)
         enable_automatic_punctuation=True  # 자동 구두점 추가
     )
@@ -63,9 +87,40 @@ def stt_models(audio_file):
         print('x')
     print('transcript',transcript)
 
-    return transcript;
+    return transcript
 
+def extract_audio_to_memory(video_file_path):
+    # ffmpeg를 사용하여 오디오를 추출하고, 이를 stdout으로 전달
+    command = [
+        'ffmpeg',
+        '-i', video_file_path,
+        '-vn',  # 비디오를 제외하고 오디오만 추출
+        '-f', 'wav',
+        '-acodec', 'pcm_s16le',
+        '-ar', '16000',  # 오디오 샘플링 레이트를 16kHz로 설정 (Google STT 요구 사항)
+        '-ac', '1',  # 모노 오디오로 변환
+        'pipe:1'  # stdout으로 출력
+    ]
 
+    # subprocess를 통해 명령 실행
+    process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    audio_data, _ = process.communicate()
+
+    # BytesIO로 오디오 데이터를 메모리에 로드
+    return io.BytesIO(audio_data)
+
+def stt_models_from_video_path(video_file_path):
+    try:
+        # 비디오 파일에서 오디오를 추출하여 메모리에 저장
+        audio_io = extract_audio_to_memory(video_file_path)
+
+        # stt_models 함수 사용
+        transcript = stt_models(audio_io)
+        return transcript
+
+    except Exception as e:
+        print(f"오디오 변환 실패: {e}")
+        return JsonResponse({'error': f"오디오 변환 실패: {e}"}, status=400)
 
 def perform_face_detection(image_np):
     # Mediapipe 얼굴 검출 솔루션 초기화
@@ -123,6 +178,11 @@ def convert_webm_to_mp4(input_path, output_path):
     :param input_path: 입력 파일 경로
     :param output_path: 출력 파일 경로
     """
+
+    # 출력 디렉토리가 없으면 생성
+    output_dir = os.path.dirname(output_path)
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
 
     command = ['ffmpeg', '-i', input_path, output_path]
 

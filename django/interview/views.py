@@ -9,7 +9,7 @@ import numpy as np
 
 
 from interview.models import perform_face_detection, stt_models, save_video, get_encoded_image, get_image_url, \
-    convert_webm_to_mp4, extract_frames_from_video, analyze_pose
+    convert_webm_to_mp4, extract_frames_from_video, analyze_pose ,stt_models_from_video_path
 
 rPath = 'interview/static'
 model_path = rPath + '/models/vgg16_Face_model.h5'
@@ -49,16 +49,15 @@ def speach_text(request):
         if 'audio' not in request.FILES:
             return JsonResponse({'error': 'No audio file provided'}, status=400)
         # speach to text 구현
-        print('왔나요~')
+        print('speach_text 왔나요~')
         audio_file = request.FILES['audio']
+        # 파일의 크기와 이름을 출력하여 확인
+        print(f"파일 이름: {audio_file.name}, 파일 크기: {audio_file.size} 바이트")
 
         stt_result=stt_models(audio_file);
-        print('오류발생')
+        print(stt_result)
         if stt_result=='':
             stt_result='오류발생';
-
-
-
         return JsonResponse({'result': stt_result })
 
     return JsonResponse({'error': 'Invalid request method'}, status=405)
@@ -74,6 +73,11 @@ def question_detail(request):
         mp4_path = video_path + '/mp4/' + unique_file_name + '.mp4'
         convert_webm_to_mp4(webm_path, mp4_path)
         frames = extract_frames_from_video(mp4_path)
+
+
+        stt_text=stt_models_from_video_path(mp4_path)
+        print('stt_text',stt_text)
+
         badcount = 0
         # 예를 들어 첫 번째 프레임을 처리하는 방법
         if frames:
