@@ -381,6 +381,14 @@ export default {
         } else if (inttypename=='인성') {
 
 
+
+          // 초기화
+          this.stt = [];
+          this.emotion = [];
+          this.position = [];
+          this.voice = [];
+          this.video_url = [];
+          this.feedback = [];
           
 
           console.log("다들어있는거!!!!!",JSON.parse(localStorage.getItem("q1detail")))

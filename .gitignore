@@ -10,3 +10,9 @@
 # Python이 소스 코드를 컴파일하면서 생성하는 바이트코드 파일들
 *.pyc
 __pycache__/
+
+# static 하위 파일들
+static/
+
+# media 하위 파일들
+media/

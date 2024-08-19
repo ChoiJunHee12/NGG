@@ -7,7 +7,7 @@ from google.cloud import texttospeech
 from google.oauth2 import service_account
 
 # JSON 파일 경로 설정 tts json
-SERVICE_ACCOUNT_JSON = 'tts/static/json/your_key_path.json'
+SERVICE_ACCOUNT_JSON = 'tts/static/json/myspeechtotext-431005-ca3313ced75e.json'
 
 # 서비스 계정 키 정보를 사용하여 Credentials 객체 생성
 def get_credentials():

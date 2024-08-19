@@ -19,7 +19,7 @@ mp_face_detection = mp.solutions.face_detection
 mp_drawing = mp.solutions.drawing_utils
 
 # stt json
-SERVICE_ACCOUNT_JSON = 'interview/static/json/your_key_path.json'
+SERVICE_ACCOUNT_JSON = 'interview/static/json/myspeechtotext-431005-a07eb9df65a2.json'
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = SERVICE_ACCOUNT_JSON
 
 #ffpeg.exe 경로 설정 각 위치에 맞게 설정
