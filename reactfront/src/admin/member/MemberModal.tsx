@@ -114,7 +114,7 @@ const MemberModal: React.FC<MemberModalProps> = ({
     console.log(updatedMember);
     try {
       const response = await axios.put(
-        `http://192.168.0.73:81/yourdream/api/memadmin/user-update/${member.memno}`,
+        `${process.env.REACT_APP_BACK_END_URL}/admin/memadmin/user-update/${member.memno}`,
         updatedMember,
         {
           headers: {
