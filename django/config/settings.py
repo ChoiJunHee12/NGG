@@ -73,6 +73,7 @@ CORS_ORIGIN_WHITELIST=[
     "http://192.168.0.42:3000",
     "http://localhost:3001",
 ]
+CORS_ALLOW_ALL_ORIGINS = True
 
 ROOT_URLCONF = 'config.urls'
 
