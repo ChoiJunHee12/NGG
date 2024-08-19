@@ -1,396 +1,630 @@
 import React, { useEffect, useState } from 'react';
-import Highcharts from 'highcharts';
+import axios from 'axios';
 import * as echarts from 'echarts';
-import wordcloud from 'highcharts/modules/wordcloud';
-import './feedbackDetail.css'; // 스타일 파일을 별도로 작성하거나 기존 스타일을 변환하세요.
+import Highcharts from 'highcharts';
+import HighchartsWordcloud from 'highcharts/modules/wordcloud';
+import 'echarts/lib/chart/radar';
+import 'echarts/lib/component/tooltip';
+import 'echarts/lib/component/title';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import './FeedbackDetail.css';
 
-wordcloud(Highcharts);
+HighchartsWordcloud(Highcharts);
+
+interface QnaData {
+  question: string;
+  answer: string;
+  aifeedbk: string;
+  QCNSFEEDBK: string;
+}
+
+interface FeedbackDetailParams {
+  intno: number;
+}
+
+interface QconEvalItem {
+  qcnsfeedbk: string;
+
+}
+interface ApiResponse {
+  QconEval: QconEvalItem[];
+}
 
 const FeedbackDetail: React.FC = () => {
-  const [page, setPage] = useState<number>(1);
-  const [i, setI] = useState<number>(0);
-  const [content, setContent] = useState<number>(1);
-  const [nownum, setNownum] = useState<number>(1);
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const intno = searchParams.get('intno');
+  const navigate = useNavigate();
+  const [activePage, setActivePage] = useState(1);
+  const [page, setPage] = useState(1);
+  const [question, setQuestion] = useState<string>('');
+  const [answer, setAnswer] = useState<string>('');
+  const [feedback, setFeedback] = useState<string>('');
+  const [userName, setUserName] = useState<string>('');
+  const [credt, setCredt] = useState<string>('');
+  const [pbadcnt, setPbadcnt] = useState<number[]>([]);
+  const [qnaData, setQnaData] = useState<QnaData[]>([]);
+  const [cnsfeedbk, setCnsfeedbk] = useState<string>('');
+  const [CTFeedback, setCTFeedback] = useState<string[]>([]);
+  const [efeed1, setEfeed1] = useState<string>('');
+  const [efeed2, setEfeed2] = useState<string>('');
+  const [pfeed1, setPfeed1] = useState<string>('');
+  const [pfeed2, setPfeed2] = useState<string>('');
+  const [sttfeed1, setSttfeed1] = useState<string>('');
+  const [sttfeed2, setSttfeed2] = useState<string>('');
+  const [vfeed1, setVfeed1] = useState<string>('');
+  const [vfeed2, setVfeed2] = useState<string>('');
+  const i = page - 1;
 
-  const questions = [
-    '자신에 대하여 소개해주세요.',
-    '자신의 강점, 단점을 지원 분야와 관련지어 말해주세요.',
-    '성공했던 혹은 실패했던 사례는 무엇인가요?',
-    '자랑할 만한 성과는 무엇이 있나요?',
-    '본인만의 업무상 경쟁력은 무엇인가요?',
-    '우리 회사의 (해당 직무)에서 가장 중요하다고 생각하는 업무는 무엇이며, \n 그 업무를 수행하기 위해 필요한 역량은 무엇이라고 생각하십니까?',
-    '(해당 직무)와 관련된 최근 트렌드나 기술 동향에 대해 어떻게 생각하시나요? \n 이러한 변화가 우리 회사와 해당 직무에 어떤 영향을 미칠 것으로 예상하십니까?'
-  ];
+  const handleFeedbackChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const newFeedback = [event.target.value];
+    setCTFeedback(newFeedback);
+  }
 
-  const comments = [
-    'Q1번에 대한 답변을 STT로 표현 해주시고 back연결후에 data에 있는 Comment기본값을 지워주시면 됩니다.',
-    'Q2번에 대한 답변을 STT로 표현 해주시고 back연결후에 data에 있는 Comment기본값을 지워주시면 됩니다.',
-    'Q3번에 대한 답변을 STT로 표현 해주시고 back연결후에 data에 있는 Comment기본값을 지워주시면 됩니다.',
-    'Q4번에 대한 답변을 STT로 표현 해주시고 back연결후에 data에 있는 Comment기본값을 지워주시면 됩니다.',
-    'Q5번에 대한 답변을 STT로 표현 해주시고 back연결후에 data에 있는 Comment기본값을 지워주시면 됩니다.'
-  ];
+  const totalevalChange = () => {
+    const textareaElement = document.getElementById('totaleval') as HTMLTextAreaElement;
+    if (textareaElement) {
+      const newCnsfeedbk = textareaElement.value;
+      setCnsfeedbk(newCnsfeedbk);
+    }
+  }
 
-  const feedbacks = [
-    '피드백 존재시 v-if로 보이게 해주시면 됩니다.',
-    '현재 Q2. 까지만 보이게 설정했습니다.'
-  ];
+  const CTFeedSubmit = () => {
+    console.log("보낼거", CTFeedback, intno, page);
+    const qcnsfeedbk = CTFeedback[0].toString();
+    console.log("내용:",qcnsfeedbk);
+    console.log(typeof(intno), typeof(page))
+    axios
+      .post(`${process.env.REACT_APP_BACK_END_URL}/feedback/feedbkQUpdate`, { "qcnsfeedbk": qcnsfeedbk, "intno": intno, "qno": page })
+      .then((response) => {
+        console.log("업데이트 성공");
+        window.location.reload();
+      })
+      .catch((error) => {
+        console.error("Error submitting feedback:", error);
+      });
+  };
+
+  const CTCnsFeedSubmit = () => {
+    console.log("보낼거", cnsfeedbk, intno, typeof(cnsfeedbk), typeof(intno));
+    axios
+      .post(`${process.env.REACT_APP_BACK_END_URL}/feedback/feedbkCnsUpdate`, { "cnsfeedbk": cnsfeedbk, "intno": intno })
+      .then((response) => {
+        console.log("업데이트 성공");
+        window.location.reload();
+      })
+      .catch((error) => {
+        console.error("Error submitting feedback:", error);
+      });
+  };
 
   useEffect(() => {
-    graph2();
+    fetchUserData();
+    fetchQuestionData();
+    fetchCTFeedback();
+    initializeCharts();
+    fetchTotalFeedbk();
+    fetchTotalConFeedbk();
+  }, []);
+  
+
+  const fetchUserData = async () => {
+    try {
+      console.log(intno);
+      const response = await axios.get(`${process.env.REACT_APP_BACK_END_URL}/feedback/feedbkDetailInfo`, { params: { intno } });
+      console.log(response.data);
+      setUserName(response.data.info.name);
+      setCredt(response.data.info.upddt);
+
+
+    } catch (error) {
+      console.error('서버 오류:', error);
+    }
+  };
+
+  const formatDate = (datetime: string) => {
+    return datetime.split('T')[0];
+  };
+
+  const fetchQuestionData = async () => {
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_BACK_END_URL}/feedback/feedbkScore`, { params: { intno } });
+      setQnaData(response.data.escore);
+      console.log("여기",response.data.escore)
+      if (response.data.escore[0]) {
+        setQuestion(response.data.escore[0].question);
+        setAnswer(response.data.escore[0].answer);
+        setFeedback(response.data.escore[0].aifeedbk);
+      }
+    } catch (error) {
+      console.error('서버 오류:', error);
+    }
+  };
+
+  const fetchCTFeedback = async () => {
+    try {
+      const response = await axios.get<ApiResponse>(`${process.env.REACT_APP_BACK_END_URL}/feedback/feedbkDetailQconEval`, { params: { intno } });
+      console.log("요고", response.data.QconEval);
+      const qcnsfeedbkArray = response.data.QconEval.map(item => item.qcnsfeedbk);
+      console.log("지금:", qcnsfeedbkArray);
+      setCTFeedback(qcnsfeedbkArray);
+    } catch (error) {
+      console.error('서버 오류:', error);
+    }
+  };
+
+  const next = () => {
+    if (page < 7) {
+      pageChange(page + 1);
+    }
+  };
+
+  const previous = () => {
+    if (page > 1) {
+      pageChange(page - 1);
+    }
+  };
+
+  const handleClose = () => {
+    navigate('/consultant/feedback/main');
+  };
+
+  const pageChange = (num: number) => {
+    setPage(num);
+    setActivePage(num);
+
+    const currentData = qnaData[num-1];
+    console.log("현재", currentData);
+    if (currentData) {
+      setQuestion(currentData.question);
+      setAnswer(currentData.answer);
+      setFeedback(currentData.aifeedbk);
+    }
+  };
+
+  const initializeCharts = () => {
+    face();
     wordcloud();
     barchart();
-    face();
     voiceg();
-  }, []);
-
-  const pagechange = (num: number) => {
-    setPage(num);
-    setI(num - 1);
-    setContent(num === 8 ? 8 : 1);
-    setNownum(num);
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth'
-    });
   };
 
-  const displayPage = (pageNum: number) => {
-    return content === pageNum ? { display: 'block' } : { display: 'none' };
-  };
-
-  const graph2 = () => {
-    const data = [];
-    const time = (new Date()).getTime();
-    let y = 0;
-  
-    for (let i = -9; i <= 0; i++) {
-      if (Math.random() < 0.1) {
-        y = -1;
-      } else {
-        y = Math.random() > 0.5 ? 1 : 0;
-      }
-  
-      data.push({
-        x: time + i * 90000,
-        y: y
-      });
+  const fetchTotalFeedbk = async () => {
+    const response = await axios.get(`${process.env.REACT_APP_BACK_END_URL}/feedback/feedbkDetailResEval`, {params : {intno}});
+    console.log(response.data);
+    try {
+      setEfeed1(response.data.resEval.efeed1);
+    setEfeed2(response.data.resEval.efeed2);
+    setPfeed1(response.data.resEval.pfeed1);
+    setPfeed2(response.data.resEval.pfeed2);
+    setVfeed1(response.data.resEval.vfeed1);
+    setVfeed2(response.data.resEval.vfeed2);
+    setSttfeed1(response.data.resEval.sttfeed1);
+    setSttfeed2(response.data.resEval.sttfeed2);
+    } catch (error) {
+      console.error('값 없음:', error);
     }
-  
-    Highcharts.chart('graph2', {
-      accessibility: {
-        enabled: false
-      },
-      chart: {
-        type: 'spline',
-        height: 320,
-        width: 480
-      },
-      title: {
-        text: "",
-        align: 'left'
-      },
-      subtitle: {
-        text: '',
-        align: 'left'
-      },
-      xAxis: {
-        type: 'datetime',
-        title: {
-          text: '시간'
-        }
-      },
-      yAxis: [{
-        title: {
-          text: '감정 인식'
-        },
-        min: -1,
-        max: 1,
-        tickPositions: [-1, 0, 1],
-        labels: {
-          // formatter: function () {
-          //   return this.value === -1 ? '부정' :
-          //     this.value === 0 ? '중립' :
-          //     this.value === 1 ? '긍정' : '';
-          // }
-        }
-      }],
-      plotOptions: {
-        series: {
-          animation: {
-            duration: 1000
-          },
-          marker: {
-            enabled: false
-          },
-          lineWidth: 3
-        }
-      },
-      series: [{
-        type: 'spline',
-        name: '감정 라인',
-        data: data,
-        color: '#08AD94'
-      }],
-      responsive: {
-        rules: [{
-          condition: {
-            maxWidth: 300
-          },
-          chartOptions: {
-            yAxis: [{
-              tickAmount: 2,
-              title: {
-                x: 15,
-                reserveSpace: false
-              }
-            }]
-          }
-        }]
-      }
-    });
-  };
+  }
 
-  const face = () => {
-    const chartContainer = document.getElementById('face')!;
-    chartContainer.style.width = '300px';
-    chartContainer.style.height = '400px';
+  const fetchTotalConFeedbk = async () => {
+    const response = await axios.get(`${process.env.REACT_APP_BACK_END_URL}/feedback/feedbkDetailResConEval`, {params : {intno}});
+    console.log(response.data);
+    setCnsfeedbk(response.data.resConEval.cnsfeedbk);
+  }
 
-    const myChart = echarts.init(chartContainer);
-    const option = {
-      title: {
-        text: '감정 점수'
-      },
-      tooltip: {
-        trigger: 'axis'
-      },
-      legend: {
-        left: 'left',
-        data: ['점']
-      },
-      radar: [
-        {
-          indicator: [
-            { text: 'Q1', max: 100 },
-            { text: 'Q2', max: 100 },
-            { text: 'Q3', max: 100 },
-            { text: 'Q4', max: 100 },
-            { text: 'Q5', max: 100 }
-          ],
-          center: ['50%', '50%'],
-          radius: 80
-        }
-      ],
-      series: [
-        {
-          type: 'radar',
+  const face = async () => {
+    const chartContainer = document.getElementById('face');
+    if (chartContainer) {
+      chartContainer.style.width = '300px';
+      chartContainer.style.height = '400px';
+
+      const myChart = echarts.init(chartContainer);
+
+      try {
+        const response = await axios.get(`${process.env.REACT_APP_BACK_END_URL}/feedback/feedbkScore`, { params: { intno } });
+        console.log(response.data);
+        const option = {
+          title: {
+            text: '감정 점수'
+          },
           tooltip: {
-            trigger: 'item'
+            trigger: 'axis'
           },
-          areaStyle: {
-            color: '#08AD94'
+          legend: {
+            left: 'left',
+            data: ['점']
           },
-          itemStyle: {
-            color: '#0A6065'
-          },
-          data: [
+          radar: [
             {
-              value: [60, 73, 85, 40, 65],
-              name: '감정 점수'
+              indicator: [
+                { text: 'Q1', max: 100 },
+                { text: 'Q2', max: 100 },
+                { text: 'Q3', max: 100 },
+                { text: 'Q4', max: 100 },
+                { text: 'Q5', max: 100 },
+                { text: 'Q6', max: 100 },
+                { text: 'Q7', max: 100 }
+              ],
+              center: ['50%', '50%'],
+              radius: 80
+            }
+          ],
+          series: [
+            {
+              type: 'radar',
+              tooltip: {
+                trigger: 'item'
+              },
+              areaStyle: {
+                color: '#08AD94'
+              },
+              itemStyle: {
+                color: '#0A6065'
+              },
+              data: [
+                {
+                  value: [response.data.escore[0].escore, 
+                          response.data.escore[1].escore, 
+                          response.data.escore[2].escore, 
+                          response.data.escore[3].escore, 
+                          response.data.escore[4].escore, 
+                          response.data.escore[5].escore,
+                          response.data.escore[6].escore],
+                  name: '감정 점수'
+                }
+              ]
             }
           ]
-        }
-      ]
-    };
-    myChart.setOption(option);
-  };
-
-  const barchart = () => {
-    Highcharts.chart('barchart', {
-      accessibility: {
-        enabled: false
-      },
-      chart: {
-        type: 'column',
-        height: '380px'
-      },
-      title: {
-        text: '자세 흐트러짐',
-        align: 'left'
-      },
-      subtitle: {
-        text: '',
-        align: 'left'
-      },
-      xAxis: {
-        categories: ['Q1', 'Q2'],
-        crosshair: true,
-        accessibility: {
-          description: 'Categories'
-        }
-      },
-      yAxis: {
-        min: 0,
-        title: {
-          text: 'Count'
-        }
-      },
-      tooltip: {
-        valueSuffix: '(회)'
-      },
-      plotOptions: {
-        column: {
-          pointPadding: 0.2,
-          borderWidth: 0
-        }
-      },
-      series: [{
-        type: 'column',
-        name: '목 꺽임',
-        data: [8, 3],
-        color: '#08AD94'
-      }]
-    });
-  };
-
-  const wordcloud = () => {
-    const text = 'Chapter 1. Down the Rabbit-Hole Alice was beginning to get very tired of sitting by her sister on the bank, and of having nothing to do: once or twice she had peeped into the book her sister was reading, but it had no pictures or conversations in it, \'and what is the use of a book,\' thought Alice \'without pictures or conversation?\' So she was considering in her own mind (as well as she could, for the hot day made her feel very sleepy and stupid), whether the pleasure of making a daisy-chain would be worth the trouble of getting up and picking the daisies, when suddenly a White Rabbit with pink eyes ran close by her.';
-  
-    const lines = text.replace(/[():'?0-9]+/g, '').split(/[,\. ]+/g);
-    const data = lines.reduce((arr: { name: string, weight: number }[], word) => {
-      let obj = arr.find(obj => obj.name === word);
-      if (obj) {
-        obj.weight += 1;
-      } else {
-        obj = {
-          name: word,
-          weight: 1
         };
-        arr.push(obj);
+        myChart.setOption(option);
+      } catch (error) {
+        console.error('서버 오류:', error);
       }
-      return arr;
-    }, []);
-  
-    Highcharts.chart('wordcloud1', {
-      accessibility: {
-        enabled: false
-      },
-      chart: {
-        type: 'wordcloud',
-        height: 380,
-        width: 470
-      },
-      title: {
-        text: '단어 구름'
-      },
-      series: [{
-        type: 'wordcloud',
-        data: data,
-        name: 'Occurrences',
-        color: '#08AD94'
-      }],
-    });
+    }
   };
 
-  const voiceg = () => {
-    const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
-    const analyser = ctx.createAnalyser();
-    analyser.fftSize = 128;
-    const bufferLength = analyser.frequencyBinCount;
-    const dataArray = new Uint8Array(bufferLength);
+  const barchart = async () => {
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_BACK_END_URL}/feedback/feedbkScore`, { params: { intno } });
+      Highcharts.chart('barchart', {
+        chart: {
+          type: 'column',  // 차트 유형을 column으로 설정
+          height: '380px'
+        },
+        title: {
+          text: '자세 흐트러짐',
+          align: 'left'
+        },
+        xAxis: {
+          categories: ['Q1', 'Q2', 'Q3', 'Q4', 'Q5', 'Q6', 'Q7'],
+          crosshair: true
+        },
+        yAxis: {
+          min: 0,
+          title: {
+            text: 'Count'
+          }
+        },
+        tooltip: {
+          valueSuffix: '(회)'
+        },
+        plotOptions: {
+          column: {
+            pointPadding: 0.2,
+            borderWidth: 0
+          }
+        },
+        series: [
+          {
+            type: 'column', // 각 series에 차트 유형을 명시
+            name: response.data.chartname,
+            data: [response.data.escore[0].pscore, 
+                  response.data.escore[1].pscore, 
+                  response.data.escore[2].pscore, 
+                  response.data.escore[3].pscore, 
+                  response.data.escore[4].pscore, 
+                  response.data.escore[5].pscore,
+                  response.data.escore[6].pscore],
+            color: '#08AD94'
+          }
+        ]
+      });
+    } catch (error) {
+      console.error('서버 오류:', error);
+    }
+  };
 
-    const canvas = document.getElementById('voiceg') as HTMLCanvasElement;
-    const canvasCtx = canvas.getContext('2d')!;
-    canvas.width = 470;
-    canvas.height = 380;
+const voiceg = async () => {
+    try {
+  const response = await axios.get(`${process.env.REACT_APP_BACK_END_URL}/feedback/feedbkScore`, { params: { intno } });
 
-    const draw = () => {
-      requestAnimationFrame(draw);
-      analyser.getByteFrequencyData(dataArray);
+  Highcharts.chart('voiceg', {
+    chart: {
+      height: 380,
+      width: 470,
+      type: 'line'
+    },
+    title: {
+      text: '음성 데이터',
+      align: 'left',
+    },
+    subtitle: {
+      text: '',
+      align: 'left',
+    },
+    yAxis: {
+      title: {
+        text: '',
+      },
+    },
+    xAxis: {
+      title: {
+        text: '(문제)',
+      },
+      accessibility: {
+        rangeDescription: '(문제)',
+      },
+      tickPositions: [0, 1, 2, 3, 4, 5, 6, 7],
+    },
+    legend: {
+      layout: 'vertical',
+      align: 'right',
+      verticalAlign: 'middle',
+    },
+    plotOptions: {
+      series: {
+        label: {
+          connectorAllowed: false,
+        },
+        pointStart: 1,
+        pointInterval: 1,
+      },
+    },
+    series: [
+      {
+        name: 'vhertz',
+        type: 'line',
+        data: 
+        [response.data.escore[0].vhertz, 
+        response.data.escore[1].vhertz, 
+        response.data.escore[2].vhertz, 
+        response.data.escore[3].vhertz, 
+        response.data.escore[4].vhertz, 
+        response.data.escore[5].vhertz,
+        response.data.escore[6].vhertz],
+      },
+      {
+        name: 'vamplit',
+        type: 'line',
+        data: 
+        [response.data.escore[0].vamplit, 
+        response.data.escore[1].vamplit, 
+        response.data.escore[2].vamplit, 
+        response.data.escore[3].vamplit, 
+        response.data.escore[4].vamplit, 
+        response.data.escore[5].vamplit,
+        response.data.escore[6].vamplit],
+      },
+      {
+        name: 'vempty',
+        type: 'line',
+        data: 
+        [response.data.escore[0].vempty, 
+        response.data.escore[1].vempty, 
+        response.data.escore[2].vempty, 
+        response.data.escore[3].vempty, 
+        response.data.escore[4].vempty, 
+        response.data.escore[5].vempty,
+        response.data.escore[6].vempty],
+      },
+    ],
+    responsive: {
+      rules: [
+        {
+          condition: {
+            maxWidth: 500,
+          },
+          chartOptions: {
+            legend: {
+              layout: 'horizontal',
+              align: 'center',
+              verticalAlign: 'bottom',
+            },
+          },
+        },
+      ],
+    },
+  });
+    } catch (error) {
+      console.error('서버 오류:', error);
+    }
+  };
 
-      canvasCtx.fillStyle = '#000';
-      canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
+  const wordcloud = async () => {
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_BACK_END_URL}/feedback/feedbkScore`, { params: { intno } });
+      console.log(response.data.escore);
+      const text: string = response.data.escore[0].answer + 
+                           response.data.escore[1].answer +
+                           response.data.escore[2].answer +
+                           response.data.escore[3].answer +
+                           response.data.escore[4].answer +
+                           response.data.escore[5].answer +
+                           response.data.escore[6].answer;
+      // console.log(text);
+      const lines: string[] = text.replace(/[():'?0-9]+/g, '').split(/[,\. ]+/g);
+      const data = lines.reduce((arr: { name: string; weight: number }[], word: string) => {
+        let obj = arr.find(obj => obj.name === word);
+        if (obj) {
+          obj.weight += 1;
+        } else {
+          obj = {
+            name: word,
+            weight: 1
+          };
+          arr.push(obj);
+        }
+        return arr;
+      }, []);
 
-      const barWidth = (canvas.width / bufferLength) * 2.5;
-      let barHeight;
-      let x = 0;
+      const top100 = data.sort((a, b) => b.weight - a.weight).slice(0, 100);
 
-      for (let i = 0; i < bufferLength; i++) {
-        barHeight = dataArray[i] / 2;
-        canvasCtx.fillStyle = '#08AD94';
-        canvasCtx.fillRect(x, canvas.height - barHeight / 2, barWidth, barHeight);
-        x += barWidth + 1;
-      }
-    };
-
-    draw();
+      Highcharts.chart('wordcloud', {
+        series: [
+          {
+            type: 'wordcloud',
+            data: top100,
+            name: 'Occurrences'
+          }
+        ],
+        title: {
+          text: '자주 언급된 단어'
+        }
+      });
+    } catch (error) {
+      console.error('서버 오류:', error);
+    }
   };
 
   return (
-    <div className="feedback-detail">
-      <div className="feedback-header">
-        <h1>Feedback Details</h1>
-        <div className="pagination">
-          <button onClick={() => pagechange(1)} className={page === 1 ? 'active' : ''}>1</button>
-          <button onClick={() => pagechange(2)} className={page === 2 ? 'active' : ''}>2</button>
-          <button onClick={() => pagechange(3)} className={page === 3 ? 'active' : ''}>3</button>
-          <button onClick={() => pagechange(4)} className={page === 4 ? 'active' : ''}>4</button>
-          <button onClick={() => pagechange(5)} className={page === 5 ? 'active' : ''}>5</button>
-          <button onClick={() => pagechange(6)} className={page === 6 ? 'active' : ''}>6</button>
-          <button onClick={() => pagechange(7)} className={page === 7 ? 'active' : ''}>7</button>
-          <button onClick={() => pagechange(8)} className={page === 8 ? 'active' : ''}>8</button>
+    <div className="container">
+        <div className="feedback-con row">
+          {/* Summary Section */}
+          <div className="feedback-summary">
+            <div className="feedback-total-t row">
+              <div className="feedback-total-title col-1">종합 분석</div>
+              <div className="feedback-total-subtitle col-1">- 직무 면접</div>
+            </div>
+            <div className="feedback-summary-right">
+              <p>이름: {userName}</p>
+              <p>날짜: {formatDate(credt)}</p>
+            </div>
+          </div>
+
+          <div className="feedback-subtitle3 col-1">
+            <div className="feedback-subtitlecon3">종합 평가</div>
+          </div>
+
+          {/* Analysis Section */}
+          <div className="feedback-totalcom">
+              <div className='feedback-analyze6-con'>
+              <li> { efeed1 }</li>
+              <li> { efeed2 }</li>
+              <li> { pfeed1 }</li>
+              <li> { pfeed2 }</li>
+              <li> { vfeed1 }</li>
+              <li> { vfeed2 }</li>
+              <li> { sttfeed1 }</li>
+              <li> { sttfeed2 }</li>
+              </div>
+          </div>
+
+          <div className="feedback-subtitle3 col-1">
+            <div className="feedback-subtitlecon3">컨설턴트 평가</div>
+          </div>
+
+          <div className="feedback-totalcom">
+            <textarea className="feedback-textarea-ct" id='totaleval' value={cnsfeedbk}
+              onChange={totalevalChange}
+              />
+            <button className='feedback-submit col-1' onClick={CTCnsFeedSubmit}>작성하기</button>
+          </div>
+
+          <div className="feedback-subtitle3 col-1">
+            <div className="feedback-subtitlecon3">표정 분석 / 자세 분석</div>
+          </div>
+
+          {/* Charts and Data Section */}
+          <div className='feedback-qcon5'>
+            <div id="face" className="feedback-chart-container1"></div>
+            <div id="barchart" className="feedback-chart-container2"></div>
+          </div>
+
+          <div className="feedback-subtitle3 col-1">
+            <div className="feedback-subtitlecon3">유사도 측정 / 음성 분석</div>
+          </div>
+
+          <div className='feedback-qcon8'>
+            <div id="wordcloud" className="feedback-chart-container4"></div>
+            <div id="voiceg" className="feedback-chart-container3"></div>
+          </div>
+
+          
+
+          <div className="feedback-qcon9">
+            <div className="feedback-similartip">
+              <img className="feedback-tipicon" src="/img/res_tip.png" />
+              <div className="feedback-ti">회원님이 작성한 이력서의 기반으로 키워드를 추출하여 면접 내용과 비교하여 유사도를 ...</div>
+            </div>
+          </div>
+
+          <div className="feedback-btncon row">
+            {[1, 2, 3, 4, 5, 6, 7].map(page => (
+              <div
+                key={page}
+                onClick={() => pageChange(page)}
+                className={`col-1 ${activePage === page ? 'feedback-active' : 'feedback-button'}`}
+              >
+                Q{page}
+              </div>
+            ))}
+          </div>
+          <div className="row scrollable-div">
+          <div className="feedback-qcon">
+            <div className="feedback-q">
+              <div className="feedback-qnum">Q{i + 1}.</div>
+              <div className="feedback-question">{question}</div>
+            </div>
+          </div>
+
+          <div className="feedback-qcontent1">
+            <div className="feedback-subtitle1 row">
+              <div className="feedback-subtitle2 col-1">면접 대답</div>
+              <div className="feedback-qcontent2">{answer}</div>
+            </div>
+          </div>
+
+            <div className="feedback-qcon4">
+              <div className="feedback-qcontent1">
+                <div className="feedback-subtitle1 row">
+                  <div className="feedback-subtitle2 col-1">AI피드백</div>
+                  <div className="feedback-qcontent2">{feedback}</div>
+                </div>
+              </div>
+            </div>
+          
+
+          {((i === 5 || i === 6)) && (
+            <div className="feedback-qcontent1">
+              <div className="feedback-subtitle1 row">
+                <div className="feedback-subtitle2 col-1">컨설턴트 피드백</div>
+                  <div className="feedback-qcontent2">
+                    <textarea className="feedback-textarea" value={CTFeedback[i - 5]}
+                    onChange={handleFeedbackChange}
+                    />
+                    <button className='feedback-submit col-1' onClick={CTFeedSubmit}>작성하기</button>
+                  </div>
+              </div>
+            </div>
+          )}
+       
         </div>
-      </div>
-
-      <div className="feedback-content" style={displayPage(1)}>
-        <h2>질문</h2>
-        <div className="questions">
-          {questions.map((question, index) => (
-            <div key={index}>{index + 1}. {question}</div>
-          ))}
-        </div>
-      </div>
-
-      <div className="feedback-content" style={displayPage(2)}>
-        <h2>STT 피드백</h2>
-        <div className="comments">
-          {comments.map((comment, index) => (
-            <div key={index}>{index + 1}. {comment}</div>
-          ))}
-        </div>
-      </div>
-
-      <div className="feedback-content" style={displayPage(3)}>
-        <h2>그래프</h2>
-        <div id="graph2" className="chart-container"></div>
-      </div>
-
-      <div className="feedback-content" style={displayPage(4)}>
-        <h2>단어 구름</h2>
-        <div id="wordcloud1" className="chart-container"></div>
-      </div>
-
-      <div className="feedback-content" style={displayPage(5)}>
-        <h2>레이다 차트</h2>
-        <div id="face" className="chart-container"></div>
-      </div>
-
-      <div className="feedback-content" style={displayPage(6)}>
-        <h2>막대 차트</h2>
-        <div id="barchart" className="chart-container"></div>
-      </div>
-
-      <div className="feedback-content" style={displayPage(7)}>
-        <h2>음성 그래프</h2>
-        <canvas id="voiceg" className="chart-container"></canvas>
-      </div>
-
-      <div className="feedback-content" style={displayPage(8)}>
-        <h2>피드백</h2>
-        <div className="feedbacks">
-          {feedbacks.map((feedback, index) => (
-            <div key={index}>{index + 1}. {feedback}</div>
-          ))}
-        </div>
+        {/* Navigation */}
+        <div className="reshdudy-btnarea">
+      {page > 1 && (
+        <button className="feedback-nextbtn col-1" onClick={previous}>
+          이전 문항
+        </button>
+      )}
+      {page < 7 && (
+        <button className="feedback-nextbtn col-1" onClick={next}>
+          다음 문항
+        </button>
+      )}
+      <button className="feedback-homebtn col-1" onClick={handleClose}>
+        돌아가기
+      </button>
+    </div>
       </div>
     </div>
   );
