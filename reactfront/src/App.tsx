@@ -11,9 +11,10 @@ import Consultant_Dash from "./admin/Consultant_Dash";
 import ConsultantProfile from "./consultant-profile/ConsultantProfile";
 import OTO_detail from "./OneToOne/OTO_detail";
 import OTO_main from "./OneToOne/OTO_main";
-import Feedback from "./feedback/feedback";
-import FeedbackDetail from "./feedback/feedbackDetail";
-
+import Feedback from "./feedback/Feedback";
+import FeedbackDetail from "./feedback/FeedbackDetail";
+import FeedbackMain from "./feedback/FeedbackMain";
+import FeedbackResume from "./feedback/FeedbackResume";
 import ConsultantAdmin from "./admin-consultant/ConsultantAdmin";
 import MemberList from "./admin/member/MemberList";
 import MemberModal from "./admin/member/MemberModal";
@@ -82,11 +83,25 @@ const App: React.FC = () => {
               element={<OTO_detail />}
             />
 
-            {/* feedback */}
-            <Route path="/consultant/feedback" element={<Feedback />} />
+            {/* feedbackMain */}
             <Route
-              path="/consultant/feedback/detail"
-              element={<FeedbackDetail />}
+            path="/consultant/feedback/main"
+            element={<FeedbackMain />}
+            />
+            {/* feedbackList */}
+            <Route
+            path="/consultant/feedback/list"
+            element={<Feedback />}
+            />
+            {/* feedbackDetail */}
+            <Route
+            path="/consultant/feedback/detail"
+            element={<FeedbackDetail />}
+            />
+            {/* feedbackResume */}
+            <Route
+            path="/consultant/feedback/resume"
+            element={<FeedbackResume />}
             />
           </Routes>
         </main>

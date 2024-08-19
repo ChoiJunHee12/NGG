@@ -229,7 +229,7 @@ export default {
   data() {
     return {
       memno: localStorage.getItem("memno"),
-      // memno: loc,
+      // memno: 150,
       activeTab: "info",
       isModalOpen: false,
       myprofile: {},

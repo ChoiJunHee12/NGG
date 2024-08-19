@@ -86,7 +86,7 @@ export default {
           this.items = res.data;
           console.log("memno:", res.data);
           console.log(this.items);
-          if (res.data === null) {
+          if (res.data.length === 0) {
             this.show = false;
           } else {
             this.show = true;
