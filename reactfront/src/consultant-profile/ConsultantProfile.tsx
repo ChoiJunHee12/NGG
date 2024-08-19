@@ -1,69 +1,80 @@
 import React, { useState, useEffect } from 'react';
+import { ProfileData, Career } from './types';
+
 import {
     Container, Header, ProfileImage, HeaderInfo, Name, Gender, Title,
     TabContainer, Tab, Section, SectionTitle, InfoGrid, InfoItem,
     InfoIcon, InfoText, EducationItem, Year,
     Details, School, Degree, Introduce, EditButton,
     Modal, ModalContent, ModalHeader, ModalBody, ModalFooter,
-    Form, FormGroup, Label, Input, Button, CancelButton, Textarea
+    Form, FormGroup, Label, Input, Button, CancelButton, Textarea,
+    FileInput, UploadButton, UploadImage
 } from './ConsultantProfile.styles';
-import { ProfileData, Education, Career } from './types';
 
 const ConsultantProfile: React.FC = () => {
     const [activeTab, setActiveTab] = useState('info');
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
     const [profileData, setProfileData] = useState<ProfileData | null>(null);
-    const [educationData, setEducationData] = useState<Education[]>([]);
-    const [careerData, setCareerData] = useState<Career[]>([]);
     const [editedProfile, setEditedProfile] = useState<ProfileData | null>(null);
-
-    // 상태 추가: 비밀번호 및 비밀번호 확인
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
     useEffect(() => {
         fetchProfileData();
     }, []);
 
+    // 컨설턴트 번호 임의로! 나중에 로그인 연동시 바꿔야함!
+    const cnsno = 1001;
+
     const fetchProfileData = async () => {
         try {
-            const profileResponse = await fetch(`${process.env.REACT_APP_BACK_END_URL}/consultantprofile/1/profile`);
-            if (!profileResponse.ok) {
-                throw new Error(`HTTP error! Status: ${profileResponse.status}`);
+            const response = await fetch(`${process.env.REACT_APP_BACK_END_URL}/consultProfiles/${cnsno}`);
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
             }
-            const profileData = await profileResponse.json();
-            setProfileData(profileData);
-
-            const educationResponse = await fetch(`${process.env.REACT_APP_BACK_END_URL}/consultantprofile/1/education`);
-            if (!educationResponse.ok) {
-                throw new Error(`HTTP error! Status: ${educationResponse.status}`);
-            }
-            const educationData = await educationResponse.json();
-            setEducationData(educationData);
-
-            const careerResponse = await fetch(`${process.env.REACT_APP_BACK_END_URL}/consultantprofile/1/career`);
-            if (!careerResponse.ok) {
-                throw new Error(`HTTP error! Status: ${careerResponse.status}`);
-            }
-            const careerData = await careerResponse.json();
-            setCareerData(careerData);
-
+            const data: ProfileData = await response.json();
+            setProfileData(data);
+            setEditedProfile(data);
         } catch (error) {
             console.error('Error fetching profile data:', error);
         }
     };
+    
 
-    const handleEditClick = () => {
-        if (profileData) {
-            setEditedProfile(profileData);
-            setIsModalOpen(true);
+    // 성별과 카테고리 텍스트 변환 함수
+    const getGenderText = (gendercd: string) => {
+        switch (gendercd) {
+            case 'F':
+                return '여성';
+            case 'M':
+                return '남성';
+            default:
+                return '기타';
         }
     };
 
+    const getCategoryText = (categcd: string) => {
+        switch (categcd) {
+            case '1':
+                return 'IT/개발';
+            case '2':
+                return '교육';
+            case '3':
+                return '영업/마케팅';
+            case '4':
+                return '기획/전략';
+            default:
+                return '경영';
+        }
+    };
+
+    const handleEditClick = () => setIsModalOpen(true);
+
     const handleCloseModal = () => {
         setIsModalOpen(false);
-        // 모달이 닫힐 때 비밀번호 필드 초기화
         setPassword('');
         setConfirmPassword('');
         setShowConfirmPassword(false);
@@ -78,7 +89,7 @@ const ConsultantProfile: React.FC = () => {
         const { name, value } = e.target;
         if (name === 'password') {
             setPassword(value);
-            setShowConfirmPassword(value.length > 0); // 비밀번호가 입력되면 비밀번호 확인 필드를 보여줍니다.
+            setShowConfirmPassword(value.length > 0);
         } else if (name === 'confirmPassword') {
             setConfirmPassword(value);
         }
@@ -86,21 +97,17 @@ const ConsultantProfile: React.FC = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (editedProfile) {
-            if (password !== confirmPassword) {
-                alert('비밀번호와 비밀번호 확인이 일치하지 않습니다.');
-                return;
-            }
-
+        if (editedProfile && password === confirmPassword) {
             try {
-                const response = await fetch(`${process.env.REACT_APP_BACK_END_URL}/consultantprofile/1/profile`, {
+                const response = await fetch(`${process.env.REACT_APP_BACK_END_URL}/consultProfiles/${cnsno}`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ ...editedProfile, password }), // 비밀번호 추가
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ...editedProfile, password }),
                 });
                 if (!response.ok) {
+                    if (response.status === 404) {
+                        throw new Error('프로필을 찾을 수 없습니다.');
+                    }
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
                 const updatedProfile = await response.json();
@@ -109,21 +116,83 @@ const ConsultantProfile: React.FC = () => {
             } catch (error) {
                 console.error('Error updating profile:', error);
             }
+        } else if (password !== confirmPassword) {
+            alert('비밀번호와 비밀번호 확인이 일치하지 않습니다.');
         }
     };
+
+    const handleUploadClick = () => setIsUploadModalOpen(true);
+
+    const handleCloseUploadModal = () => {
+        setIsUploadModalOpen(false);
+        setSelectedFile(null);
+    };
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files) {
+            setSelectedFile(e.target.files[0]);
+        }
+    };
+
+    const handleFileUpload = async () => {
+        if (selectedFile) {
+            const formData = new FormData();
+            formData.append('imgfile', selectedFile);
+    
+            try {
+                // 파일 업로드 요청
+                const uploadResponse = await fetch(`${process.env.REACT_APP_BACK_END_URL}/consultProfiles/uploadProfileImage`, {
+                    method: 'POST',
+                    body: formData,
+                });
+    
+                if (!uploadResponse.ok) {
+                    throw new Error(`HTTP error! Status: ${uploadResponse.status}`);
+                }
+    
+                const uploadResult = await uploadResponse.json();
+                const filename = uploadResult.filename;  // 서버가 반환한 파일 이름을 사용합니다.
+    
+                // 프로필 이미지 업데이트 요청
+                const updateResponse = await fetch(`${process.env.REACT_APP_BACK_END_URL}/consultProfiles/${cnsno}/updateProfileImage`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ imgname: filename }),  // 이미지 파일 이름을 JSON 형태로 전송
+                });
+
+    
+                if (!updateResponse.ok) {
+                    throw new Error(`HTTP error! Status: ${updateResponse.status}`);
+                }    
+                // 프로필 데이터 다시 불러오기
+                await fetchProfileData();
+                handleCloseUploadModal();
+            } catch (error) {
+                console.error('Error uploading file:', error);
+                alert('파일 업로드 중 오류가 발생했습니다.');
+            }
+        }
+    };
+    
 
     if (!profileData) {
         return <div>Loading...</div>;
     }
-
+    
+    
     return (
         <Container>
             <Header>
-                <ProfileImage src="/img/consult_profile_img/consultant.jpg" alt={profileData.name} />
+            <ProfileImage
+                src={profileData.imgname ? `/img/upimg/${profileData.imgname}` : "/img/noimage.png"}
+                alt={profileData.name}
+            /><UploadImage src="/img/camera.png" alt="프로필 사진 수정" onClick={handleUploadClick} />
                 <HeaderInfo>
                     <div>
-                        <Name as="h1">{profileData.name} <Gender>({profileData.gender})</Gender></Name>
-                        <Title as="h2">{profileData.title}</Title>
+                        <Name as="h1">
+                            {profileData.name} <Gender>({getGenderText(profileData.gendercd)})</Gender>
+                        </Name>
+                        <Title as="h2">{getCategoryText(profileData.categcd)} 전문 컨설턴트</Title>
                     </div>
                     <EditButton onClick={handleEditClick}>프로필 수정</EditButton>
                 </HeaderInfo>
@@ -141,7 +210,7 @@ const ConsultantProfile: React.FC = () => {
                         <InfoGrid>
                             <InfoItem>
                                 <InfoIcon>📞</InfoIcon>
-                                <InfoText>{profileData.phone}</InfoText>
+                                <InfoText>{profileData.phonenum}</InfoText>
                             </InfoItem>
                             <InfoItem>
                                 <InfoIcon>✉️</InfoIcon>
@@ -149,11 +218,7 @@ const ConsultantProfile: React.FC = () => {
                             </InfoItem>
                             <InfoItem>
                                 <InfoIcon>🎂</InfoIcon>
-                                <InfoText>{profileData.birthYear}</InfoText>
-                            </InfoItem>
-                            <InfoItem>
-                                <InfoIcon>📍</InfoIcon>
-                                <InfoText>{profileData.area}</InfoText>
+                                <InfoText>{profileData.birthymd}</InfoText>
                             </InfoItem>
                         </InfoGrid>
                     </Section>
@@ -162,11 +227,11 @@ const ConsultantProfile: React.FC = () => {
                         <InfoGrid>
                             <InfoItem>
                                 <InfoIcon>💼</InfoIcon>
-                                <InfoText>컨설팅 경력: {profileData.experience}</InfoText>
+                                <InfoText>컨설팅 경력: {profileData.cnscareer}</InfoText>
                             </InfoItem>
                             <InfoItem>
                                 <InfoIcon>👥</InfoIcon>
-                                <InfoText>프로젝트 수행: {profileData.clients}</InfoText>
+                                <InfoText>프로젝트 수행: {profileData.cnsproject}</InfoText>
                             </InfoItem>
                         </InfoGrid>
                     </Section>
@@ -181,25 +246,24 @@ const ConsultantProfile: React.FC = () => {
                 <>
                     <Section>
                         <SectionTitle as="h3">학력</SectionTitle>
-                        {educationData.map((edu, index) => (
+                        {profileData.cnscareer_vo.filter(career => career.careerdiv === '1').map((edu, index) => (
                             <EducationItem key={index}>
-                                <Year>{edu.year}</Year>
+                                <Year>{edu.term}</Year>
                                 <Details>
-                                    <School>{edu.school}</School>
-                                    <Degree>{edu.degree} in {edu.field}</Degree>
+                                    <School>{edu.content}</School>
+                                    <Degree>{edu.detail}</Degree>
                                 </Details>
                             </EducationItem>
                         ))}
                     </Section>
                     <Section>
                         <SectionTitle as="h3">상세 경력</SectionTitle>
-                        {careerData.map((career, index) => (
+                        {profileData.cnscareer_vo.filter(career => career.careerdiv === '2').map((career, index) => (
                             <EducationItem key={index}>
-                                <Year>{career.period}</Year>
+                                <Year>{career.term}</Year>
                                 <Details>
-                                    <School>{career.company}</School>
-                                    <Degree>{career.position}</Degree>
-                                    <p>{career.description}</p>
+                                    <School>{career.content}</School>
+                                    <Degree>{career.detail}</Degree>
                                 </Details>
                             </EducationItem>
                         ))}
@@ -207,7 +271,6 @@ const ConsultantProfile: React.FC = () => {
                 </>
             )}
 
-            {/* 프로필 수정 모달 */}
             <Modal isOpen={isModalOpen}>
                 <ModalContent>
                     <ModalHeader>
@@ -228,12 +291,12 @@ const ConsultantProfile: React.FC = () => {
                                 />
                             </FormGroup>
                             <FormGroup>
-                                <Label htmlFor="title">👔 직책</Label>
+                                <Label htmlFor="categcd">👔 전문 분야</Label>
                                 <Input
                                     type="text"
-                                    id="title"
-                                    name="title"
-                                    value={editedProfile?.title || ''}
+                                    id="categcd"
+                                    name="categcd"
+                                    value={getCategoryText(editedProfile?.categcd || '')}
                                     onChange={handleInputChange}
                                     disabled
                                 />
@@ -261,12 +324,12 @@ const ConsultantProfile: React.FC = () => {
                                 </FormGroup>
                             )}
                             <FormGroup>
-                                <Label htmlFor="phone">📞 전화번호</Label>
+                                <Label htmlFor="phonenum">📞 전화번호</Label>
                                 <Input
                                     type="tel"
-                                    id="phone"
-                                    name="phone"
-                                    value={editedProfile?.phone || ''}
+                                    id="phonenum"
+                                    name="phonenum"
+                                    value={editedProfile?.phonenum || ''}
                                     onChange={handleInputChange}
                                 />
                             </FormGroup>
@@ -281,54 +344,33 @@ const ConsultantProfile: React.FC = () => {
                                 />
                             </FormGroup>
                             <FormGroup>
-                                <Label htmlFor="birthYear">🎂 생년월일</Label>
+                                <Label htmlFor="birthymd">🎂 생년월일</Label>
                                 <Input
                                     type="text"
-                                    id="birthYear"
-                                    name="birthYear"
-                                    value={editedProfile?.birthYear || ''}
+                                    id="birthymd"
+                                    name="birthymd"
+                                    value={editedProfile?.birthymd || ''}
                                     onChange={handleInputChange}
                                 />
                             </FormGroup>
                             <FormGroup>
-                                <Label htmlFor="area">📍 활동 지역</Label>
+                                <Label htmlFor="cnscareer">💼 컨설팅 경력</Label>
                                 <Input
                                     type="text"
-                                    name="area"
-                                    id="area"
-                                    value={editedProfile?.area || ''}
-                                    onChange={handleInputChange}
-                                />
-                            </FormGroup>
-                            <FormGroup>
-                                <Label htmlFor="expertise">🌟 전문 분야</Label>
-                                <Input
-                                    type="text"
-                                    id="expertise"
-                                    name="expertise"
-                                    value={editedProfile?.expertise || ''}
+                                    id="cnscareer"
+                                    name="cnscareer"
+                                    value={editedProfile?.cnscareer || ''}
                                     onChange={handleInputChange}
                                     disabled
                                 />
                             </FormGroup>
                             <FormGroup>
-                                <Label htmlFor="experience">💼 컨설팅 경력</Label>
+                                <Label htmlFor="cnsproject">👥 프로젝트 수행</Label>
                                 <Input
                                     type="text"
-                                    id="experience"
-                                    name="experience"
-                                    value={editedProfile?.experience || ''}
-                                    onChange={handleInputChange}
-                                    disabled
-                                />
-                            </FormGroup>
-                            <FormGroup>
-                                <Label htmlFor="clients">👥 주요 클라이언트</Label>
-                                <Input
-                                    type="text"
-                                    id="clients"
-                                    name="clients"
-                                    value={editedProfile?.clients || ''}
+                                    id="cnsproject"
+                                    name="cnsproject"
+                                    value={editedProfile?.cnsproject || ''}
                                     onChange={handleInputChange}
                                     disabled
                                 />
@@ -345,6 +387,33 @@ const ConsultantProfile: React.FC = () => {
                             <ModalFooter>
                                 <Button type="submit">저장</Button>
                                 <CancelButton type="button" onClick={handleCloseModal}>취소</CancelButton>
+                            </ModalFooter>
+                        </Form>
+                    </ModalBody>
+                </ModalContent>
+            </Modal>
+
+            <Modal isOpen={isUploadModalOpen}>
+                <ModalContent>
+                    <ModalHeader>
+                        <h2>프로필 사진 수정</h2>
+                        <button onClick={handleCloseUploadModal}>&times;</button>
+                    </ModalHeader>
+                    <ModalBody>
+                        <Form>
+                            <FormGroup>
+                                <Label htmlFor="file">📷 프로필 사진 선택</Label>
+                                <FileInput
+                                    type="file"
+                                    id="file"
+                                    name="file"
+                                    accept="image/*"
+                                    onChange={handleFileChange}
+                                />
+                            </FormGroup>
+                            <ModalFooter>
+                                <Button type="button" onClick={handleFileUpload}>업로드</Button>
+                                <CancelButton type="button" onClick={handleCloseUploadModal}>취소</CancelButton>
                             </ModalFooter>
                         </Form>
                     </ModalBody>

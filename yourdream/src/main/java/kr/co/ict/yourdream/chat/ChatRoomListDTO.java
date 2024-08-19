@@ -1,7 +1,5 @@
 package kr.co.ict.yourdream.chat;
 
-import java.util.Date;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,7 +13,7 @@ import lombok.Setter;
 @Builder
 public class ChatRoomListDTO {
 
-    private int chtno;
-    private String mname;
-    private Date chatdt;
+    private Long chtno;
+    private String nickname;
+    private String imgname;
 }

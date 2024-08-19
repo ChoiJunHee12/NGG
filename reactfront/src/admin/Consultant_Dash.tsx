@@ -8,35 +8,160 @@ import axios from 'axios';
 
 
 
-const Consultant= () => {
+const Consultant = () => {
+  const [consultantCount, setConsultantCount] = useState(0);
+  const [memCnsAve, setMemCnsAve] = useState(0);
+  const [reviewAve, setReviewAve] = useState(0);
+  const [cntconsulting_week, setCntConsultingWeek] = useState(0);
+  const [cntConsultingDay, setCntConsultingDay] = useState<any[]>([]);
+  const [categCnt, setCategoryCounts] = useState<any[]>([]);
+  const [reviewRange, setReviewRange] = useState<any[]>([]);
+  const [daycategave, setDayCategAve] = useState<any[]>([]);
+
+  useEffect(() => {
+    // 컨설턴트 수 가져오기
+    axios.get(`${process.env.REACT_APP_BACK_END_URL}/admin/cnsDash/getcnscount`)
+      .then(response => {
+        setConsultantCount(response.data);
+      })
+      .catch(error => {
+        console.error("getcnscount!", error);
+      });
+      
+    // 평균 회원 수 가져오기
+    axios.get(`${process.env.REACT_APP_BACK_END_URL}/admin/cnsDash/memcns_ave`)
+      .then(response => {
+        setMemCnsAve(response.data);
+      })
+      .catch(error => {
+        console.error("memcns_ave!", error);
+      });
+
+    // 평균 리뷰 값 가져오기
+    axios.get(`${process.env.REACT_APP_BACK_END_URL}/admin/cnsDash/review_ave`)
+      .then(response => {
+        setReviewAve(response.data);
+      })
+      .catch(error => {
+        console.error("review_ave!", error);
+      });
+
+    // 주간 컨설팅 횟수 가져오기
+    axios.get(`${process.env.REACT_APP_BACK_END_URL}/admin/cnsDash/cntconsulting_thisweek`)
+      .then(response => {
+        setCntConsultingWeek(response.data);
+      })
+      .catch(error => {
+        console.error("cntconsulting_thisweek!", error);
+      });  
+
+    // 일일 컨설팅 횟수 가져오기
+    axios.get(`${process.env.REACT_APP_BACK_END_URL}/admin/cnsDash/cntconsulting_day`)
+      .then(response => {
+        setCntConsultingDay(response.data);
+      })
+      .catch(error => {
+        console.error("cntconsulting_day!", error);
+      });  
+        
+    // 일일 컨설팅 횟수 가져오기
+    axios.get(`${process.env.REACT_APP_BACK_END_URL}/admin/cnsDash/getcategcnt`)
+      .then(response => {
+        // console.log(response.data);
+        setCategoryCounts(response.data);        
+      })
+      .catch(error => {
+        console.error("cntconsulting_day!", error);
+      });  
+              
+    // 일일 컨설팅 횟수 가져오기
+    axios.get(`${process.env.REACT_APP_BACK_END_URL}/admin/cnsDash/reviewrange`)
+    .then(response => {
+      // console.log(response.data);
+      setReviewRange(response.data);        
+    })
+    .catch(error => {
+      console.error("cntconsulting_day!", error);
+    });  
+              
+    // 일일 컨설팅 횟수 가져오기
+    axios.get(`${process.env.REACT_APP_BACK_END_URL}/admin/cnsDash/daycategave`)
+    .then(response => {
+      console.log(response.data);
+      setDayCategAve(response.data);        
+    })
+    .catch(error => {
+      console.error("cntconsulting_day!", error);
+    });  
+
+  }, []);
   /* 분야 별 점수 여긴 데이터를 뭐 넣을지 못 정했습니다.*/
-  const g3 = {
-    tooltip: {
-      trigger: 'item'
-    },
-    legend: {
-      top: '5%',
-      left: 'center'
-    },
-    series: [
-      {
-        name: '점수 분포도',
-        type: 'pie',
-        radius: ['40%', '70%'],
-        center: ['50%', '70%'],
-        startAngle: 180,
-        endAngle: 360,
-        data: [
-          { value: 600, name: '0 ~ 1점' },
-          { value: 230, name: '1 ~ 2점' },
-          { value: 780, name: '3 ~ 4점' },
-          { value: 1500, name: '4 ~ 5점' }
-        ]
-      }
-    ]
+  // g3 차트의 설정을 반환하는 함수
+  const getG3Options = () => {
+    // reviewRange 상태에서 데이터를 가져와서 차트에 맞게 변환합니다.
+    const data = reviewRange.map(item => ({
+      value: item.COUNT_PER_RANGE,
+      name: item.SCORE_RANGE
+    }));
+
+    return {
+      tooltip: {
+        trigger: 'item'
+      },
+      legend: {
+        top: '5%',
+        left: 'center'
+      },
+      series: [
+        {
+          name: '점수 분포도',
+          type: 'pie',
+          radius: ['40%', '70%'],
+          center: ['50%', '70%'],
+          startAngle: 180,
+          endAngle: 360,
+          data: data
+        }
+      ]
+    };
   };
+
+  const g3 = getG3Options(); // 차트 설정을 가져옵니다.
   /* 월 평균 그래프 */
-  const monavg={
+
+  const processChartData = () => {
+    const categories = ['IT/개발', '경영', '교육', '영업/마케팅', '기획/전략'];
+    const weekdays = ['월요일', '화요일', '수요일', '목요일', '금요일', '토요일', '일요일'];
+
+    const seriesData = categories.map(category => ({
+      name: category,
+      type: 'line',
+      data: new Array(7).fill(0) // Initialize with zeroes for each day of the week
+    }));
+
+    seriesData.push({
+      name: '평균',
+      type: 'line',
+      data: new Array(7).fill(0) // Initialize with zeroes for each day of the week
+    });
+
+    daycategave.forEach(item => {
+      const dayIndex = weekdays.indexOf(item.WEEKDAY);
+      const categIndex = categories.indexOf(item.CATEGCD_GROUP);
+
+      if (dayIndex >= 0 && categIndex >= 0) {
+        seriesData[categIndex].data[dayIndex] = item.CTG_DT_AVGSCORE;
+      }
+
+      const avgIndex = seriesData.length - 1;
+      const avgScores = seriesData.slice(0, -1).map(series => series.data[dayIndex]);
+      seriesData[avgIndex].data[dayIndex] = avgScores.filter(score => score !== null).reduce((a, b) => a + b, 0) / avgScores.length;
+    });
+
+    return seriesData;
+  };
+
+  const monavg = {
     title: {
       text: 'Line Chart'
     },
@@ -44,7 +169,7 @@ const Consultant= () => {
       trigger: 'axis'
     },
     legend: {
-      data: ['IT', '경영/컨설팅', '인사/총무', '재무/회계', '외국어','평균']
+      data: ['IT/개발', '경영', '교육', '영업/마케팅', '기획/전략', '평균']
     },
     grid: {
       left: '3%',
@@ -65,38 +190,7 @@ const Consultant= () => {
     yAxis: {
       type: 'value'
     },
-    series: [
-      {
-        name: 'IT',
-        type: 'line',
-        data: [3.7, 3.9, 4.2, 4.1, 4.0, 4.2, 3.8]
-      },
-      {
-        name: '경영/컨설팅',
-        type: 'line',
-        data: [3.5, 3.7, 4.3, 4.6, 4.7, 4.4, 3.5]
-      },
-      {
-        name: '인사/총무',
-        type: 'line',
-        data: [3.9, 4.2, 4.9,2.9 , 3.4, 4.8,3.9]
-      },
-      {
-        name: '재무/회계',
-        type: 'line',
-        data: [2.9 , 3.4, 4.8,3.9,3.9, 4.2,4.1]
-      },
-      {
-        name: '외국어',
-        type: 'line',
-        data: [3.9, 4.2, 4.1,2.9 , 3.4, 4.8,3.9]
-      },
-      {
-        name: '평균',
-        type: 'line',
-        data: [3.9,3.7,3.6,3.9,3.7,3.6,3.8]
-      }
-    ]
+    series: processChartData()
   };
   
   const option1 = {
@@ -116,6 +210,18 @@ const Consultant= () => {
       },
     ],
   };
+
+
+
+  // 데이터 변환 함수
+  const transformData = (data: any[]) => {
+    return data.map(item => ({
+      value: item.COUNT_PER_CATEGORY,
+      name: item.CATEGCD
+    }));
+  };
+
+  // ECharts 설정
   const chartpie = {
     series: [
       {
@@ -148,13 +254,7 @@ const Consultant= () => {
         labelLine: {
           show: false,
         },
-        data: [
-          { value: 1048, name: "IT" },
-          { value: 735, name: "사무직" },
-          { value: 580, name: "제조업" },
-          { value: 484, name: "의료" },
-          { value: 300, name: "회계" },
-        ],
+        data: transformData(categCnt),
       },
     ],
   };
@@ -279,6 +379,30 @@ const Consultant= () => {
       },
     ],
   };
+
+  // Prepare data for the chart
+  const getChartData = () => {
+    const daysOfWeek = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
+    const applyData = new Array(7).fill(0);
+    const completeData = new Array(7).fill(0);
+
+    cntConsultingDay.forEach(item => {
+      const index = daysOfWeek.indexOf(item.DAY_OF_WEEK);
+      if (index >= 0) {
+        applyData[index] = item.CNS_APPLY || 0;
+        completeData[index] = item.CNS_COMPLETE || 0;
+      }
+    });
+
+    const maxApply = Math.max(...applyData);
+    const maxComplete = Math.max(...completeData);
+    const max = Math.max(maxApply, maxComplete);
+
+    return { daysOfWeek, applyData, completeData, max };
+  };
+
+  const { daysOfWeek, applyData, completeData, max } = getChartData();
+
   const twobar = {
     tooltip: {
       trigger: 'axis',
@@ -298,12 +422,12 @@ const Consultant= () => {
       }
     },
     legend: {
-      data: [ '컨설팅 완료','컨설팅 신청']
+      data: [ '컨설팅 신청','컨설팅 완료']
     },
     xAxis: [
       {
         type: 'category',
-        data: ['월요일', '화요일', '수요일', '목요일', '금요일', '토요일', '일요일'],
+        data: daysOfWeek,
         axisPointer: {
           type: 'shadow'
         }
@@ -314,7 +438,7 @@ const Consultant= () => {
         type: 'value',
         name: '', //y축 설명
         min: 0,
-        max: 250,
+        max: max,
         interval: 50,
         axisLabel: {
           formatter: '{value} 회'
@@ -323,22 +447,14 @@ const Consultant= () => {
     ],
     series: [
       {
-        name: '컨설팅 완료',
-        type: 'bar',
-        tooltip: 
-          ''
-        ,
-        data: [
-          2.0, 4.9, 7.0, 23.2, 25.6, 76.7, 135.6, 162.2, 32.6, 20.0, 6.4, 3.3
-        ]
-      },
-      {
         name: '컨설팅 신청',
         type: 'bar',
-        tooltip: '',
-        data: [
-          2.6, 5.9, 9.0, 26.4, 28.7, 70.7, 175.6, 182.2, 48.7, 18.8, 6.0, 2.3
-        ]
+        data: applyData
+      },
+      {
+        name: '컨설팅 완료',
+        type: 'bar',
+        data: completeData
       }
     ]
   };
@@ -353,7 +469,7 @@ const Consultant= () => {
           <div>
             <h3 className="consultant-info-text">컨설턴트 수</h3>
             <div>
-              <p className="consultant-info-textinfo">36명</p>
+              <p className="consultant-info-textinfo">{consultantCount}명</p>
             </div>
           </div>
           <div className="consultant-info2">
@@ -364,7 +480,7 @@ const Consultant= () => {
           <div>
             <h3 className="consultant-info-text">컨설턴트 평균 회원수</h3>
             <div>
-              <p className="consultant-info-textinfo">4.6명</p>
+              <p className="consultant-info-textinfo">{memCnsAve}명</p>
             </div>
           </div>
           <div className="consultant-info2">
@@ -375,7 +491,7 @@ const Consultant= () => {
           <div>
             <h3 className="consultant-info-text">컨설턴트 평균 평점</h3>
             <div>
-              <p className="consultant-info-textinfo">3.2점</p>
+              <p className="consultant-info-textinfo">{reviewAve}점</p>
             </div>
           </div>
           <div className="consultant-info2">
@@ -386,7 +502,7 @@ const Consultant= () => {
           <div>
             <h3 className="consultant-info-text">주간 컨설팅 횟수</h3>
             <div>
-              <p className="consultant-info-textinfo">1,329번</p>
+              <p className="consultant-info-textinfo">{cntconsulting_week}번</p>
             </div>
           </div>
           <div className="consultant-info2">
@@ -398,7 +514,7 @@ const Consultant= () => {
       <div className="consultant-chart">
         <div className="consultant-chart-col">
           <div className="consultant-chart-row" style={{ width: "800px"}}>
-            <div className="consultant-chart-name">완료 횟수 </div>
+            <div className="consultant-chart-name">컨설팅 횟수 </div>
             <ReactEcharts
               option={twobar}
               style={{ height: "400px", width: "100%" }}
@@ -409,7 +525,7 @@ const Consultant= () => {
             /> */}
           </div>
           <div className="consultant-chart-row" style={{ width: "480px" }}>
-            <div className="consultant-chart-name">컨설턴트 분포도</div>
+            <div className="consultant-chart-name">전문분야 분포도</div>
             <ReactEcharts
               option={chartpie}
               style={{ height: "400px", width: "100%" }}
@@ -418,7 +534,7 @@ const Consultant= () => {
         </div>
         <div className="consultant-chart-col">
           <div className="consultant-chart-row" style={{ width: "480px" }}>
-            <div className="consultant-chart-name">점수 분포도</div>
+            <div className="consultant-chart-name">평점 분포도</div>
             {/* <ReactEcharts
               option={chartbar}
               style={{ height: "400px", width: "100%" }}
@@ -429,7 +545,7 @@ const Consultant= () => {
             />
           </div>
           <div className="consultant-chart-row" style={{ width: "800px" }}>
-            <div className="consultant-chart-name">컨설팅 월평균점수</div>
+            <div className="consultant-chart-name">컨설팅 일 평균점수</div>
             <ReactEcharts
               option={monavg}
               style={{ height: "400px", width: "100%" }}

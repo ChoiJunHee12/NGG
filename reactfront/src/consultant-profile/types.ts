@@ -4,38 +4,43 @@ export interface TabProps {
 }
 
 export interface ProfileData {
-  id: string;
+  cnsno: number;
   name: string;
-  gender: string;
-  title: string;
-  phone: string;
+  gendercd: string;
+  categcd: string;
   email: string;
-  birthYear: string;
-  area: string;
-  expertise: string;
-  experience: string;
-  clients: string;
+  phonenum: string;
+  birthymd: string;
   introduce: string;
+  quitymd: string;
+  imgname: string;
+  cnscareer: string;
+  cnsproject: string;
+  credt: string;
+  upddt: string;
+  password: string;
+  rolecd: string;
+  cnscareer_vo: Career[]; 
 }
-
 
 export interface Education {
-  id: string;
-  degree: string;
-  field: string; // field 프로퍼티 추가
-  school: string;
-  year: string;
-}
-
-export interface Expertise {
-  id: string;
-  skill: string;
+  cnsno: number;
+  seqno: number;
+  term: string;
+  content: string;
+  detail: string;
+  careerdiv: string;
+  credt: string;
+  upddt: string;
 }
 
 export interface Career {
-  id: string;
-  company: string;
-  position: string;
-  period: string; 
-  description: string;
+  cnsno: number;
+  seqno: number;
+  term: string;
+  content: string;
+  detail: string;
+  careerdiv: string; 
+  credt: string;
+  upddt: string;
 }

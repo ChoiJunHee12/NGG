@@ -177,7 +177,9 @@ export default {
         this.stream = stream; // Save the stream for stopping later
 
         // Start media recorder
-        this.mediaRecorder = new MediaRecorder(stream);
+        this.mediaRecorder = new MediaRecorder(stream,{
+          mimeType: "audio/webm"  // 또는 "audio/wav", "audio/ogg" 등 지원되는 형식
+        });
         this.mediaRecorder.ondataavailable = (event) => {
           if (event.data.size > 0) {
             this.recordedChunks.push(event.data);
@@ -232,20 +234,21 @@ export default {
         }
 
         // 녹음된 오디오를 blob에 저장해서 서버로 보냄.
-        this.handleStop();
+        //this.handleStop();
 
         this.isRecording = 3;
       }
     },
     handleStop() {
       // This function is called when mediaRecorder stops
-      const blob = new Blob(this.recordedChunks, { type: "audio/wav" });
+      const blob = new Blob(this.recordedChunks,{ type: "audio/wav" });
+      console.log("Recorded Chunks Length:", this.recordedChunks.length);
       this.uploadAudio(blob);
     },
     async uploadAudio(blob) {
       const formData = new FormData();
       formData.append("audio", blob, "recording.wav");
-
+      console.log("Blob type:", blob.type);
       try {
         const response = await axios.post(
           `${process.env.VUE_APP_DJANGO_APP_BACK_END_URL}/interview/speach_text`,

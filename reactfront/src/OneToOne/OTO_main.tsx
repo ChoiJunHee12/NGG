@@ -1,33 +1,58 @@
-import React from 'react';
+import React,{ useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import './OTO_main.css';
+import axios from 'axios';
 
 interface Item {
-  name: string;
-  link: string;
-  imgSrc: string;
+  nickname: string;
+  chtno: string;
+  imgname: string;
 }
 
-const items: Item[] = [
-  { name: '침착맨 님', link: '/consultant/OneToOne/detail', imgSrc: '/img/OneToOne_img/noimage.png' },
-  { name: '침착맨 님', link: '/consultant/OneToOne/detail', imgSrc: '/img/OneToOne_img/noimage.png' },
-  { name: '침착맨 님', link: '/consultant/OneToOne/detail', imgSrc: '/img/OneToOne_img/noimage.png' },
-  { name: '침착맨 님', link: '/consultant/OneToOne/detail', imgSrc: '/img/OneToOne_img/noimage.png' },
-  { name: '침착맨 님', link: '/consultant/OneToOne/detail', imgSrc: '/img/OneToOne_img/noimage.png' },
-  { name: '침착맨 님', link: '/consultant/OneToOne/detail', imgSrc: '/img/OneToOne_img/noimage.png' },
-  { name: '침착맨 님', link: '/consultant/OneToOne/detail', imgSrc: '/img/OneToOne_img/noimage.png' },
-  { name: '침착맨 님', link: '/consultant/OneToOne/detail', imgSrc: '/img/OneToOne_img/noimage.png' },
-  { name: '침착맨 님', link: '/consultant/OneToOne/detail', imgSrc: '/img/OneToOne_img/noimage.png' },
-  // 필요한 만큼 더미 데이터 추가
+const items: Item[][] = [
+ // {chtno: 43, nickname: '홍길동닉네임4', imgname: 'default.png'} 예시 데이터
 ];
 
 const OTO_main: React.FC = () => {
-  const rows = items.reduce<Item[][]>((acc, item, index) => {
-    if (index % 3 === 0) acc.push([]);
-    acc[Math.floor(index / 3)].push(item);
-    return acc;
-  }, []);
+  const [cnsno] = useState(2);
+  const [rows, setRows] = useState<Item[][]>([]);
 
+
+
+
+
+  const chatlist = async () => {
+    try {
+      const res = await axios.get(`${process.env.REACT_APP_BACK_END_URL}/chat/getlist?cnsno=${cnsno}`, {
+        headers: { 'Content-Type': 'application/json' }
+      });
+      items.push(res.data);
+      console.log(items);
+      console.log(items[0]);
+      const rows = items.flatMap(itemList => itemList).reduce<Item[][]>((acc, item, index) => {
+        if (index % 3 === 0) acc.push([]);
+        acc[Math.floor(index / 3)].push(item);
+        return acc;
+      }, []);
+
+      setRows(rows);
+    } catch (error) {
+      console.error('Error fetching chat getlist:', error);
+    }
+  }
+
+
+// items가 2차원 배열의 첫 번째 요소로만 들어있기 때문에 이를 flatMap으로 펼치고,
+// reduce를 사용해 3개씩 나눠 새로운 2차원 배열을 생성
+
+
+
+
+  useEffect(() => {
+    chatlist();
+    return () => {
+    };
+  }, []);
   return (
     <div className="container">
       <div className="OTO-con-1">
@@ -37,29 +62,30 @@ const OTO_main: React.FC = () => {
           </div>
         </div>
       </div>
+
       <div className="OTO-main-con">
-        {rows.map((row, rowIndex) => (
-          <div className="OTO-main-con-row" key={rowIndex}>
-            {row.map((item, colIndex) => (
-              <div className="OTO-main-profileImgBox" key={colIndex}>
+      {rows.map((row, rowIndex) => (
+        <div className="OTO-main-con-row" key={rowIndex}>
+          {row.map((item, colIndex) => (
+            <div className="OTO-main-profileImgBox" key={colIndex}>
+              <div>
+                <Link to={{pathname:`/consultant/OneToOne/detail`,}}state={{chtno:item.chtno}}>
+                  <img src={`/img/OneToOne_img/${item.imgname}`} alt="프로필" className="OTO-main-profileImg" />
+                </Link>
+              </div>
+              <div className="OTO-main-txtbox">
                 <div>
-                  <Link to={item.link}>
-                    <img src={item.imgSrc} alt="프로필" className="OTO-main-profileImg" />
-                  </Link>
-                </div>
-                <div className="OTO-main-txtbox">
-                  <div>
-                    <h5 className="OTO-main-h5">{item.name}</h5>
-                    <p>
-                      새로운 메시지 <Link to={item.link} className="OTO-main-msg">✉️</Link>
-                    </p>
-                  </div>
+                  <h5 className="OTO-main-h5">{item.nickname}</h5>
+                  <p>
+                    새로운 메시지 <Link to={`/chat/${item.chtno}`} className="OTO-main-msg">✉️</Link>
+                  </p>
                 </div>
               </div>
-            ))}
-          </div>
-        ))}
-      </div>
+            </div>
+          ))}
+        </div>
+      ))}
+    </div>
     </div>
   );
 };

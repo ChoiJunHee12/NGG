@@ -1,12 +1,18 @@
 package kr.co.ict.yourdream.vo;
 
+import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -21,21 +27,33 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Getter
+@Setter
 @Table(name = "TBCHATROOM")
 public class ChatRoomVO {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_chtno")
     @SequenceGenerator(name = "seq_chtno", sequenceName = "seq_chtno", allocationSize = 1)
-    private Integer chtno;
-    @Column
-    private int memno;
-    @Column(length = 20)
-    private String cnsno;
-    @Column
-    private String chatname;
-    @Column
-    private Date credt;
-    @Column
-    private Date upddt;
+    @Column(name = "CHTNO", nullable = false)
+    private Long chtno;
 
+    @ManyToOne
+    @JoinColumn(name = "memno", referencedColumnName = "memno")
+    private MemberVO member;
+
+    @ManyToOne
+    @JoinColumn(name = "cnsno", nullable = false)
+    private ConsultVO consult;
+
+    @Column(name = "CHATNAME", length = 100)
+    private String chatname;
+
+    @Column(name = "CREDT", nullable = false)
+    private LocalDateTime credt;
+
+    @Column(name = "UPDDT", nullable = false)
+    private LocalDateTime upddt;
+
+    @OneToMany(mappedBy = "chatRoom", fetch = FetchType.EAGER)
+    private List<ChatDetailVO> chatDetails;
 }

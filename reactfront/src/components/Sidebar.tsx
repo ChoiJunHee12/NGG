@@ -63,7 +63,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isVisible }) => {
         <Link to="/consultant/consultant-profile" className="main-router">
           <p className="bar-p">개인정보 수정</p>
         </Link>
-        <Link to="/consultant/feedback" className="main-router">
+        <Link to="/consultant/feedback/main" className="main-router">
           <p className="bar-p">피드백 관리</p>
         </Link>
         <Link to="/consultant/OneToOne" className="main-router">
@@ -83,7 +83,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isVisible }) => {
           <p className="bar-p">Consultant DashBoard</p>
         </Link>
         <hr />
-        <Link to="/admin/AddId" className="main-router">
+        <Link to="/admin-consultant/ConsultantAdmin" className="main-router">
           <p className="bar-p">Consultant Admin DashBoard</p>
         </Link>
         <hr />

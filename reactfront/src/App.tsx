@@ -11,11 +11,13 @@ import Consultant_Dash from "./admin/Consultant_Dash";
 import ConsultantProfile from "./consultant-profile/ConsultantProfile";
 import OTO_detail from "./OneToOne/OTO_detail";
 import OTO_main from "./OneToOne/OTO_main";
-import Feedback from "./feedback/feedback";
-import FeedbackDetail from "./feedback/feedbackDetail";
-import AddId from "./admin/AddId";
-import MemberList from "./member/MemberList";
-import MemberModal from "./member/MemberModal";
+import Feedback from "./feedback/Feedback";
+import FeedbackDetail from "./feedback/FeedbackDetail";
+import FeedbackMain from "./feedback/FeedbackMain";
+import FeedbackResume from "./feedback/FeedbackResume";
+import ConsultantAdmin from "./admin-consultant/ConsultantAdmin";
+import MemberList from "./admin/member/MemberList";
+import MemberModal from "./admin/member/MemberModal";
 
 const App: React.FC = () => {
   const [isSidebarVisible, setIsSidebarVisible] = useState(true);
@@ -45,13 +47,19 @@ const App: React.FC = () => {
             <Route path="/admin/User_Dash" element={<User_Dash />} />
 
             {/* Consultant DashBoard */}
-            <Route path="/admin/Consultant_Dash" element={<Consultant_Dash />} />
+            <Route
+              path="/admin/Consultant_Dash"
+              element={<Consultant_Dash />}
+            />
 
             {/* Member Admin DashBoard */}
             <Route path="/member/MemberList" element={<MemberList />} />
 
             {/* Consultant Admin */}
-            <Route path="/admin/AddId" element={<AddId />} />
+            <Route
+              path="/admin-consultant/ConsultantAdmin"
+              element={<ConsultantAdmin />}
+            />
 
             {/*<Route path="/mypage" element={<YourMypageComponent />} />
             <Route path="/InterviewRes" element={<YourInterviewResComponent />} /> */}
@@ -75,11 +83,25 @@ const App: React.FC = () => {
               element={<OTO_detail />}
             />
 
-            {/* feedback */}
-            <Route path="/consultant/feedback" element={<Feedback />} />
+            {/* feedbackMain */}
             <Route
-              path="/consultant/feedback/detail"
-              element={<FeedbackDetail />}
+            path="/consultant/feedback/main"
+            element={<FeedbackMain />}
+            />
+            {/* feedbackList */}
+            <Route
+            path="/consultant/feedback/list"
+            element={<Feedback />}
+            />
+            {/* feedbackDetail */}
+            <Route
+            path="/consultant/feedback/detail"
+            element={<FeedbackDetail />}
+            />
+            {/* feedbackResume */}
+            <Route
+            path="/consultant/feedback/resume"
+            element={<FeedbackResume />}
             />
           </Routes>
         </main>
