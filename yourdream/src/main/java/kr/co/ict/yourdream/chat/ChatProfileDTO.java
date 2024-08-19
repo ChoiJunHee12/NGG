@@ -11,9 +11,10 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ChatRoomListDTO {
+public class ChatProfileDTO {
 
-    private Long chtno;
-    private String nickname;
-    private String imgname;
+    private String unick;
+    private String uimg;
+    private String cname;
+    private String cimg;
 }

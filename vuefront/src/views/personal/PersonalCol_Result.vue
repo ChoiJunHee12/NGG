@@ -9,8 +9,9 @@
             </div>
             <div style="margin-top:0px;">
                 <div class="res-btncon row" >
-                    <div @click="pageChange(1)" class="res-button-start col-1" style="margin-left: 50px;">Q1</div>
-                    <div @click="pageChange(2)" class="res-button-end col-1">Q2</div>
+                    <div @click="pageChange(1)" class="res-button-start col-1" style="margin-left: 50px;">컬러 비율</div>
+                    <div @click="pageChange(2)" class="res-button-end col-1">추천 복장</div>
+                    <div @click="pageChange(3)" class="res-button-end col-1">기본 복장</div>
                 </div>                        
                 <div :style="displayPage(1)" class="personal-con row">
                     <div class="personal-highcharts"  style="margin-top:0px">
@@ -18,11 +19,35 @@
                     </div>                    
                 </div>
                 <div :style="displayPage(2)" class="personal-con row">
-                    <div class="personal-highcharts" style="height:450px;">
-                        <div style=" margin: 103.75px 0 103.75px 0;">
-                            <p><span style="color: lightblue;">하늘색</span> 넥타이가 잘어울릴듯</p><br>
-                            <p><span style="color: pink;">핑크색</span> 와이셔츠가 잘어울릴듯</p><br>
-                            <p><span style="color: navy;">남색</span> 블레이져가 잘어울릴듯</p>
+                    <div class="personal-style2" style="height:450px;">
+                        <img class="personal-style-img" :src="this.season_style" >
+                        <div class="personal-style-textbox">
+                            <div class="personal-style-textbox1">
+                                <div class="personal-style-text">
+                                    <div v-for="(text, index) in season_text" :key="index">
+                                <p>{{ text }}</p>
+                                <hr v-if="index < season_text.length - 1">
+                                    </div>
+                                
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div :style="displayPage(3)" class="personal-con row">
+                    <div class="personal-style2" style="height:450px;">
+                        <img class="personal-style-img" :src="basic" >
+                        <div class="personal-style-textbox">
+                            <div class="personal-style-textbox1">
+                                <div class="personal-style-text">
+                                <p>블랙과 화이트는 면접 복장의 가장 안전한 선택입니다.</p>
+                                <hr>
+                                <p>단정하고 프로페셔널한 이미지를 연출하는 데 중점을 두세요.</p>
+                                <hr>
+                                <p>퍼스널 컬러를 알고 있더라도 면접 상황에 맞게 유연하게 활용하는 것이 중요 합니다.</p>
+
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -42,7 +67,10 @@ export default {
         return {
             befimg: localStorage.getItem('befimg'),
             befimgn: localStorage.getItem('befimgn'),
-            activePage: 1
+            activePage: 1,
+            basic:"../img/Personal_image/basic_style2.png",
+            season_style:"../img/Personal_image/basic_style2.png",
+            season_text:[],
         }
     },
     setup(){
@@ -108,6 +136,20 @@ return {
             
 
             },
+        season_text_input(tone){
+            if(tone==="웜톤"){
+            this.season_text=["아이보리나 베이지 계열의 셔츠가 좋습니다.",
+                                "계절에 맞는 컬러감 있는 넥타이가 잘 어울립니다.",
+                                "브라운,카키,베이지 계열의 자켓이 잘 어울립니다.",
+                                "텍스처와 소재의 조직감이 은은한 아이템을 선택하세요."]
+            }
+            if(tone==="쿨톤"){
+            this.season_text=["순수한 화이트나 연한 블루 계열의 셔츠가 좋습니다.",
+                                "스트라이프나 네이비 컬러의 넥타이가 잘 어울립니다.",
+                                "네이비,차콜 그레이,블랙 계열의 자켓이 잘 어울립니다.",
+                                "화려한 패턴보다는 소재의 조직감이 은은한 아이템을 선택하세요."]
+            }
+        },
 
 
 
@@ -117,9 +159,13 @@ return {
             let toneTotal=0
             if((this.spring+this.autumn)>(this.summer+this.winter)){
                 bestTone= "웜톤";
+                this.season_text_input(bestTone);
+                this.season_style="../img/Personal_image/warmtone_style2.png"
                 toneTotal = this.spring+this.autumn
             }else{
                 bestTone= "쿨톤";
+                this.season_text_input(bestTone);
+                this.season_style="../img/Personal_image/cooltone_style2.png"
                 toneTotal = this.summer+this.winter
             }
             console.log(bestTone)
@@ -139,7 +185,7 @@ return {
                                 customLabel = chart.options.chart.custom.label =
                                     chart.renderer.label(
                                         bestTone+' Total'+'<br/>' +
-                                        '<strong>'+toneTotal+'%</strong><br/>'
+                                        '<strong>'+toneTotal.toFixed(2)+'%</strong><br/>'
                                     )
                                     .css({
                                         color: '#000',
