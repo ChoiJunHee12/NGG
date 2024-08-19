@@ -2,12 +2,12 @@ package kr.co.ict.yourdream.consultantProfile;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
-import org.hibernate.jpa.QueryHints;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,6 +24,9 @@ public class ConsultProfileService {
 
     @Autowired
     private EntityManager entityManager;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     // 파일 업로드 경로 설정
     private final static String filePath = Paths.get("").toAbsolutePath().toString().replace("yourdream", "")
@@ -54,6 +57,11 @@ public class ConsultProfileService {
     public ConsultVO updateConsultProfile(int cnsno, ConsultVO consultVO) {
         return consultProfileRepository.findById(cnsno)
                 .map(existingProfile -> {
+                    // 비밀번호가 존재하고 빈 값이 아닌 경우에만 인코딩
+                    if (consultVO.getPassword() != null && !consultVO.getPassword().isEmpty()) {
+                        String encodedPassword = passwordEncoder.encode(consultVO.getPassword());
+                        existingProfile.setPassword(encodedPassword);
+                    }
                     updateConsultProfileFields(existingProfile, consultVO);
                     updateCnsCareerList(existingProfile, consultVO.getCnscareerVO());
                     ConsultProfile updatedProfile = consultProfileRepository.save(existingProfile);
@@ -85,10 +93,20 @@ public class ConsultProfileService {
     }
 
     // 컨설턴트 프로필의 필드를 업데이트하는 내부 헬퍼 메서드
-    private void updateConsultProfileFields(ConsultProfile profile, ConsultVO vo) {
-        BeanUtils.copyProperties(vo, profile, "cnsno", "cnscareerList");
-    }
+    // private void updateConsultProfileFields(ConsultProfile profile, ConsultVO vo) {
+    //     BeanUtils.copyProperties(vo, profile, "cnsno", "cnscareerList");
+    // }
 
+    private void updateConsultProfileFields(ConsultProfile profile, ConsultVO vo) {
+        // 비밀번호가 제공된 경우에만 인코딩 후 설정
+        if (vo.getPassword() != null && !vo.getPassword().isEmpty()) {
+            String encodedPassword = passwordEncoder.encode(vo.getPassword());
+            profile.setPassword(encodedPassword);
+        }
+        
+        // 비밀번호를 제외한 나머지 필드 업데이트
+        BeanUtils.copyProperties(vo, profile, "password", "cnsno", "cnscareerList");
+    }
     // 컨설턴트 프로필의 경력 리스트를 업데이트하는 내부 헬퍼 메서드
     private void updateCnsCareerList(ConsultProfile profile, List<CnsCareerVO> careerVOList) {
         profile.getCnscareerList().clear();
