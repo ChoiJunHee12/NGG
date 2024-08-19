@@ -47,11 +47,11 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
                 System.out.println("와써요!");
                 chatroomvo.setMemno(Integer.parseInt(inchat[0]));
                 chatroomvo.setCnsno(Integer.parseInt(inchat[1]));
-                String chtroom = String.valueOf(chatService.getchatcroom(chatroomvo));
-                System.out.println(chtroom);
-                SESSION_ROOMS.put(inchat[0], chtroom);
-                CLIENTS.put(inchat[0], session);
-                sendMessageToClient(session, chtroom);
+                // String chtroom = String.valueOf(chatService.getchatcroom(chatroomvo));
+                // System.out.println(chtroom);
+                SESSION_ROOMS.put(session.getId(), inchat[1]);
+                CLIENTS.put(session.getId(), session);
+                sendMessageToClient(session, inchat[1]);
 
             } else if (inchat.length == 1) {
                 int intprotocol = Integer.parseInt(inchat[0]);
