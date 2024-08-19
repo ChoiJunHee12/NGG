@@ -44,7 +44,7 @@ const User = () => {
   const fetchTotalMembers = async () => {
     try {
       const response = await axios.get(
-        "http://192.168.0.73:81/yourdream/api/members/count"
+        `${process.env.REACT_APP_BACK_END_URL}/admin/members/count`
       );
       setTotalMembers(response.data);
     } catch (error) {
@@ -58,7 +58,7 @@ const User = () => {
       const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD 형식으로 오늘 날짜 가져오기
       console.log("오늘", today);
       const response = await axios.get(
-        `http://192.168.0.73:81/yourdream/api/members/daily-visit-count?date=${today}`
+        `${process.env.REACT_APP_BACK_END_URL}/admin/members/daily-visit-count?date=${today}`
       );
       setDailyVisitors(response.data);
     } catch (err) {
@@ -70,7 +70,7 @@ const User = () => {
   const fetchTotalIntnos = async () => {
     try {
       const response = await axios.get(
-        "http://192.168.0.73:81/yourdream/api/members/int-count"
+        `${process.env.REACT_APP_BACK_END_URL}/admin/members/int-count`
       );
       setTotalIntnos(response.data);
     } catch (err) {
@@ -81,7 +81,7 @@ const User = () => {
   const fetchTotalMemCon = async () => {
     try {
       const response = await axios.get(
-        "http://192.168.0.73:81/yourdream/api/members/con-count"
+        `${process.env.REACT_APP_BACK_END_URL}/admin/members/con-count`
       );
       setTotalMemCon(response.data);
     } catch (err) {
@@ -104,7 +104,7 @@ const User = () => {
         setTopologyData(topologyResponse.data);
 
         const locCdCountsResponse = await axios.get(
-          "http://192.168.0.73:81/yourdream/api/members/loccdCounts"
+          `${process.env.REACT_APP_BACK_END_URL}/admin/members/loccdCounts`
         );
         const locCdCounts = locCdCountsResponse.data;
 
@@ -214,7 +214,7 @@ const User = () => {
 
         // 일별 회원 수 데이터 요청
         const dailyCountsResponse = await axios.get(
-          "http://192.168.0.73:81/yourdream/api/members/dailyCounts",
+          `${process.env.REACT_APP_BACK_END_URL}/admin/members/dailyCounts`,
           {
             params: {
               startDate: formattedStartDate,
@@ -245,7 +245,7 @@ const User = () => {
     const fetchCategoryData = async () => {
       try {
         const response = await axios.get(
-          "http://192.168.0.73:81/yourdream/api/members/categcdCounts"
+          `${process.env.REACT_APP_BACK_END_URL}/admin/members/categcdCounts`
         );
         const data = response.data;
 
@@ -279,7 +279,7 @@ const User = () => {
         const formattedStartDate = formatDate(startDate);
         const formattedEndDate = formatDate(endDate);
         const dailyintresponse = await axios.get(
-          "http://192.168.0.73:81/yourdream/api/members/daily-interview",
+          `${process.env.REACT_APP_BACK_END_URL}/admin/members/daily-interview`,
           {
             params: {
               startDate: formattedStartDate,

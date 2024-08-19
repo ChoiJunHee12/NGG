@@ -49,7 +49,7 @@ const MemberList: React.FC = () => {
       setLoading(true);
       try {
         const response = await fetch(
-          "http://192.168.0.73:81/yourdream/api/memadmin/with-consultants"
+          `${process.env.REACT_APP_BACK_END_URL}/admin/memadmin/with-consultants`
         );
         if (!response.ok) {
           throw new Error("네트워크 응답이 좋지 않습니다.");
@@ -86,7 +86,7 @@ const MemberList: React.FC = () => {
         console.log(memno);
         setLoading(true);
         const response = await axios.delete(
-          `http://192.168.0.73:81/yourdream/api/memadmin/del/${memno}`
+          `${process.env.REACT_APP_BACK_END_URL}/admin/memadmin/del/${memno}`
         );
         if (response.status === 204) {
           alert("멤버가 성공적으로 삭제되었습니다.");
