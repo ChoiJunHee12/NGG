@@ -1,0 +1,12 @@
+# 환경 변수 파일
+.env
+
+# IDE 관련 파일들
+.idea/
+
+# Ignore all .lock files
+*.lock
+
+# Python이 소스 코드를 컴파일하면서 생성하는 바이트코드 파일들
+*.pyc
+__pycache__/
