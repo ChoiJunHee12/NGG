@@ -478,7 +478,7 @@ export default {
           align: "left",
         },
         subtitle: {
-          text: "",
+          text: "고개, 어깨가 정자세에 어긋날 때 마다 1회 증가합니다",
           align: "left",
         },
         xAxis: {
@@ -505,7 +505,7 @@ export default {
         },
         series: [
           {
-            name: "목 꺾임",
+            name: "자세 흐트러짐 count",
             data: [
               this.detailvoList[0].pbadcnt,
               this.detailvoList[1].pbadcnt,

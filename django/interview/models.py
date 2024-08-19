@@ -227,20 +227,19 @@ def extract_frames_from_video(video_path):
     return frames
 
 
-def get_line_angle(p1, p2):
-    """두 점을 연결하는 선의 기울기(각도)를 계산합니다."""
-    delta_y = p2[1] - p1[1]
-    delta_x = p2[0] - p1[0]
-    angle = np.arctan2(delta_y, delta_x) * (180.0 / np.pi)
-    return angle
+def get_line_angle(point1, point2):
+    # 두 점 사이의 선의 각도 계산
+    x1, y1 = point1
+    x2, y2 = point2
+    return np.degrees(np.arctan2(y2 - y1, x2 - x1))
+
 
 def analyze_pose(frame):
     # MediaPipe Pose 모델에 이미지 프레임을 전달
     image_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     results = pose.process(image_rgb)
 
-    # 랜드마크를 그리기 위해 원본 이미지 복사
-    annotated_frame = frame.copy()
+
     badcount = 0
 
     if results.pose_landmarks:
@@ -249,8 +248,8 @@ def analyze_pose(frame):
         landmark_coords = np.array([(landmark.x, landmark.y) for landmark in landmarks])
 
         # 어깨와 눈 랜드마크 인덱스
-        LEFT_SHOULDER = 5
-        RIGHT_SHOULDER = 2
+        LEFT_SHOULDER = 11
+        RIGHT_SHOULDER = 12
         LEFT_EYE = 1
         RIGHT_EYE = 4
 
@@ -265,11 +264,19 @@ def analyze_pose(frame):
             shoulder_angle = abs(get_line_angle(left_shoulder, right_shoulder))
             eye_angle = abs(get_line_angle(left_eye, right_eye))
 
-            # 선이 평행하지 않은 경우
-            if abs(shoulder_angle - eye_angle) < 170:  # 각도 차이 임계값 설정
+
+            # 기준 2: 어깨가 수평에서 너무 기울어져 있는 경우 (비대칭 어깨)
+            if shoulder_angle < 173:  # 어깨 각도 임계값 설정
+                print('수평에서 어깨가 너무 기울어져 있는 경우 => ', shoulder_angle)
                 badcount += 1
 
-            # 랜드마크를 시각화
-            mp_drawing.draw_landmarks(annotated_frame, results.pose_landmarks, mp_pose.POSE_CONNECTIONS)
+            # 기준 3: 고개가 한쪽으로 기울어진 경우
+            if abs(left_eye[1] - right_eye[1]) > 0.01:  # 눈의 높이 차이 임계값 설정
+                print('고개가 한쪽으로 기울어진 경우 => ', abs(left_eye[1] - right_eye[1]))
+                badcount += 1
 
-    return annotated_frame, badcount
+
+
+    return badcount
+
+
