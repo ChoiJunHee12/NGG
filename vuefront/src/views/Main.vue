@@ -448,7 +448,7 @@ export default {
 
     // 컨설턴트 1대1 상담으로 가기
     const goToConsultantChat = () => {
-      router.push("/OneToOne");
+      router.push("/MyConsultantProfile");
     };
 
     // 인터뷰 데이터가 없을 경우, AI면접으로 가기
