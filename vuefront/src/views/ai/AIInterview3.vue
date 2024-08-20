@@ -136,17 +136,17 @@ export default {
       mediaRecorder: null,
       recordedChunks: [],
       videoStream: null,
-      recordingInProgress: false // 추가된 플래그
+      wehereinpage:true,
     };
   },
   mounted() {
-    console.log('첫 번째 질문 페이지');
+    console.log('세 번째 질문 페이지');
     window.scrollTo(0, 0);
     this.convertTextToSpeech();
     setTimeout(() => {
       this.showInterviewSection = true;
       this.startStreaming(); // 스트리밍 시작
-    }, 2000);
+    }, 1000);
   },
   methods: {
     async convertTextToSpeech() {
@@ -199,12 +199,14 @@ export default {
           }
         } else {
           clearInterval(this.interval);
-          this.submitAnswer(); // 녹화가 완료되었는지 여부를 체크하고 전송
+          if(this.wehereinpage){
+            this.submitAnswer(); // 녹화가 완료되었는지 여부를 체크하고 전송
+          }
         }
       }, 1000);
 
       // Check and start recording if answering time is active
-      if (this.isAnsweringTime && !this.recordingInProgress) {
+      if (this.isAnsweringTime && this.mediaRecorder.state === "inactive") {
         this.startRecording(); // 녹화 시작
       }
     },
@@ -243,15 +245,17 @@ export default {
       }
     },
     startRecording() {
-      if (this.mediaRecorder) {
+      if (this.mediaRecorder.state === "inactive") {
         this.mediaRecorder.start();
-        this.recordingInProgress = true; // 녹화가 진행 중임을 표시
+        console.log('Recording started');
       }
     },
     stopRecording() {
-      if (this.mediaRecorder && this.recordingInProgress) {
-        this.mediaRecorder.stop();
-        this.recordingInProgress = false;
+      if (this.mediaRecorder.state === "recording") {        
+          this.mediaRecorder.stop();                
+      } else {
+        console.log('this.mediaRecorder.state => ',this.mediaRecorder.state)
+        this.startRecording();
       }
     },
     restartInterview() {
@@ -265,15 +269,20 @@ export default {
 
         // Stop current recording and start a new one
         this.stopRecording();
-        this.recordedChunks = [];
-        this.initMediaRecorder();
-        this.startRecording();
+        setTimeout(() => {
+          this.recordedChunks = [];
+          this.initMediaRecorder();
+          this.startRecording();
+        }, 500);
       }
     },
     submitAnswer() {
       console.log('제출누름')
       this.stopRecording(); // Stop the current recording
-      this.uploadRecordedVideo(); // Upload the recorded video
+      
+      setTimeout(() => {
+        this.uploadRecordedVideo(); // Upload the recorded video
+      }, 500);
     },
     uploadRecordedVideo() {
       if (this.recordedChunks.length > 0) {
@@ -310,6 +319,7 @@ export default {
   },
   beforeUnmount() {
     this.stopCamera();
+    this.wehereinpage=false;
   }
 };
 </script>

@@ -580,7 +580,7 @@ export default {
       details.forEach((key) => {
         const storedDetail = JSON.parse(localStorage.getItem(key));
 
-        this.stt.push(storedDetail.answer || null);
+        this.stt.push(storedDetail.answer || "");
         this.emotion.push(storedDetail.emotion || { escore: 0 });
         this.position.push(storedDetail.position || { pscore: 0 });
         this.voice.push(storedDetail.voice || { vscore: 0 });
@@ -628,7 +628,9 @@ export default {
     this.graph2(1);
     this.wordcloud();
     this.barchart();
-    this.face();
+    this.$nextTick(() => {
+      this.face();
+    });
     this.voiceg();
     axios.get(`${process.env.VUE_APP_BACK_END_URL}/interview/getresnametime?memno=${localStorage.getItem("memno")}`)
     .then((res) => {
