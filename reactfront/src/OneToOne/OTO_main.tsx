@@ -9,14 +9,14 @@ interface Item {
   imgname: string;
 }
 
-const items: Item[][] = [
- // {chtno: 43, nickname: '홍길동닉네임4', imgname: 'default.png'} 예시 데이터
-];
+
 
 const OTO_main: React.FC = () => {
   const [cnsno] = useState(2);
   const [rows, setRows] = useState<Item[][]>([]);
-
+  const items: Item[][] = [
+    // {chtno: 43, nickname: '홍길동닉네임4', imgname: 'default.png'} 예시 데이터
+   ];
 
 
 
@@ -26,7 +26,9 @@ const OTO_main: React.FC = () => {
       const res = await axios.get(`${process.env.REACT_APP_BACK_END_URL}/chat/getlist?cnsno=${cnsno}`, {
         headers: { 'Content-Type': 'application/json' }
       });
+      //items=res.data
       items.push(res.data);
+      console.log(res.data);
       console.log(items);
       console.log(items[0]);
       const rows = items.flatMap(itemList => itemList).reduce<Item[][]>((acc, item, index) => {
@@ -70,7 +72,7 @@ const OTO_main: React.FC = () => {
             <div className="OTO-main-profileImgBox" key={colIndex}>
               <div>
                 <Link to={{pathname:`/consultant/OneToOne/detail`,}}state={{chtno:item.chtno}}>
-                  <img src={`/img/OneToOne_img/${item.imgname}`} alt="프로필" className="OTO-main-profileImg" />
+                  <img src={`/img/OneToOne_img/default.png`} alt="프로필" className="OTO-main-profileImg" />
                 </Link>
               </div>
               <div className="OTO-main-txtbox">
