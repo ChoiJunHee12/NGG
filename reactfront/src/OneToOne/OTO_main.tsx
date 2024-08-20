@@ -23,7 +23,7 @@ const OTO_main: React.FC = () => {
 
   const chatlist = async () => {
     try {
-      const res = await axios.get(`${process.env.REACT_APP_BACK_END_URL}/chat/getlist?cnsno=${cnsno}`, {
+      const res = await axios.get(`${process.env.REACT_APP_BACK_END_URL}/consultant/chat/getlist?cnsno=${cnsno}`, {
         headers: { 'Content-Type': 'application/json' }
       });
       items.push(res.data);

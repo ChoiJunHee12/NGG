@@ -19,7 +19,7 @@ interface Item {
 
     useEffect(() => {
       const fetchData = async () => {
-        const response = await axios.post(`${process.env.REACT_APP_BACK_END_URL}/feedback/main`, {"cnsno": cnsno});
+        const response = await axios.post(`${process.env.REACT_APP_BACK_END_URL}/consultant/feedback/main`, {"cnsno": cnsno});
         console.log(response.data);
         setItems(response.data);
       }
