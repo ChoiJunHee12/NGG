@@ -48,8 +48,9 @@
                 class="interviewRes-list"
                 @click="showModal_personal(e.INTNO)"
               >
-                <li style="padding: 10px;">
-                  {{ e.INTNO }} 〈인성면접〉{{ e.MNAME }}님 면접결과 {{ formatDate(e.CREDT) }}
+                <li style="padding: 15px;">
+                  <b>[인성면접]</b> {{ e.MNAME }}님 면접결과 
+                  <span style="font-size: 0.75em; color: #949494;">({{ formatDate(e.CREDT) }})</span>
                 </li>
               </td>
             </tr>
@@ -88,8 +89,9 @@
           <table v-show="e !== null" class="interviewRes-table">
             <tr>
               <td class="interviewRes-list" @click="showModal_duty(e.INTNO)">
-                <li style="padding: 10px;">
-                  {{ e.INTNO }} 〈직무면접〉{{ e.MNAME }}님 면접결과 {{ formatDate(e.CREDT) }}
+                <li style="padding: 15px;">
+                  <b>[직무면접]</b> {{ e.MNAME }}님 면접결과 
+                  <span style="font-size: 0.75em; color: #949494;">({{ formatDate(e.CREDT) }})</span>
                 </li>
               </td>
             </tr>
@@ -123,7 +125,7 @@
     @close="closeModal_duty"
     v-bind:intno="intno"
   ></InterviewResDutyModal>
-  <OneToOne v-if="popState_one" @close="closeModal_one"></OneToOne>
+  <OneToOne v-if="popState_one" @close="closeModal_one"/>
 </template>
 
 <script>

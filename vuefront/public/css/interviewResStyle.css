@@ -181,7 +181,8 @@
 .interviewRes-table{
     width:100%; 
     text-align:left; 
-    font-size:17px;
+    font-size:1.1em;
+    /* font-weight: 300; */
 }
 
 .interviewRes-list {
