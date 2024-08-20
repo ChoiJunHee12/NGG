@@ -1,6 +1,8 @@
-// src/components/LoginModal.tsx
-import React from "react";
+import React, { useState } from "react";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { login } from "../authSlice";
+import { unwrapResult } from "@reduxjs/toolkit";
 import "./LoginModal.css";
 
 interface LoginModalProps {
@@ -14,15 +16,38 @@ const LoginModal: React.FC<LoginModalProps> = ({
   onClose,
   loginType,
 }) => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
 
-  const handleLogin = (event: React.FormEvent) => {
+  const handleLogin = async (event: React.FormEvent) => {
     event.preventDefault();
 
-    if (loginType === "admin") {
-      navigate("/admin/User_Dash");
-    } else if (loginType === "consul") {
-      navigate("/consultant/consultant-profile");
+    setError(null);
+
+    try {
+      // Thunk 액션 디스패치
+      const resultAction = await dispatch(login({ email, password }) as any);
+
+      // unwrapResult로 결과를 명확하게 추출합니다
+      const result = unwrapResult(resultAction);
+      console.log(result); // result를 콘솔에 출력하여 확인
+
+      const { rolecd } = result;
+
+      if (rolecd === "C") {
+        navigate("/consultant/consultant-profile");
+      } else if (rolecd === "A") {
+        navigate("/admin/User_Dash");
+      } else {
+        setError("This user does not have the appropriate access.");
+      }
+      onClose();
+    } catch (error) {
+      console.error(error);
+      setError("Login failed. Please check your credentials.");
     }
   };
 
@@ -35,11 +60,25 @@ const LoginModal: React.FC<LoginModalProps> = ({
           {loginType === "admin" ? "관리자 로그인" : "컨설턴트 로그인"}
         </h2>
         <form className="login-form" onSubmit={handleLogin}>
-          <label htmlFor="username">아이디</label>
-          <input type="text" id="username" name="username" required />
+          <label htmlFor="email">아이디</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
 
           <label htmlFor="password">비밀번호</label>
-          <input type="password" id="password" name="password" required />
+          <input
+            type="password"
+            id="password"
+            name="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
 
           <button type="submit" className="submit-button">
             로그인
@@ -48,6 +87,7 @@ const LoginModal: React.FC<LoginModalProps> = ({
             취소
           </button>
         </form>
+        {error && <p className="login-error">{error}</p>}
       </div>
     </div>
   );
