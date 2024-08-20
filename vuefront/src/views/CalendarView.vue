@@ -172,8 +172,8 @@ export default defineComponent({
       modalEvent.value = {
         id: event.id,
         title: event.title,
-        startdt: event.start,
-        enddt: event.end || event.start,
+        startdt: dayjs(event.start).format("YYYY-MM-DD"),
+        enddt: event.end ? dayjs(event.end).format("YYYY-MM-DD") : dayjs(event.start).format("YYYY-MM-DD"),
       };
       isModalVisible.value = true;
     };

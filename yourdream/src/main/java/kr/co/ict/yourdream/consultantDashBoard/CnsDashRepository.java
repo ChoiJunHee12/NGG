@@ -14,8 +14,8 @@ public interface CnsDashRepository extends JpaRepository<ConsultDashBoard, Integ
 
         int countBy(); // This method will count all entries in the ConsultDashBoard table
 
-        @Query(value = "SELECT (SELECT COUNT(memno) FROM TBMEMBERCONSULT WHERE USEYN='Y') / " +
-                        "(SELECT COUNT(cnsno) FROM tbconsult) AS memcns_ave FROM dual", nativeQuery = true)
+        @Query(value = "SELECT ROUND((SELECT COUNT(memno) FROM TBMEMBERCONSULT WHERE USEYN = 'Y') / " +
+                        "(SELECT COUNT(cnsno) FROM tbconsult), 2) AS memcns_ave FROM dual", nativeQuery = true)
         float findMemCnsAverage();
 
         @Query(value = "SELECT ROUND((SELECT SUM(reviewscore) FROM TBINTRES) / " +
