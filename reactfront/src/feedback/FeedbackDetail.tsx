@@ -75,7 +75,7 @@ const FeedbackDetail: React.FC = () => {
     console.log("내용:",qcnsfeedbk);
     console.log(typeof(intno), typeof(page))
     axios
-      .post(`${process.env.REACT_APP_BACK_END_URL}/feedback/feedbkQUpdate`, { "qcnsfeedbk": qcnsfeedbk, "intno": intno, "qno": page })
+      .post(`${process.env.REACT_APP_BACK_END_URL}/consultant/feedback/feedbkQUpdate`, { "qcnsfeedbk": qcnsfeedbk, "intno": intno, "qno": page })
       .then((response) => {
         console.log("업데이트 성공");
         window.location.reload();
@@ -88,7 +88,7 @@ const FeedbackDetail: React.FC = () => {
   const CTCnsFeedSubmit = () => {
     console.log("보낼거", cnsfeedbk, intno, typeof(cnsfeedbk), typeof(intno));
     axios
-      .post(`${process.env.REACT_APP_BACK_END_URL}/feedback/feedbkCnsUpdate`, { "cnsfeedbk": cnsfeedbk, "intno": intno })
+      .post(`${process.env.REACT_APP_BACK_END_URL}/consultant/feedback/feedbkCnsUpdate`, { "cnsfeedbk": cnsfeedbk, "intno": intno })
       .then((response) => {
         console.log("업데이트 성공");
         window.location.reload();
@@ -111,7 +111,7 @@ const FeedbackDetail: React.FC = () => {
   const fetchUserData = async () => {
     try {
       console.log(intno);
-      const response = await axios.get(`${process.env.REACT_APP_BACK_END_URL}/feedback/feedbkDetailInfo`, { params: { intno } });
+      const response = await axios.get(`${process.env.REACT_APP_BACK_END_URL}/consultant/feedback/feedbkDetailInfo`, { params: { intno } });
       console.log(response.data);
       setUserName(response.data.info.name);
       setCredt(response.data.info.upddt);
@@ -128,7 +128,7 @@ const FeedbackDetail: React.FC = () => {
 
   const fetchQuestionData = async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_BACK_END_URL}/feedback/feedbkScore`, { params: { intno } });
+      const response = await axios.get(`${process.env.REACT_APP_BACK_END_URL}/consultant/feedback/feedbkScore`, { params: { intno } });
       setQnaData(response.data.escore);
       console.log("여기",response.data.escore)
       if (response.data.escore[0]) {
@@ -143,7 +143,7 @@ const FeedbackDetail: React.FC = () => {
 
   const fetchCTFeedback = async () => {
     try {
-      const response = await axios.get<ApiResponse>(`${process.env.REACT_APP_BACK_END_URL}/feedback/feedbkDetailQconEval`, { params: { intno } });
+      const response = await axios.get<ApiResponse>(`${process.env.REACT_APP_BACK_END_URL}/consultant/feedback/feedbkDetailQconEval`, { params: { intno } });
       console.log("요고", response.data.QconEval);
       const qcnsfeedbkArray = response.data.QconEval.map(item => item.qcnsfeedbk);
       console.log("지금:", qcnsfeedbkArray);
@@ -190,7 +190,7 @@ const FeedbackDetail: React.FC = () => {
   };
 
   const fetchTotalFeedbk = async () => {
-    const response = await axios.get(`${process.env.REACT_APP_BACK_END_URL}/feedback/feedbkDetailResEval`, {params : {intno}});
+    const response = await axios.get(`${process.env.REACT_APP_BACK_END_URL}/consultant/feedback/feedbkDetailResEval`, {params : {intno}});
     console.log(response.data);
     try {
       setEfeed1(response.data.resEval.efeed1);
@@ -207,7 +207,7 @@ const FeedbackDetail: React.FC = () => {
   }
 
   const fetchTotalConFeedbk = async () => {
-    const response = await axios.get(`${process.env.REACT_APP_BACK_END_URL}/feedback/feedbkDetailResConEval`, {params : {intno}});
+    const response = await axios.get(`${process.env.REACT_APP_BACK_END_URL}/consultant/feedback/feedbkDetailResConEval`, {params : {intno}});
     console.log(response.data);
     setCnsfeedbk(response.data.resConEval.cnsfeedbk);
   }
@@ -221,7 +221,7 @@ const FeedbackDetail: React.FC = () => {
       const myChart = echarts.init(chartContainer);
 
       try {
-        const response = await axios.get(`${process.env.REACT_APP_BACK_END_URL}/feedback/feedbkScore`, { params: { intno } });
+        const response = await axios.get(`${process.env.REACT_APP_BACK_END_URL}/consultant/feedback/feedbkScore`, { params: { intno } });
         console.log(response.data);
         const option = {
           title: {
@@ -285,7 +285,7 @@ const FeedbackDetail: React.FC = () => {
 
   const barchart = async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_BACK_END_URL}/feedback/feedbkScore`, { params: { intno } });
+      const response = await axios.get(`${process.env.REACT_APP_BACK_END_URL}/consultant/feedback/feedbkScore`, { params: { intno } });
       Highcharts.chart('barchart', {
         chart: {
           type: 'column',  // 차트 유형을 column으로 설정
@@ -336,7 +336,7 @@ const FeedbackDetail: React.FC = () => {
 
 const voiceg = async () => {
     try {
-  const response = await axios.get(`${process.env.REACT_APP_BACK_END_URL}/feedback/feedbkScore`, { params: { intno } });
+  const response = await axios.get(`${process.env.REACT_APP_BACK_END_URL}/consultant/feedback/feedbkScore`, { params: { intno } });
 
   Highcharts.chart('voiceg', {
     chart: {
@@ -442,7 +442,7 @@ const voiceg = async () => {
 
   const wordcloud = async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_BACK_END_URL}/feedback/feedbkScore`, { params: { intno } });
+      const response = await axios.get(`${process.env.REACT_APP_BACK_END_URL}/consultant/feedback/feedbkScore`, { params: { intno } });
       console.log(response.data.escore);
       const text: string = response.data.escore[0].answer + 
                            response.data.escore[1].answer +

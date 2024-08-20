@@ -21,7 +21,7 @@ const ConsultQuestion: React.FC = () => {
         return;
       }
 
-      const response = await axios.get(`${process.env.REACT_APP_BACK_END_URL}/CTQ/CTQuestionList`, {
+      const response = await axios.get(`${process.env.REACT_APP_BACK_END_URL}/consultant/CTQ/CTQuestionList`, {
         params: { cnsno }
       });
 

@@ -12,7 +12,7 @@ import kr.co.ict.yourdream.vo.ChatDetailVO;
 import kr.co.ict.yourdream.vo.ChatRoomVO;
 
 @RestController
-@RequestMapping("/chat")
+@RequestMapping("/consultant/chat")
 public class ChatController {
     @Autowired
     private ChatService chatService;
