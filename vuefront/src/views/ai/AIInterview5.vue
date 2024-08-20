@@ -148,8 +148,7 @@ export default {
       isInterviewCompleted: false,
       mediaRecorder: null,
       recordedChunks: [],
-      videoStream: null,
-      recordingInProgress: false, // 추가된 플래그      
+      videoStream: null,     
       detail:[],
       stt:[],
       emotion:[],
@@ -198,7 +197,7 @@ export default {
       detailvo:{},
       intfeedbkvo:{},
       intno:0,
-
+      wehereinpage:true,
     };
   },
   computed: {
@@ -213,13 +212,13 @@ export default {
   },
   mounted() {
     console.log(localStorage.getItem('inttypename'));
-    console.log('첫 번째 질문 페이지');
+    console.log('다섯 번째 질문 페이지');
     window.scrollTo(0, 0);
     this.convertTextToSpeech();
     setTimeout(() => {
       this.showInterviewSection = true;
       this.startStreaming(); // 스트리밍 시작
-    }, 2000);
+    }, 1000);
   },
   methods: {
     async convertTextToSpeech() {
@@ -273,12 +272,14 @@ export default {
           }
         } else {
           clearInterval(this.interval);
-          this.submitAnswer(); // 녹화가 완료되었는지 여부를 체크하고 전송
+          if(this.wehereinpage){
+            this.submitAnswer(); // 녹화가 완료되었는지 여부를 체크하고 전송
+          }
         }
       }, 1000);
 
       // Check and start recording if answering time is active
-      if (this.isAnsweringTime && !this.recordingInProgress) {
+      if (this.isAnsweringTime && this.mediaRecorder.state === "inactive") {
         this.startRecording(); // 녹화 시작
       }
     },
@@ -317,15 +318,17 @@ export default {
       }
     },
     startRecording() {
-      if (this.mediaRecorder) {
+      if (this.mediaRecorder.state === "inactive") {
         this.mediaRecorder.start();
-        this.recordingInProgress = true; // 녹화가 진행 중임을 표시
+        console.log('Recording started');
       }
     },
     stopRecording() {
-      if (this.mediaRecorder && this.recordingInProgress) {
+      if (this.mediaRecorder.state === "recording") {
         this.mediaRecorder.stop();
-        this.recordingInProgress = false;
+      } else {
+        console.log('this.mediaRecorder.state => ',this.mediaRecorder.state)
+        this.startRecording();
       }
     },
     restartInterview() {
@@ -339,18 +342,24 @@ export default {
 
         // Stop current recording and start a new one
         this.stopRecording();
-        this.recordedChunks = [];
-        this.initMediaRecorder();
-        this.startRecording();
+        setTimeout(() => {
+          this.recordedChunks = [];
+          this.initMediaRecorder();
+          this.startRecording();
+        }, 500);
       }
     },
     submitAnswer() {
       console.log('제출누름')
       this.stopRecording(); // Stop the current recording
-      this.uploadRecordedVideo(); // Upload the recorded video
+      
+      setTimeout(() => {
+        this.uploadRecordedVideo(); // Upload the recorded video
+      }, 500);
+      
     },
     uploadRecordedVideo() {
-      if (this.recordedChunks.length > 0) {
+      
         const recordedBlob = new Blob(this.recordedChunks, { type: 'video/webm' });
 
         // Prepare FormData to send the recorded video
@@ -369,177 +378,150 @@ export default {
         )
         .then(response => {
           localStorage.setItem('q5detail', JSON.stringify(response.data));
+          const inttypename = localStorage.getItem('inttypename')
+          if (inttypename=='직무'){
+            this.$router.push({ name: "AIInterview6" });
+          } else if (inttypename=='인성') {
+            // 초기화
+            this.stt = [];
+            this.emotion = [];
+            this.position = [];
+            this.voice = [];
+            this.video_url = [];
+            this.feedback = [];            
+
+            console.log("다들어있는거!!!!!",JSON.parse(localStorage.getItem("q1detail")))
+            const details = ["q1detail", "q2detail", "q3detail", "q4detail", "q5detail"];
+            details.forEach(key => {
+                const storedDetail = JSON.parse(localStorage.getItem(key));                
+                
+                this.stt.push(storedDetail.answer || null);                
+                this.emotion.push(storedDetail.emotion || { escore: 0 });                
+                this.position.push(storedDetail.position || { pscore: 0 });                
+                this.voice.push(storedDetail.voice || { vscore: 0 });
+                this.video_url.push(storedDetail.video_url || '');
+                this.feedback.push(storedDetail.aifeedback || '');
+            });        
+            console.log('this.stt!!=> ',this.stt)
+            console.log('this.emotion!!=> ',this.emotion)
+            console.log('this.position!!=> ',this.position)
+            // emotion 배열에서 escore 값을 추출
+            const emotionScores = this.emotion.map(e => e.escore);
+            // position 배열에서 pscore 값을 추출
+            const positionScores = this.position.map(p => p.pscore);
+            // voice 배열에서 vscore 값을 추출
+            const voiceScores = this.voice.map(v => v.vscore);
+
+            // 각 배열의 평균 계산
+            this.escoreAverage = this.computeAverage(emotionScores);
+            this.pscoreAverage = this.computeAverage(positionScores);
+            this.vscoreAverage = this.computeAverage(voiceScores);
+
+            console.log('평균값확인')
+            console.log(this.escoreAverage)
+            console.log(this.pscoreAverage)
+            console.log(this.vscoreAverage)
+            
+
+            this.updateResults(this.escoreAverage, this.eresultData, 'eresult');
+            this.updateResults(this.pscoreAverage, this.presultData, 'presult');
+            this.updateResults(this.vscoreAverage, this.vresultData, 'vresult');
+
+            localStorage.setItem('efinalcmt',JSON.stringify(this.intresult.eresult))
+            localStorage.setItem('pfinalcmt',JSON.stringify(this.intresult.presult))
+            localStorage.setItem('vfinalcmt',JSON.stringify(this.intresult.vresult))
+            console.log(`JSON.parse(localStorage.getItem('efinalcmt'))`,JSON.parse(localStorage.getItem('efinalcmt')));
+
+
+
+            axios.post(`${process.env.VUE_APP_BACK_END_URL}/interview/setintres`, {
+                memno: localStorage.getItem('memno'),
+                inttypecd: 1
+            })
+            .then(res => {
+                console.log('TBINTRES에 INSERT 완료');
+                console.log('intno값 반환 => ', res.data);
+                this.intno = res.data;
+
+                // detailvoList를 초기화
+                this.detailvoList = [];
+
+                // 반복문을 통해 detailvo 객체를 생성하고 detailvoList에 추가
+                for (let i = 0; i < 5; i++) {
+                    let detailvo = {
+                        intno: this.intno,
+                        qno: i + 1,
+                        aiqno: i <= 4 ? JSON.parse(localStorage.getItem('questionlist'))[i].totalqno : null,
+                        cnsqno: i > 4 ? JSON.parse(localStorage.getItem('questionlist'))[i].totalqno : null,
+                        question: JSON.parse(localStorage.getItem('questionlist'))[i].totalq,
+                        answer: this.stt[i],
+                        ecntgood: this.emotion[i].ecntgood,
+                        ecntsoso: this.emotion[i].ecntsoso,
+                        ecntbad: this.emotion[i].ecntbad,
+                        pbadcnt: this.position[i].pbadcnt,
+                        vhertz: this.voice[i].vhertz,
+                        vamplit: this.voice[i].vamplit,
+                        vempty: this.voice[i].vempty,
+                        aifeedbk: this.feedback[i],
+                        escore: this.emotion[i].escore,
+                        pscore: this.position[i].pscore,
+                        vscore: this.voice[i].vscore
+                    };
+                    this.detailvoList.push(detailvo);
+                }
+                console.log('this.detailvo', this.detailvoList);
+                console.log('this.intresult.eresult => ',this.intresult.eresult[0])
+
+
+
+
+                axios.post(`${process.env.VUE_APP_DJANGO_APP_BACK_END_URL}/interview/interview_result`, this.stt)
+                .then(response => {
+                  // 서버에서 반환한 JSON 응답 처리            
+                  this.intresult.sttresult = response.data;
+                  console.log(this.intresult.sttresult);
+                  localStorage.setItem('sttfinalcmt',JSON.stringify(this.intresult.sttresult))
+                  console.log('sttfinalcmt',this.intresult.sttresult.sttresult1);
+
+                  this.intfeedbkvo.intno = this.intno
+                  this.intfeedbkvo.efeed1 = this.intresult.eresult[0];
+                  this.intfeedbkvo.efeed2 = this.intresult.eresult[1];
+                  this.intfeedbkvo.pfeed1 = this.intresult.presult[0];
+                  this.intfeedbkvo.pfeed2 = this.intresult.presult[1];
+                  this.intfeedbkvo.vfeed1 = this.intresult.vresult[0];
+                  this.intfeedbkvo.vfeed2 = this.intresult.vresult[1];
+                  this.intfeedbkvo.sttfeed1 = this.intresult.sttresult.sttresult1;
+                  this.intfeedbkvo.sttfeed2 = this.intresult.sttresult.sttresult2;
+                  console.log('this.intfeedbkvo => ',this.intfeedbkvo)
+                  
+                  axios.post(`${process.env.VUE_APP_BACK_END_URL}/interview/setintfeedbk`, this.intfeedbkvo)            
+
+                })
+                .catch(error => {
+                  console.error("There was an error!", error);
+                });
+                
+                axios.post(`${process.env.VUE_APP_BACK_END_URL}/interview/setintdetail`, this.detailvoList)
+                .then(res => {
+                    console.log('TBINTDETAIL에 INSERT 완료');
+                })
+                
+            })
+            .catch(error => {
+                console.error('요청 중 오류 발생:', error);
+            });
+            
+            console.log(JSON.parse(localStorage.getItem('questionlist')))
+
+            this.isInterviewCompleted = true;
           
+          }
         })
         .catch(error => {
           console.error('Error uploading video:', error);
           alert('Failed to upload video');
         });
-        const inttypename = localStorage.getItem('inttypename')
-        if (inttypename=='직무'){
-          this.$router.push({ name: "AIInterview6" });
-        } else if (inttypename=='인성') {
-
-
-
-          // 초기화
-          this.stt = [];
-          this.emotion = [];
-          this.position = [];
-          this.voice = [];
-          this.video_url = [];
-          this.feedback = [];
-          
-
-          console.log("다들어있는거!!!!!",JSON.parse(localStorage.getItem("q1detail")))
-          const details = ["q1detail", "q2detail", "q3detail", "q4detail", "q5detail"];
-          details.forEach(key => {
-              const storedDetail = JSON.parse(localStorage.getItem(key));
-              
-              
-              this.stt.push(storedDetail.answer || null);
-              console.log('this.stt!!=> ',this.stt)
-              this.emotion.push(storedDetail.emotion || { escore: 0 });
-              console.log('this.emotion!!=> ',this.emotion)
-              this.position.push(storedDetail.position || { pscore: 0 });
-              console.log('this.position!!=> ',this.position)
-              this.voice.push(storedDetail.voice || { vscore: 0 });
-              this.video_url.push(storedDetail.video_url || '');
-              this.feedback.push(storedDetail.aifeedback || '');
-          });        
-          
-          // emotion 배열에서 escore 값을 추출
-          const emotionScores = this.emotion.map(e => e.escore);
-          // position 배열에서 pscore 값을 추출
-          const positionScores = this.position.map(p => p.pscore);
-          // voice 배열에서 vscore 값을 추출
-          const voiceScores = this.voice.map(v => v.vscore);
-
-          // 각 배열의 평균 계산
-          this.escoreAverage = this.computeAverage(emotionScores);
-          this.pscoreAverage = this.computeAverage(positionScores);
-          this.vscoreAverage = this.computeAverage(voiceScores);
-
-          console.log('평균값확인')
-          console.log(this.escoreAverage)
-          console.log(this.pscoreAverage)
-          console.log(this.vscoreAverage)
-          
-
-          this.updateResults(this.escoreAverage, this.eresultData, 'eresult');
-          this.updateResults(this.pscoreAverage, this.presultData, 'presult');
-          this.updateResults(this.vscoreAverage, this.vresultData, 'vresult');
-
-          localStorage.setItem('efinalcmt',JSON.stringify(this.intresult.eresult))
-          localStorage.setItem('pfinalcmt',JSON.stringify(this.intresult.presult))
-          localStorage.setItem('vfinalcmt',JSON.stringify(this.intresult.vresult))
-          console.log(`JSON.parse(localStorage.getItem('efinalcmt'))`,JSON.parse(localStorage.getItem('efinalcmt')));
-
-
-
-          axios.post(`${process.env.VUE_APP_BACK_END_URL}/interview/setintres`, {
-              memno: localStorage.getItem('memno'),
-              inttypecd: 1
-          })
-          .then(res => {
-              console.log('TBINTRES에 INSERT 완료');
-              console.log('intno값 반환 => ', res.data);
-              this.intno = res.data;
-
-              // detailvoList를 초기화
-              this.detailvoList = [];
-
-              // 반복문을 통해 detailvo 객체를 생성하고 detailvoList에 추가
-              for (let i = 0; i < 5; i++) {
-                  let detailvo = {
-                      intno: this.intno,
-                      qno: i + 1,
-                      aiqno: i <= 4 ? JSON.parse(localStorage.getItem('questionlist'))[i].totalqno : null,
-                      cnsqno: i > 4 ? JSON.parse(localStorage.getItem('questionlist'))[i].totalqno : null,
-                      question: JSON.parse(localStorage.getItem('questionlist'))[i].totalq,
-                      answer: this.stt[i],
-                      ecntgood: this.emotion[i].ecntgood,
-                      ecntsoso: this.emotion[i].ecntsoso,
-                      ecntbad: this.emotion[i].ecntbad,
-                      pbadcnt: this.position[i].pbadcnt,
-                      vhertz: this.voice[i].vhertz,
-                      vamplit: this.voice[i].vamplit,
-                      vempty: this.voice[i].vempty,
-                      aifeedbk: this.feedback[i],
-                      escore: this.emotion[i].escore,
-                      pscore: this.position[i].pscore,
-                      vscore: this.voice[i].vscore
-                  };
-                  this.detailvoList.push(detailvo);
-              }
-              console.log('this.detailvo', this.detailvoList);
-              console.log('this.intresult.eresult => ',this.intresult.eresult[0])
-
-
-
-
-              axios.post(`${process.env.VUE_APP_DJANGO_APP_BACK_END_URL}/interview/interview_result`, this.stt)
-              .then(response => {
-                // 서버에서 반환한 JSON 응답 처리            
-                this.intresult.sttresult = response.data;
-                console.log(this.intresult.sttresult);
-                localStorage.setItem('sttfinalcmt',JSON.stringify(this.intresult.sttresult))
-                console.log('sttfinalcmt',this.intresult.sttresult.sttresult1);
-
-                this.intfeedbkvo.intno = this.intno
-                this.intfeedbkvo.efeed1 = this.intresult.eresult[0];
-                this.intfeedbkvo.efeed2 = this.intresult.eresult[1];
-                this.intfeedbkvo.pfeed1 = this.intresult.presult[0];
-                this.intfeedbkvo.pfeed2 = this.intresult.presult[1];
-                this.intfeedbkvo.vfeed1 = this.intresult.vresult[0];
-                this.intfeedbkvo.vfeed2 = this.intresult.vresult[1];
-                this.intfeedbkvo.sttfeed1 = this.intresult.sttresult.sttresult1;
-                this.intfeedbkvo.sttfeed2 = this.intresult.sttresult.sttresult2;
-                console.log('this.intfeedbkvo => ',this.intfeedbkvo)
-                
-                axios.post(`${process.env.VUE_APP_BACK_END_URL}/interview/setintfeedbk`, this.intfeedbkvo)            
-
-              })
-              .catch(error => {
-                console.error("There was an error!", error);
-              });
-              
-
-              
-
-              // 두 번째 요청을 첫 번째 요청의 성공 후에 실행
-              return axios.post(`${process.env.VUE_APP_BACK_END_URL}/interview/setintdetail`, this.detailvoList);
-
-
-              
-          })
-          .then(res => {
-              console.log('TBINTDETAIL에 INSERT 완료');
-          })
-          .catch(error => {
-              console.error('요청 중 오류 발생:', error);
-          });
-
-          
-          console.log(JSON.parse(localStorage.getItem('questionlist')))
-          
-
-
-
-          
-
-
-
-
-
-
-
-
-
-
-          this.isInterviewCompleted = true;
-        }
-      }
+        
     },
     stopCamera() {
       this.stopStreaming();
@@ -576,6 +558,7 @@ export default {
   },
   beforeUnmount() {
     this.stopCamera();
+    this.wehereinpage=false;
   }
 };
 </script>

@@ -135,8 +135,8 @@ export default {
       aiquestion1: JSON.parse(localStorage.getItem('questionlist'))[0],
       mediaRecorder: null,
       recordedChunks: [],
-      videoStream: null,
-      recordingInProgress: false // 추가된 플래그
+      videoStream: null,      
+      wehereinpage:true,
     };
   },
   mounted() {
@@ -144,10 +144,12 @@ export default {
     console.log(this.aiquestion1);
     window.scrollTo(0, 0);
     this.convertTextToSpeech();
+    
     setTimeout(() => {
-      this.showInterviewSection = true;
-      this.startStreaming(); // 스트리밍 시작
-    }, 2000);
+      this.startStreaming(); // 스트리밍 시작  
+      this.showInterviewSection = true;      
+    }, 1000);
+    
   },
   methods: {
     async convertTextToSpeech() {
@@ -200,12 +202,15 @@ export default {
           }
         } else {
           clearInterval(this.interval);
-          this.submitAnswer(); // 녹화가 완료되었는지 여부를 체크하고 전송
+          if(this.wehereinpage){
+            this.submitAnswer(); // 녹화가 완료되었는지 여부를 체크하고 전송
+          }
+          
         }
       }, 1000);
 
       // Check and start recording if answering time is active
-      if (this.isAnsweringTime && !this.recordingInProgress) {
+      if (this.isAnsweringTime && this.mediaRecorder.state === "inactive") {
         this.startRecording(); // 녹화 시작
       }
     },
@@ -254,27 +259,35 @@ export default {
 
         // Stop current recording and start a new one
         this.stopRecording();
-        this.recordedChunks = [];
-        this.initMediaRecorder();
-        this.startRecording();
+        
+        setTimeout(() => {
+          this.recordedChunks = [];
+          this.initMediaRecorder();
+          this.startRecording();
+        }, 500);
       }
     },
     submitAnswer() {
       console.log('제출누름')
       this.stopRecording(); // Stop the current recording
-      this.uploadRecordedVideo(); // Upload the recorded video
+      
+      setTimeout(() => {
+        this.uploadRecordedVideo(); // Upload the recorded video
+      }, 500);
+      
     },
     startRecording() {
-      if (this.mediaRecorder) {
+      if (this.mediaRecorder.state === "inactive") {
         this.mediaRecorder.start();
         console.log('Recording started');
-        this.recordingInProgress = true; // 녹화가 진행 중임을 표시
       }
     },
     stopRecording() {
-      if (this.mediaRecorder && this.recordingInProgress) {
-        this.mediaRecorder.stop();
-        this.recordingInProgress = false;
+      if (this.mediaRecorder.state === "recording") {        
+          this.mediaRecorder.stop();                
+      } else {
+        console.log('this.mediaRecorder.state => ',this.mediaRecorder.state)
+        this.startRecording();
       }
     },
     uploadRecordedVideo() {
@@ -306,12 +319,11 @@ export default {
         this.$router.push({ name: "AIInterview2" });
       }
     },
-    stopCamera() {
-      this.stopStreaming();
-    },
   },
   beforeUnmount() {
-    this.stopCamera();
+    this.stopStreaming();
+    this.wehereinpage=false;
+    
   }
 };
 </script>
