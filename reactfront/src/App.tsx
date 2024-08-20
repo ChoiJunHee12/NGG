@@ -18,6 +18,8 @@ import FeedbackResume from "./feedback/FeedbackResume";
 import ConsultantAdmin from "./admin-consultant/ConsultantAdmin";
 import MemberList from "./admin/member/MemberList";
 import MemberModal from "./admin/member/MemberModal";
+import Login from "./main/Login";
+import PrivateRoute from "./components/PrivateRoute"; // PrivateRoute import 추가
 
 const App: React.FC = () => {
   const [isSidebarVisible, setIsSidebarVisible] = useState(true);
@@ -111,6 +113,105 @@ const App: React.FC = () => {
         <Footer />
       </div>
     </Router>
+  );
+};
+
+const MainLayout: React.FC<{
+  toggleSidebar: () => void;
+  isSidebarVisible: boolean;
+}> = ({ toggleSidebar, isSidebarVisible }) => {
+  return (
+    <div id="app">
+      <Header toggleSidebar={toggleSidebar} />
+      <i className="bi bi-list fixed-menu-icon" onClick={toggleSidebar}></i>
+      <Sidebar isVisible={isSidebarVisible} />
+      <main
+        className={`main-content ${isSidebarVisible ? "sidebar-open" : ""}`}
+      >
+        <Routes>
+          {/* Pages accessible with rolecd "A" */}
+          <Route
+            path="/admin/User_Dash"
+            element={<PrivateRoute element={<User_Dash />} roleRequired="A" />}
+          />
+          <Route
+            path="/admin/Consultant_Dash"
+            element={
+              <PrivateRoute element={<Consultant_Dash />} roleRequired="A" />
+            }
+          />
+          <Route
+            path="/member/MemberList"
+            element={<PrivateRoute element={<MemberList />} roleRequired="A" />}
+          />
+          <Route
+            path="/admin-consultant/ConsultantAdmin"
+            element={
+              <PrivateRoute element={<ConsultantAdmin />} roleRequired="A" />
+            }
+          />
+
+          {/* Pages accessible with rolecd "C" */}
+          <Route
+            path="/consultant/consultant-profile"
+            element={
+              <PrivateRoute element={<ConsultantProfile />} roleRequired="C" />
+            }
+          />
+          <Route
+            path="/consultant/Consult_Question"
+            element={
+              <PrivateRoute element={<Consult_Question />} roleRequired="C" />
+            }
+          />
+          <Route
+            path="/consultant/OneToOne"
+            element={<PrivateRoute element={<OTO_main />} roleRequired="C" />}
+          />
+          <Route
+            path="/consultant/OneToOne/detail"
+            element={<PrivateRoute element={<OTO_detail />} roleRequired="C" />}
+          />
+          <Route
+            path="/consultant/feedback"
+            element={<PrivateRoute element={<Feedback />} roleRequired="C" />}
+          />
+          <Route
+            path="/consultant/feedback/detail"
+            element={
+              <PrivateRoute element={<FeedbackDetail />} roleRequired="C" />
+            }
+          />
+          <Route
+            path="/consultant/feedback/main"
+            element={
+              <PrivateRoute element={<FeedbackMain />} roleRequired="C" />
+            }
+          />
+          <Route
+            path="/consultant/feedback/resume"
+            element={
+              <PrivateRoute element={<FeedbackResume />} roleRequired="C" />
+            }
+          />
+        </Routes>
+      </main>
+      <i
+        className="bi bi-caret-up scroll-to-top"
+        onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+      >
+        <p style={{ display: "inline", fontSize: "20px" }}>TOP</p>
+      </i>
+      <Footer />
+    </div>
+  );
+};
+
+const LoginPageLayout: React.FC = () => {
+  return (
+    <div className="login-page">
+      <Login />
+    </div>
   );
 };
 

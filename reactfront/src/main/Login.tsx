@@ -39,7 +39,7 @@ const Login: React.FC = () => {
       <LoginModal
         isOpen={modalIsOpen}
         onClose={closeModal}
-        loginType={loginType as "admin" | "consul"}
+        loginType={loginType as "admin" | "consul"} // loginType을 올바르게 전달
       />
     </div>
   );
