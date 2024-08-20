@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
-@RequestMapping("/CTQ")
+@RequestMapping("/consultant/CTQ")
 public class CTQuestionController {
     @Autowired
     private CTQuestionService ctQuestionService;

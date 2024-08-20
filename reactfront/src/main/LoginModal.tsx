@@ -24,7 +24,6 @@ const LoginModal: React.FC<LoginModalProps> = ({
 
   const handleLogin = async (event: React.FormEvent) => {
     event.preventDefault();
-
     setError(null);
 
     try {
@@ -37,17 +36,31 @@ const LoginModal: React.FC<LoginModalProps> = ({
 
       const { rolecd } = result;
 
-      if (rolecd === "C") {
-        navigate("/consultant/consultant-profile");
-      } else if (rolecd === "A") {
-        navigate("/admin/User_Dash");
-      } else {
-        setError("This user does not have the appropriate access.");
+      if (loginType === "admin") {
+        if (rolecd === "A") {
+          navigate("/admin/User_Dash");
+        } else {
+          alert("관리자 전용 페이지입니다. 관리자 계정으로 로그인하세요.");
+          localStorage.clear(); // 로컬스토리지 초기화
+          setError("관리자 전용 페이지입니다.");
+        }
+      } else if (loginType === "consul") {
+        if (rolecd === "C") {
+          navigate("/consultant/consultant-profile");
+        } else {
+          alert("컨설턴트 전용 페이지입니다. 컨설턴트 계정으로 로그인하세요.");
+          localStorage.clear(); // 로컬스토리지 초기화
+          setError("컨설턴트 전용 페이지입니다.");
+        }
       }
-      onClose();
+
+      // 로그인 성공 후 모달 닫기
+      if (rolecd === "A" || rolecd === "C") {
+        onClose();
+      }
     } catch (error) {
       console.error(error);
-      setError("Login failed. Please check your credentials.");
+      setError("로그인 실패. 자격 증명을 확인하세요.");
     }
   };
 

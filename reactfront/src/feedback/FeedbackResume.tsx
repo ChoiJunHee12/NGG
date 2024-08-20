@@ -62,7 +62,7 @@ const FeedbackResume: React.FC = () => {
     
     const fetchData = async (memno: number) => {
         console.log("보내는 memno", memno, typeof(memno));
-        const response = await axios.get(`${process.env.REACT_APP_BACK_END_URL}/feedback/resumeInfo`, { params: { memno } })
+        const response = await axios.get(`${process.env.REACT_APP_BACK_END_URL}/consultant/feedback/resumeInfo`, { params: { memno } })
         console.log(response.data, typeof(response.data));
         const basicInfo = response.data;
 
@@ -72,17 +72,17 @@ const FeedbackResume: React.FC = () => {
 
         const rsmno = basicInfo.rsmno;
         console.log("rsmno", rsmno);
-        const responseEdu = await axios.post(`${process.env.REACT_APP_BACK_END_URL}/feedback/resumeEdu`, {"rsmno": rsmno})
+        const responseEdu = await axios.post(`${process.env.REACT_APP_BACK_END_URL}/consultant/feedback/resumeEdu`, {"rsmno": rsmno})
         console.log(responseEdu.data, typeof(response.data));
         const education = responseEdu.data;
         setEdu(education);
 
-        const responseCar = await axios.post(`${process.env.REACT_APP_BACK_END_URL}/feedback/resumeCar`, {"rsmno": rsmno})
+        const responseCar = await axios.post(`${process.env.REACT_APP_BACK_END_URL}/consultant/feedback/resumeCar`, {"rsmno": rsmno})
         console.log(responseCar.data, typeof(response.data));
         const career = responseCar.data;
         setCar(career);
 
-        const responseSelf = await axios.post(`${process.env.REACT_APP_BACK_END_URL}/feedback/resumeSelf`, {"rsmno": rsmno})
+        const responseSelf = await axios.post(`${process.env.REACT_APP_BACK_END_URL}/consultant/feedback/resumeSelf`, {"rsmno": rsmno})
         console.log(responseSelf.data, typeof(response.data));
         const self = responseSelf.data;
         setIntro(self);
