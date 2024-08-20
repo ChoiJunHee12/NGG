@@ -24,6 +24,7 @@ import ConsultantAdmin from "./admin-consultant/ConsultantAdmin";
 import MemberList from "./admin/member/MemberList";
 import MemberModal from "./admin/member/MemberModal";
 import Login from "./main/Login";
+import PrivateRoute from "./components/PrivateRoute"; // PrivateRoute import 추가
 
 const App: React.FC = () => {
   const [isSidebarVisible, setIsSidebarVisible] = useState(true);
@@ -69,32 +70,70 @@ const MainLayout: React.FC<{
         className={`main-content ${isSidebarVisible ? "sidebar-open" : ""}`}
       >
         <Routes>
-          <Route path="/admin/User_Dash" element={<User_Dash />} />
-          <Route path="/admin/Consultant_Dash" element={<Consultant_Dash />} />
-          <Route path="/member/MemberList" element={<MemberList />} />
+          {/* Pages accessible with rolecd "A" */}
           <Route
-            path="/admin-consultant/ConsultantAdmin"
-            element={<ConsultantAdmin />}
+            path="/admin/User_Dash"
+            element={<PrivateRoute element={<User_Dash />} roleRequired="A" />}
           />
           <Route
+            path="/admin/Consultant_Dash"
+            element={
+              <PrivateRoute element={<Consultant_Dash />} roleRequired="A" />
+            }
+          />
+          <Route
+            path="/member/MemberList"
+            element={<PrivateRoute element={<MemberList />} roleRequired="A" />}
+          />
+          <Route
+            path="/admin-consultant/ConsultantAdmin"
+            element={
+              <PrivateRoute element={<ConsultantAdmin />} roleRequired="A" />
+            }
+          />
+
+          {/* Pages accessible with rolecd "C" */}
+          <Route
             path="/consultant/consultant-profile"
-            element={<ConsultantProfile />}
+            element={
+              <PrivateRoute element={<ConsultantProfile />} roleRequired="C" />
+            }
           />
           <Route
             path="/consultant/Consult_Question"
-            element={<Consult_Question />}
+            element={
+              <PrivateRoute element={<Consult_Question />} roleRequired="C" />
+            }
           />
-          <Route path="/consultant/OneToOne" element={<OTO_main />} />
-          <Route path="/consultant/OneToOne/detail" element={<OTO_detail />} />
-          <Route path="/consultant/feedback" element={<Feedback />} />
+          <Route
+            path="/consultant/OneToOne"
+            element={<PrivateRoute element={<OTO_main />} roleRequired="C" />}
+          />
+          <Route
+            path="/consultant/OneToOne/detail"
+            element={<PrivateRoute element={<OTO_detail />} roleRequired="C" />}
+          />
+          <Route
+            path="/consultant/feedback"
+            element={<PrivateRoute element={<Feedback />} roleRequired="C" />}
+          />
           <Route
             path="/consultant/feedback/detail"
-            element={<FeedbackDetail />}
+            element={
+              <PrivateRoute element={<FeedbackDetail />} roleRequired="C" />
+            }
           />
-          <Route path="/consultant/feedback/main" element={<FeedbackMain />} />
+          <Route
+            path="/consultant/feedback/main"
+            element={
+              <PrivateRoute element={<FeedbackMain />} roleRequired="C" />
+            }
+          />
           <Route
             path="/consultant/feedback/resume"
-            element={<FeedbackResume />}
+            element={
+              <PrivateRoute element={<FeedbackResume />} roleRequired="C" />
+            }
           />
         </Routes>
       </main>
