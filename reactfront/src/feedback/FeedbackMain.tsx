@@ -49,7 +49,7 @@ interface Item {
               {row.map((item, colIndex) => (
                 <div className="feedback-main-profileImgBox" key={colIndex}>
                   <div>
-                      <img src={`vuefront/public/img/upimg/${item.imgname}`} alt="프로필" className="feedback-main-profileImg" />
+                      <img src={`/img/OneToOne_img/default.png`} alt="프로필" className="feedback-main-profileImg" />
                   </div>
                   <div className="feedback-main-txtbox">
                     <div>
