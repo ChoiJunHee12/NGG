@@ -11,7 +11,7 @@ import org.springframework.data.repository.query.Param;
 public interface AdminConsultRepository extends JpaRepository<ConsultProfile, Integer> {
 
     // 모든 컨설턴트 프로필을 경력 정보와 함께 조회
-    @Query("SELECT DISTINCT cp FROM ConsultProfile cp LEFT JOIN FETCH cp.cnscareerList")
+    @Query("SELECT DISTINCT cp FROM ConsultProfile cp LEFT JOIN FETCH cp.cnscareerList ORDER BY cp.cnsno ASC")
     List<ConsultProfile> findAllWithCareers();
 
     // 특정 ID의 컨설턴트 프로필을 경력 정보와 함께 조회
