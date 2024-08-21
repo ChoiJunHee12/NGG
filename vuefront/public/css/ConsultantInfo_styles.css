@@ -261,6 +261,8 @@
   border-radius: 5px;
   font-size: 20px;
   overflow: hidden;
+  margin: 105px 0px;
+  top: -100px;
 }
   
 .thumbnail .mask {
