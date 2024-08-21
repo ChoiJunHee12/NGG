@@ -20,21 +20,18 @@ const OTO_detail: React.FC = () => {
   const [newMessage, setNewMessage] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
   const [roomnum, setRoomnum] = useState<number | null>(null);
-  const [cnsno] = useState(3);
   const [UIMG, setUIMG] = useState('default.png');
   const [unick, setUnick] = useState('유저이름');
   const [CIMG, setCIMG] = useState('default.png');
   const [cname, setCname] = useState('컨턴턴트 이름');
   const chatContainerRef = useRef<HTMLDivElement>(null);
-  const [memno2] = useState(51);
+  const [cnsno] = useState(localStorage.getItem("cnsno"));
   // const [chtno] = useState(2);
-   // useLocation 훅을 사용하여 location 객체 가져오기
    const location = useLocation();
 
    // location.state에서 chtno 값 추출
    const { chtno } = location.state || {}; // location.state가 없을 경우를 대비해 기본값 {}를 사용
 
-   const imageUrl = 'http://localhost:3000/vuefront/img/upimg/1f96af07-f8da-4347-8a12-daa0704d7ade.png';
 
 
   const chattype = (type: string) => (type === '1' ? 'user' : 'consultant');
@@ -43,7 +40,6 @@ const OTO_detail: React.FC = () => {
 
     const memnoData = new FormData();
     console.log(`${process.env.REACT_APP_BACK_END_URL}/consultant/chat/chatdetail?chtno=${chtno}`);
-    memnoData.append('memno', cnsno.toString());
     try {
       const res = await axios.get(`${process.env.REACT_APP_BACK_END_URL}/consultant/chat/chatdetail?chtno=${chtno}`, {
         headers: { 'Content-Type': 'application/json' }
@@ -62,8 +58,9 @@ const OTO_detail: React.FC = () => {
       const res = await axios.get(`${process.env.REACT_APP_BACK_END_URL}/consultant/chat/profile?chtno=${chtno}`, {
         headers: { 'Content-Type': 'application/json' }
       });
-      setUIMG(res.data.UIMG);
-      setCIMG(res.data.CIMG);
+      setUIMG(res.data.uimg);
+      console.log('res.data.UIMG'+res.data.uimg)
+      setCIMG(res.data.cimg);
       setUnick(res.data.unick);
       setCname(res.data.cname);
       console.log(res.data);
@@ -71,7 +68,7 @@ const OTO_detail: React.FC = () => {
         prevMessages.map((message) => ({
           ...message,
           name: message.chatdiv === '1' ? 'user' : 'consulte',
-          profileImage: message.chatdiv === '1' ? `/img/upimg/${res.data.UIMG}` : `/img/upimg/${res.data.CIMG}`
+          profileImage: message.chatdiv === '1' ? `/img/upimg/${res.data.uimg}` : `/img/upimg/${res.data.cimg}`
         }))
       );
     } catch (error) {
@@ -91,11 +88,10 @@ const OTO_detail: React.FC = () => {
   };
 
     const connect = () => {
-      const chatmsg = `${cnsno}_${memno2}`;
+      const chatmsg = `${cnsno}-${chtno}`;
       console.log(process.env.VUE_APP_Web_Socket_URL)
-      //
-      const socket = new WebSocket(`ws://localhost:80/mydream/ws/chat`,chatmsg);
-      // const socket = new WebSocket(`${process.env.VUE_APP_Web_Socket_URL}/ws/chat`,chatmsg);
+
+      const socket = new WebSocket(`${process.env.REACT_APP_Web_Socket_URL}/ws/chat`,chatmsg);
       socket.onmessage = (event) => onMessage(event);
       socket.onopen = () => onOpen();
       socket.onerror = (error) => onError(error);
@@ -115,7 +111,7 @@ const OTO_detail: React.FC = () => {
       setMessages((prevMessages) => [
         ...prevMessages,
 
-        { chatdiv: '2', name: 'consultant', profileImage: `../../vuefront/public/img/upimg/1f96af07-f8da-4347-8a12-daa0704d7ade.png`, content: newMessage, chatdt: getCurrentDateTime() }
+        { chatdiv: '2', name: 'consultant', profileImage: `/img/upimg/${CIMG}`, content: newMessage, chatdt: getCurrentDateTime() }
       ]);
       setNewMessage('');
       scrollToEnd();
@@ -123,11 +119,14 @@ const OTO_detail: React.FC = () => {
   };
 
   const onMessage = (event: MessageEvent) => {
-    if (!roomnum) {
-      setRoomnum(parseInt(event.data, 10));
-      return;
-    }
+    // if (!roomnum) {
+    //   setRoomnum(parseInt(event.data, 10));
+    //   return;
+    // }
+    console.log('onMessage작동')
+    console.log('event.data'+event.data)
     const message: Message = JSON.parse(event.data);
+    console.log('message'+message)
     setMessages((prevMessages) => [
       ...prevMessages,
       { chatdiv: '1', name: 'user', profileImage: `/img/upimg/${UIMG}`, content: message.content, chatdt: getCurrentDateTime() }
@@ -145,11 +144,7 @@ const OTO_detail: React.FC = () => {
     return `${year}-${month}-${day} ${hours}:${minutes}`;
   };
 
-  const scrollToEnd = () => {
-    if (chatContainerRef.current) {
-      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
-    }
-  };
+
 
   const onOpen = () => {
     console.log('Connected to the WebSocket server.');
@@ -170,7 +165,11 @@ const OTO_detail: React.FC = () => {
       ws?.close();
     };
   }, []);
-
+  const scrollToEnd = () => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+    }
+  };
 
   return (
     <div className="container">
@@ -188,7 +187,7 @@ const OTO_detail: React.FC = () => {
 
     <div className="interviewRes-counsel">
         <div className="interviewRes-imgbox">
-            <img src="/img/OneToOne_img/noimage.png" alt='noimage' className="interviewRes-img" />
+            <img src={`http://localhost:3001/img/OneToOne_img/${CIMG}`}alt='noimage' className="interviewRes-img" />
         </div>
         <div className="interviewRes-text">
             <h5 className="interviewRes-h5">면접자 : {unick}</h5>
@@ -197,7 +196,7 @@ const OTO_detail: React.FC = () => {
         <div className="chat-container scrollable-div" ref={chatContainerRef}>
           {messages.map((message, index) => (
             <div key={index} className={`chat-message `+chattype(message.chatdiv)}>
-              <img src={message.profileImage} alt={message.name} className="profile-image" />
+              <img src={`${process.env.REACT_APP_VUE_FRONT_END_URL}`+message.profileImage} alt={message.name} className="profile-image" />
               <div className="message-info">
                 <div className={`message-text `+chattype(message.chatdiv)}>
                   {message.content}

@@ -13,7 +13,8 @@ import lombok.Setter;
 @Builder
 public class ChatRoomListDTO {
 
+    private Integer memno;
     private Long chtno;
-    private String nickname;
+    private String name;
     private String imgname;
 }
