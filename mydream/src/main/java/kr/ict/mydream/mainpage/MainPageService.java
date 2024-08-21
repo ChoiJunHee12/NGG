@@ -164,16 +164,11 @@ public class MainPageService {
 
                         Map<String, Object> questionInfo = new HashMap<>();
                         questionInfo.put("voiceScore", detail.getVscore());
-                        questionInfo.put("emotionScore", detail.getEscore());
+                        questionInfo.put("emotionScore", detail.getEscore()); // escore를 그대로 사용
                         questionInfo.put("postureScore", detail.getPscore());
                         questionInfo.put("ecntgood", detail.getEcntgood());
                         questionInfo.put("ecntsoso", detail.getEcntsoso());
                         questionInfo.put("ecntbad", detail.getEcntbad());
-
-                        // 스트레스율 계산
-                        float totalEmotions = detail.getEcntgood() + detail.getEcntsoso() + detail.getEcntbad();
-                        float stressRate = (detail.getEcntbad() / totalEmotions) * 100;
-                        questionInfo.put("stressRate", Math.round(stressRate));
 
                         interviewQuestions.get(qKey).add(questionInfo);
                 }
