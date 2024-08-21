@@ -30,7 +30,7 @@ public class MainPageService {
                 return mapping;
         }
 
-        // 스트레스율 계산
+        // 감정 점수
         public int calculateStressRate(int intno, int memno) {
                 Map<String, Object> params = new HashMap<>();
                 params.put("intno", intno);
@@ -38,64 +38,56 @@ public class MainPageService {
 
                 List<IntDetailVO> latestDetails = mainPageDao.getLatestEmotionDetails(params);
                 if (latestDetails.isEmpty()) {
-                        return 0;
+                        return 0; // 데이터가 없으면 0점 반환
                 }
 
-                float totalGood = 0, totalSoso = 0, totalBad = 0, totalCount = 0;
-
+                float totalEmotionScore = 0;
                 for (IntDetailVO detail : latestDetails) {
-                        totalGood += detail.getEcntgood();
-                        totalSoso += detail.getEcntsoso();
-                        totalBad += detail.getEcntbad();
-                        totalCount += detail.getEcntgood() + detail.getEcntsoso() + detail.getEcntbad();
+                        totalEmotionScore += detail.getEscore();
                 }
 
-                float badRatio = totalBad / totalCount;
-                float stressRate = badRatio * 100;
-                return Math.round(Math.max(stressRate, 0));
+                float avgEscore = totalEmotionScore / latestDetails.size();
+                return Math.round(Math.max(avgEscore, 0)); // 음수가 나오지 않도록 보정
         }
 
-        // 음성 점수 계산
+        // 음성 점수
         public int calculateVoiceRate(int intno, int memno) {
                 Map<String, Object> params = new HashMap<>();
                 params.put("intno", intno);
                 params.put("memno", memno);
 
                 List<IntDetailVO> latestDetails = mainPageDao.getLatestVoiceDetails(params);
-                float totalScore = 0;
-                int questionCount = latestDetails.size();
-
-                if (questionCount == 0) {
-                        return 0;
+                if (latestDetails.isEmpty()) {
+                        return 0; // 데이터가 없으면 0점 반환
                 }
 
+                float totalVoiceScore = 0;
                 for (IntDetailVO detail : latestDetails) {
-                        float voiceScore = detail.getVhertz() + detail.getVamplit() - (detail.getVempty() * 2.0f);
-                        totalScore += Math.max(voiceScore, 0);
+                        totalVoiceScore += detail.getVscore();
                 }
 
-                return Math.round(Math.max((totalScore / questionCount) / 100 * 100, 0));
+                float avgVscore = totalVoiceScore / latestDetails.size();
+                return Math.round(Math.max(avgVscore, 0)); // 음수가 나오지 않도록 보정
         }
 
-        // 자세 불량 점수 계산
-        public int calculatePostureBadCountRate(int intno, int memno) {
+        // 자세 점수
+        public int calculatePostureRate(int intno, int memno) {
                 Map<String, Object> params = new HashMap<>();
                 params.put("intno", intno);
                 params.put("memno", memno);
 
                 List<IntDetailVO> latestDetails = mainPageDao.getLatestPostureDetails(params);
                 if (latestDetails.isEmpty()) {
-                        return 100; // 데이터가 없으면 0 반환? 아니면 자세가 좋으니까 badcount가 0일테니까 100점 반환?
+                        return 0; // 데이터가 없으면 0점 반환
                 }
 
-                float totalBadCount = 0;
+                float totalPostureScore = 0;
                 for (IntDetailVO detail : latestDetails) {
-                        totalBadCount += detail.getPbadcnt();
+                        totalPostureScore += detail.getPscore();
                 }
 
-                float avgPbadcnt = totalBadCount / latestDetails.size();
-                float postureScore = 100 - avgPbadcnt;
-                return Math.round(Math.max(postureScore, 0)); // 음수가 나오지 않도록 보정
+                float avgPscore = totalPostureScore / latestDetails.size();
+                return Math.round(Math.max(avgPscore, 0)); // 음수가 나오지 않도록 보정
         }
 
         // 컨설턴트 평가 점수 조회
@@ -139,113 +131,56 @@ public class MainPageService {
                 return result != null ? result.getCnsfeedbk() : null;
         }
 
-        // 최근 5개의 인성면접 데이터
-        public Map<String, Object> calculateRecentInterviewScores(int memno) {
+        // 최근 5개의 면접 데이터
+        public Map<String, Object> getRecentInterviewData(int memno) {
                 List<IntDetailVO> interviewDetails = mainPageDao.getInterviewDetails(memno);
 
-                List<Integer> stressRates = new ArrayList<>();
-                List<Integer> postureScores = new ArrayList<>();
-                List<Integer> voiceScores = new ArrayList<>();
-                List<String> dates = new ArrayList<>();
-                Map<String, List<Integer>> questionVoiceScores = new HashMap<>();
-                Map<String, List<Map<String, Object>>> questionEmotionScores = new HashMap<>();
+                Map<String, Object> result = new HashMap<>();
+                result.put("interviewData", new ArrayList<Map<String, Object>>());
 
-                Map<Integer, List<IntDetailVO>> groupedByIntno = interviewDetails.stream()
-                                .collect(Collectors.groupingBy(IntDetailVO::getIntno));
+                Map<Integer, Map<String, List<Map<String, Object>>>> questionData = new HashMap<>();
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
-                for (Map.Entry<Integer, List<IntDetailVO>> entry : groupedByIntno.entrySet()) {
-                        List<IntDetailVO> interviewGroup = entry.getValue();
+                for (IntDetailVO detail : interviewDetails) {
+                        int intno = detail.getIntno();
 
-                        float totalEcntgood = 0, totalEcntsoso = 0, totalEcntbad = 0;
-                        float totalPbadcnt = 0, totalVhertz = 0, totalVamplit = 0, totalVempty = 0;
-                        int count = interviewGroup.size();
-                        Date credt = null;
+                        // 면접 데이터 처리
+                        if (!questionData.containsKey(intno)) {
+                                Map<String, Object> interviewInfo = new HashMap<>();
+                                interviewInfo.put("intno", intno);
+                                interviewInfo.put("date", sdf.format(detail.getCredt()));
+                                ((List<Map<String, Object>>) result.get("interviewData")).add(interviewInfo);
 
-                        Map<Integer, Float> questionVoiceScoreMap = new HashMap<>();
-                        Map<Integer, Map<String, Object>> questionEmotionScoreMap = new HashMap<>();
-
-                        for (IntDetailVO detail : interviewGroup) {
-                                totalEcntgood += detail.getEcntgood();
-                                totalEcntsoso += detail.getEcntsoso();
-                                totalEcntbad += detail.getEcntbad();
-                                totalPbadcnt += detail.getPbadcnt();
-                                totalVhertz += detail.getVhertz();
-                                totalVamplit += detail.getVamplit();
-                                totalVempty += detail.getVempty();
-                                if (credt == null || detail.getCredt().after(credt)) {
-                                        credt = detail.getCredt();
-                                }
-
-                                // 질문당 음성 점수 계산
-                                float questionVoiceScore = calculateQuestionVoiceScore(detail);
-                                questionVoiceScoreMap.put(detail.getQno(), questionVoiceScore);
-
-                                // 질문당 감정 점수 및 카운트 계산
-                                Map<String, Object> emotionData = calculateQuestionEmotionScore(detail);
-                                questionEmotionScoreMap.put(detail.getQno(), emotionData);
+                                questionData.put(intno, new HashMap<>());
                         }
+
+                        // 질문별 데이터 처리
+                        String qKey = "Q" + detail.getQno();
+                        Map<String, List<Map<String, Object>>> interviewQuestions = questionData.get(intno);
+
+                        if (!interviewQuestions.containsKey(qKey)) {
+                                interviewQuestions.put(qKey, new ArrayList<>());
+                        }
+
+                        Map<String, Object> questionInfo = new HashMap<>();
+                        questionInfo.put("voiceScore", detail.getVscore());
+                        questionInfo.put("emotionScore", detail.getEscore());
+                        questionInfo.put("postureScore", detail.getPscore());
+                        questionInfo.put("ecntgood", detail.getEcntgood());
+                        questionInfo.put("ecntsoso", detail.getEcntsoso());
+                        questionInfo.put("ecntbad", detail.getEcntbad());
 
                         // 스트레스율 계산
-                        float totalEmotions = totalEcntgood + totalEcntsoso + totalEcntbad;
-                        int stressRate = Math.round((totalEcntbad / totalEmotions) * 100);
-                        stressRates.add(stressRate);
+                        float totalEmotions = detail.getEcntgood() + detail.getEcntsoso() + detail.getEcntbad();
+                        float stressRate = (detail.getEcntbad() / totalEmotions) * 100;
+                        questionInfo.put("stressRate", Math.round(stressRate));
 
-                        // 자세 점수 계산
-                        int postureScore = Math.round(Math.max(100 - (totalPbadcnt / count), 0));
-                        postureScores.add(postureScore);
-
-                        // 전체 음성 점수 계산
-                        float rawVoiceScore = ((totalVhertz + totalVamplit) / count) - ((totalVempty / count) * 2.0f);
-                        int voiceScore = Math.round(Math.max(rawVoiceScore, 0) / 100 * 100);
-                        voiceScores.add(voiceScore);
-
-                        // 날짜 추가
-                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                        dates.add(sdf.format(credt));
-
-                        // 질문당 음성 점수 추가
-                        for (Map.Entry<Integer, Float> questionScore : questionVoiceScoreMap.entrySet()) {
-                                String key = "Q" + questionScore.getKey();
-                                questionVoiceScores.computeIfAbsent(key, k -> new ArrayList<>())
-                                                .add(Math.round(questionScore.getValue()));
-                        }
-
-                        // 질문당 감정 점수 및 카운트 추가
-                        for (Map.Entry<Integer, Map<String, Object>> questionEmotion : questionEmotionScoreMap
-                                        .entrySet()) {
-                                String key = "Q" + questionEmotion.getKey();
-                                questionEmotionScores.computeIfAbsent(key, k -> new ArrayList<>())
-                                                .add(questionEmotion.getValue());
-                        }
+                        interviewQuestions.get(qKey).add(questionInfo);
                 }
 
-                Map<String, Object> result = new HashMap<>();
-                result.put("stressRates", stressRates);
-                result.put("postureScores", postureScores);
-                result.put("voiceScores", voiceScores);
-                result.put("dates", dates);
-                result.put("questionVoiceScores", questionVoiceScores);
-                result.put("questionEmotionScores", questionEmotionScores);
+                result.put("questionData", questionData);
 
                 return result;
-        }
-
-        private float calculateQuestionVoiceScore(IntDetailVO detail) {
-                float voiceScore = detail.getVhertz() + detail.getVamplit() - (detail.getVempty() * 2.0f);
-                return Math.max(voiceScore, 0) / 100 * 100; // 0-100 스케일로 변환
-        }
-
-        private Map<String, Object> calculateQuestionEmotionScore(IntDetailVO detail) {
-                float totalEmotions = detail.getEcntgood() + detail.getEcntsoso() + detail.getEcntbad();
-                float emotionScore = (detail.getEcntgood() / totalEmotions) * 100; // 긍정 감정을 기준으로 점수 계산
-
-                Map<String, Object> emotionData = new HashMap<>();
-                emotionData.put("score", Math.round(emotionScore));
-                emotionData.put("good", Math.round(detail.getEcntgood()));
-                emotionData.put("soso", Math.round(detail.getEcntsoso()));
-                emotionData.put("bad", Math.round(detail.getEcntbad()));
-
-                return emotionData;
         }
 
         // 회원의 최근 인터뷰 정보를 가져옴
@@ -271,4 +206,5 @@ public class MainPageService {
                 }
                 return convertedResult;
         }
+
 }

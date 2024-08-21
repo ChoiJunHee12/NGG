@@ -47,7 +47,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isVisible }) => {
       if (cnsno) {
         try {
           const response = await axios.get(
-            `${process.env.REACT_APP_BACK_END_URL}/consultProfiles/${cnsno}`
+            `${process.env.REACT_APP_BACK_END_URL}/consultant/consultProfiles/${cnsno}`
           );
           setUsername(response.data.name); // API 응답에서 사용자 이름 설정
         } catch (error) {

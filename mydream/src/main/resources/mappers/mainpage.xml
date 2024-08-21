@@ -48,7 +48,7 @@
 
     <!-- 최신 감정 데이터 조회 -->
     <select id="getLatestEmotionDetails" parameterType="map" resultType="intdetailvo">
-        SELECT d.intno, d.qno, d.ecntgood, d.ecntsoso, d.ecntbad
+        SELECT d.intno, d.qno, d.escore
         FROM TBINTDETAIL d
         JOIN TBINTRES r ON d.intno = r.intno
         WHERE d.intno = #{intno}
@@ -58,7 +58,7 @@
 
     <!-- 최신 음성 데이터 조회 -->
     <select id="getLatestVoiceDetails" parameterType="map" resultType="intdetailvo">
-        SELECT d.intno, d.qno, d.vhertz, d.vamplit, d.vempty
+        SELECT d.intno, d.qno, d.vscore
         FROM TBINTDETAIL d
         JOIN TBINTRES r ON d.intno = r.intno
         WHERE d.intno = #{intno}
@@ -68,7 +68,7 @@
 
     <!-- 최신 자세 데이터 조회 -->
     <select id="getLatestPostureDetails" parameterType="map" resultType="intdetailvo">
-        SELECT d.intno, d.qno, d.pbadcnt
+        SELECT d.intno, d.qno, d.pscore
         FROM TBINTDETAIL d
         JOIN TBINTRES r ON d.intno = r.intno
         WHERE d.intno = #{intno}
@@ -130,7 +130,7 @@
         WHERE memno = #{memno} AND intno = #{intno}
     </select>
 
-    <!-- 최근 5개의 인성면접 데이터-->
+    <!-- 최근 5개의 면접 데이터-->
     <select id="getInterviewDetails" parameterType="int" resultType="IntDetailVO">
     <![CDATA[
     SELECT 
@@ -139,10 +139,9 @@
         AVG(d.ecntgood) AS ecntgood, 
         AVG(d.ecntsoso) AS ecntsoso, 
         AVG(d.ecntbad) AS ecntbad, 
-        AVG(d.pbadcnt) AS pbadcnt,
-        AVG(d.vhertz) AS vhertz, 
-        AVG(d.vamplit) AS vamplit, 
-        AVG(d.vempty) AS vempty, 
+        AVG(d.escore) AS escore,
+        AVG(d.pscore) AS pscore,
+        AVG(d.vscore) AS vscore,
         MAX(d.credt) AS credt,
         MAX(d.upddt) AS upddt  
     FROM TBINTDETAIL d
@@ -157,7 +156,6 @@
         ) r
         WHERE r.rn <= 5
     ) recent ON d.intno = recent.intno
-    WHERE d.qno BETWEEN 1 AND 5
     GROUP BY d.intno, d.qno
     ORDER BY d.intno, d.qno
     ]]>
