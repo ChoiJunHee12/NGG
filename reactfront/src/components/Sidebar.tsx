@@ -50,6 +50,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isVisible }) => {
             `${process.env.REACT_APP_BACK_END_URL}/consultProfiles/${cnsno}`
           );
           setUsername(response.data.name); // API 응답에서 사용자 이름 설정
+          setImagePreview(response.data.imgname);
         } catch (error) {
           console.error("사용자 정보를 불러오는 데 실패했습니다.", error);
         }
@@ -68,7 +69,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isVisible }) => {
           <div className="pie-chart">
             <div className="profile-img">
               <img
-                src={imagePreview || "/img/consult_img/noimage.png"}
+                src={imagePreview ? `/img/upimg/${imagePreview}` : ""}
                 alt="Preview"
                 className="preview-image"
               />
