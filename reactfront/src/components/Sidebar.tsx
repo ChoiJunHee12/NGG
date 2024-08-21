@@ -74,13 +74,13 @@ const Sidebar: React.FC<SidebarProps> = ({ isVisible }) => {
               />
             </div>
           </div>
-          <button
+          {/* <button
             className="profile-btn btnModify"
             type="button"
             onClick={changeImage}
           >
             <span className="skip">사진편집</span>
-          </button>
+          </button> */}
           <input
             type="file"
             ref={fileInputRef}

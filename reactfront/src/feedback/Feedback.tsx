@@ -18,7 +18,7 @@ const Feedback = () => {
     const memno = searchParams.get('memno');
       const fetchData = async() => {
         console.log("memno:", memno);
-        const response = await axios.post(`${process.env.REACT_APP_BACK_END_URL}/feedback/feedbkList`, {"memno": memno});
+        const response = await axios.post(`${process.env.REACT_APP_BACK_END_URL}/consultant/feedback/feedbkList`, {"memno": memno});
         console.log(response.data);
         setItems(response.data);
         }

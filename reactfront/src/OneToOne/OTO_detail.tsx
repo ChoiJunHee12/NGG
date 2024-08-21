@@ -42,10 +42,10 @@ const OTO_detail: React.FC = () => {
   const chatdetail = async () => {
 
     const memnoData = new FormData();
-    console.log(`${process.env.REACT_APP_BACK_END_URL}/chat/chatdetail?chtno=${chtno}`);
+    console.log(`${process.env.REACT_APP_BACK_END_URL}/consultant/chat/chatdetail?chtno=${chtno}`);
     memnoData.append('memno', cnsno.toString());
     try {
-      const res = await axios.get(`${process.env.REACT_APP_BACK_END_URL}/chat/chatdetail?chtno=${chtno}`, {
+      const res = await axios.get(`${process.env.REACT_APP_BACK_END_URL}/consultant/chat/chatdetail?chtno=${chtno}`, {
         headers: { 'Content-Type': 'application/json' }
       });
       setMessages(res.data);
@@ -59,7 +59,7 @@ const OTO_detail: React.FC = () => {
 
   const chatprofile = async (memnoData: FormData) => {
     try {
-      const res = await axios.get(`${process.env.REACT_APP_BACK_END_URL}/chat/profile?chtno=${chtno}`, {
+      const res = await axios.get(`${process.env.REACT_APP_BACK_END_URL}/consultant/chat/profile?chtno=${chtno}`, {
         headers: { 'Content-Type': 'application/json' }
       });
       setUIMG(res.data.UIMG);

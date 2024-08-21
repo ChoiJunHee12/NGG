@@ -43,8 +43,33 @@ public class ResumeController {
     @Autowired
     private ObjectMapper objectMapper;
 
-    private final static String filePath = Paths.get(System.getProperty("user.dir"))
-            .resolve("vuefront/public/img/resumePhoto").toString();
+    private final String filePath;
+
+    public ResumeController() {
+        String tempPath;
+        try {
+            // 현재 경로에서 "mydream"을 벗어난 경로를 설정하기 위해 프로젝트 루트로 이동
+            Path projectRootPath = Paths.get(new ClassPathResource("").getFile().getAbsolutePath())
+                    .getParent() // "classes"
+                    .getParent() // "target"
+                    .getParent(); // "mydream" (벗어남)
+
+            // 최종 경로를 설정
+            this.filePath = projectRootPath.resolve("vuefront/public/img/resumePhoto").normalize().toString();
+
+            System.out.println("imagePath => " + filePath);
+
+            Path directoryPath = Paths.get(filePath);
+
+            if (!Files.exists(directoryPath)) {
+                Files.createDirectories(directoryPath);
+                System.out.println("디렉토리 생성: " + directoryPath);
+            }
+        } catch (Exception e) {
+            System.err.println("경로 설정 실패: " + e.getMessage());
+            throw new RuntimeException("Failed to set file path", e);
+        }
+    }
 
     @PostMapping("/resumeList")
     public ResponseEntity<?> resumeList(Model model, @RequestBody Map<String, Integer> num) {
