@@ -15,11 +15,13 @@ interface Item {
 
   const FeedbackMain: React.FC = () => {
     const [items, setItems] = useState<Item[]>([]);
-    const [cnsno, setCnsno] = useState<number | null>(1);
+    const [cnsno, setCnsno] = useState<number | null>(
+      localStorage.getItem("cnsno") !== null ? parseInt(localStorage.getItem("cnsno")!) : null
+    );
 
     useEffect(() => {
       const fetchData = async () => {
-        const response = await axios.post(`${process.env.REACT_APP_BACK_END_URL}/feedback/main`, {"cnsno": cnsno});
+        const response = await axios.post(`${process.env.REACT_APP_BACK_END_URL}/consultant/feedback/main`, {"cnsno": cnsno});
         console.log(response.data);
         setItems(response.data);
       }
@@ -48,8 +50,8 @@ interface Item {
             <div className="feedback-main-con-row" key={rowIndex}>
               {row.map((item, colIndex) => (
                 <div className="feedback-main-profileImgBox" key={colIndex}>
-                  <div>
-                      <img src={`vuefront/public/img/upimg/${item.imgname}`} alt="프로필" className="feedback-main-profileImg" />
+                  <div className='feedback-imagebox'>
+                      <img src={`http://localhost:3000/img/upimg/${item.imgname}`} alt="프로필" className="feedback-main-profileImg" />
                   </div>
                   <div className="feedback-main-txtbox">
                     <div>

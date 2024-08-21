@@ -21,7 +21,7 @@ const ConsultQuestion: React.FC = () => {
         return;
       }
 
-      const response = await axios.get(`${process.env.REACT_APP_BACK_END_URL}/CTQ/CTQuestionList`, {
+      const response = await axios.get(`${process.env.REACT_APP_BACK_END_URL}/consultant/CTQ/CTQuestionList`, {
         params: { cnsno }
       });
 
@@ -38,7 +38,7 @@ const ConsultQuestion: React.FC = () => {
 
   const del = async (cnsqno: number) => {
     try {
-      await axios.get(`${process.env.REACT_APP_BACK_END_URL}/CTQ/CTQuestionDel`, {
+      await axios.get(`${process.env.REACT_APP_BACK_END_URL}/consultant/CTQ/CTQuestionDel`, {
         params: { cnsqno }
       });
       fetchQuestions();
@@ -63,7 +63,7 @@ const ConsultQuestion: React.FC = () => {
 
       if (editingQuestion) {
         // 수정 모드
-        await axios.post(`${process.env.REACT_APP_BACK_END_URL}/CTQ/updateQuestion`, {
+        await axios.post(`${process.env.REACT_APP_BACK_END_URL}/consultant/CTQ/updateQuestion`, {
           cnsqno: editingQuestion.cnsqno,
           cnsno,
           question: currentQuestion,
@@ -73,7 +73,7 @@ const ConsultQuestion: React.FC = () => {
         });
       } else {
         // 추가 모드
-        await axios.post(`${process.env.REACT_APP_BACK_END_URL}/CTQ/addQuestion`, {
+        await axios.post(`${process.env.REACT_APP_BACK_END_URL}/consultant/CTQ/addQuestion`, {
           cnsno,
           question: currentQuestion,
           keyword1: currentKeywords[0],

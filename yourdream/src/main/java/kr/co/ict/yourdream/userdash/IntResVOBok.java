@@ -9,6 +9,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
@@ -25,8 +28,8 @@ public class IntResVOBok {
     @Column
     private int intno; // 면접번호(PK)
 
-    @Column
-    private int memno; // 회원번호(FK)
+    // @Column
+    // private int memno; // 회원번호(FK)
 
     @Column
     private String inttypecd; // 직무 or 인성면접
@@ -51,4 +54,8 @@ public class IntResVOBok {
     @Column
     @Temporal(TemporalType.TIMESTAMP)
     private Date upddt; // 최종수정일자
+
+    @ManyToOne
+    @JoinColumn(name = "memno", nullable = false)
+    private MemberVOBoks member;
 }

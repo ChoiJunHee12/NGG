@@ -7,7 +7,7 @@
     </select>
 
     <select id="getCnsno" parameterType="int" resultType="Integer">
-        SELECT CNSNO FROM TBMEMBERCONSULT WHERE memno=#{memno}
+        SELECT CNSNO FROM TBMEMBERCONSULT WHERE memno=#{memno} AND useyn = 'Y'
     </select>
 
     <select id="getQuestion" parameterType="Integer" resultType="Map">

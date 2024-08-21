@@ -366,7 +366,7 @@ export default {
             this.edu = resp.data[1];
             this.car = resp.data[2];
             this.intro = resp.data[3];
-            this.imageSrc = "/img/resumePhoto/" + this.basic.imgname;
+            this.imageSrc = "http://localhost:3000/img/resumePhoto/" + this.basic.imgname;
             console.log(this.basic);
             console.log(this.edu);
             console.log(this.car);
@@ -382,10 +382,10 @@ export default {
         console.log("이력서 작성");
       }
     },
-    complete() {
+    async complete() {
       const num = this.$route.query.num; // URL 파라미터 접근
       if (num != null) {
-        axios.post(
+        await axios.post(
           `${process.env.VUE_APP_BACK_END_URL}/resume/resumeUpdate?num=${num}`,
           {
             basic: this.basic,
@@ -407,13 +407,15 @@ export default {
           formData.append("memno", this.memno);
           console.log(formData);
           console.log(typeof formData);
-          axios
+          console.log("이미지:",formData.get("file"));
+          await axios
             .post(
               `${process.env.VUE_APP_BACK_END_URL}/resume/resumeImgUp`,
               formData,
               { headers: { "Content-Type": "multipart/form-data" } }
             )
             .then(() => {
+              console.log("업로드")
               this.savecom = !this.savecom;
             });
         } else {
@@ -421,7 +423,7 @@ export default {
           this.savecom = !this.savecom;
         }
       } else {
-        axios
+        const response = await axios
           .post(
             `${process.env.VUE_APP_BACK_END_URL}/resume/resumeAdd`,
             {
@@ -435,9 +437,8 @@ export default {
               headers: { "Content-Type": "application/json" },
             }
           )
-          .then((res) => {
-            console.log("반환값", res.data);
-            this.rsmno = res.data;
+            console.log("반환값", response.data);
+            this.rsmno = response.data;
 
             // 사진 추가
             if (this.selectedFile != null) {
@@ -447,15 +448,15 @@ export default {
               formData.append("memno", this.memno);
               console.log(formData);
               console.log(typeof formData);
-              axios.post(
+              console.log("이미지:",formData.get("file"));
+              await axios.post(
                 `${process.env.VUE_APP_BACK_END_URL}/resume/resumeImgUp`,
                 formData,
                 { headers: { "Content-Type": "multipart/form-data" } }
               );
             } else {
               console.log("사진 없음");
-            }
-          });
+            };
         this.savecom = !this.savecom;
       }
     },
