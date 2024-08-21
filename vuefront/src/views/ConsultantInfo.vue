@@ -125,7 +125,7 @@
           >
             <div class="thumbnail">
               <img
-                :src="imgpath(project.imgname)"
+                :src="`http://localhost:3001/img/upimg/${project.imgname}`"
                 :alt="'project ' + (index + 1)"
               />
               <div class="mask">
@@ -152,7 +152,9 @@
                   >
                     {{ desc.content }}
                   </li>
-                  <li v-if="project.introduce && project.introduce.length > 3">...</li>
+                  <li v-if="project.introduce && project.introduce.length > 3">
+                    ...
+                  </li>
                 </ul>
               </div>
             </div>
@@ -233,13 +235,13 @@ export default {
       this.activeProjectIndex = null;
     },
     truncateText(text, maxLength) {
-    if(text){
-      return text.length > maxLength
-        ? text.substring(0, maxLength) + "..."
-        : text;
-    } else {
-      return "..."
-    }
+      if (text) {
+        return text.length > maxLength
+          ? text.substring(0, maxLength) + "..."
+          : text;
+      } else {
+        return "...";
+      }
     },
     application(cnsno) {
       axios
@@ -271,7 +273,8 @@ export default {
         });
     },
     imgpath(imgname) {
-      return `/img/ConsultantInfo_image/${imgname}`;
+      // return `localhost:3001/public/img/upimg/${project.imgname}`;
+      return `http://localhost:3001/img/upimg/${imgname}`;
     },
   },
 };
