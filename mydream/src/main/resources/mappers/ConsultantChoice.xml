@@ -25,7 +25,7 @@
 <select id="consultantList" resultMap="cnscareerMap">
    SELECT a.cnsno, a.name, a.email, a.introduce, a.imgname,
    b.seqno, b.term, b.CONTENT, b.detail, GET_CMMCDNAME('CAREERDIV', b.CAREERDIV) AS careerdiv, GET_CMMCDNAME('CATEGCD',a.categcd) AS category 
-   FROM TBCONSULT a, TBCNSCAREER b WHERE a.CNSNO = b.CNSNO
+   FROM TBCONSULT a, TBCNSCAREER b WHERE a.CNSNO = b.CNSNO and a.rolecd = 'C'
 </select>
 <!-- 컨설턴트 유무 -->
 <select id="consultantUse" parameterType="int" resultType="map">

@@ -15,7 +15,9 @@ interface Item {
 
   const FeedbackMain: React.FC = () => {
     const [items, setItems] = useState<Item[]>([]);
-    const [cnsno, setCnsno] = useState<number | null>(1);
+    const [cnsno, setCnsno] = useState<number | null>(
+      localStorage.getItem("cnsno") !== null ? parseInt(localStorage.getItem("cnsno")!) : null
+    );
 
     useEffect(() => {
       const fetchData = async () => {
