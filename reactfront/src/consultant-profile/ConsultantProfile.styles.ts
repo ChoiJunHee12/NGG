@@ -3,7 +3,7 @@ import { TabProps } from './types';
 
 export const Container = styled.div`
   && {
-    max-width: 900px;
+    max-width: 1280px;
     margin: 0 auto;
     padding: 40px 20px;
     font-family: 'NanumSquare', sans-serif;
@@ -24,7 +24,7 @@ export const Header = styled.header`
 export const ProfileImage = styled.img`
   && {
     width: 250px;
-    height: 180px;
+    height: 200px;
     border-radius: 50%;
     object-fit: cover;
     margin-left: 40px;

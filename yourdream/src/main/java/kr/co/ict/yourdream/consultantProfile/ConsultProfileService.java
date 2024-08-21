@@ -93,8 +93,9 @@ public class ConsultProfileService {
     }
 
     // 컨설턴트 프로필의 필드를 업데이트하는 내부 헬퍼 메서드
-    // private void updateConsultProfileFields(ConsultProfile profile, ConsultVO vo) {
-    //     BeanUtils.copyProperties(vo, profile, "cnsno", "cnscareerList");
+    // private void updateConsultProfileFields(ConsultProfile profile, ConsultVO vo)
+    // {
+    // BeanUtils.copyProperties(vo, profile, "cnsno", "cnscareerList");
     // }
 
     private void updateConsultProfileFields(ConsultProfile profile, ConsultVO vo) {
@@ -103,10 +104,11 @@ public class ConsultProfileService {
             String encodedPassword = passwordEncoder.encode(vo.getPassword());
             profile.setPassword(encodedPassword);
         }
-        
+
         // 비밀번호를 제외한 나머지 필드 업데이트
         BeanUtils.copyProperties(vo, profile, "password", "cnsno", "cnscareerList");
     }
+
     // 컨설턴트 프로필의 경력 리스트를 업데이트하는 내부 헬퍼 메서드
     private void updateCnsCareerList(ConsultProfile profile, List<CnsCareerVO> careerVOList) {
         profile.getCnscareerList().clear();

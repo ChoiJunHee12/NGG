@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ProfileData, Career } from './types';
+import { ProfileData } from './types';
 
 import {
     Container, Header, ProfileImage, HeaderInfo, Name, Gender, Title,
@@ -8,7 +8,7 @@ import {
     Details, School, Degree, Introduce, EditButton,
     Modal, ModalContent, ModalHeader, ModalBody, ModalFooter,
     Form, FormGroup, Label, Input, Button, CancelButton, Textarea,
-    FileInput, UploadButton, UploadImage
+    FileInput, UploadImage
 } from './ConsultantProfile.styles';
 
 const ConsultantProfile: React.FC = () => {
@@ -24,14 +24,15 @@ const ConsultantProfile: React.FC = () => {
 
     useEffect(() => {
         fetchProfileData();
+
     }, []);
 
-    // 컨설턴트 번호 임의로! 나중에 로그인 연동시 바꿔야함!
-    const cnsno = 1001;
+    const cnsno = localStorage.getItem("cnsno");
 
     const fetchProfileData = async () => {
+
         try {
-            const response = await fetch(`${process.env.REACT_APP_BACK_END_URL}/consultProfiles/${cnsno}`);
+            const response = await fetch(`${process.env.REACT_APP_BACK_END_URL}/consultant/consultProfiles/${cnsno}`);
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
@@ -42,7 +43,7 @@ const ConsultantProfile: React.FC = () => {
             console.error('Error fetching profile data:', error);
         }
     };
-    
+
 
     // 성별과 카테고리 텍스트 변환 함수
     const getGenderText = (gendercd: string) => {
@@ -99,7 +100,7 @@ const ConsultantProfile: React.FC = () => {
         e.preventDefault();
         if (editedProfile && password === confirmPassword) {
             try {
-                const response = await fetch(`${process.env.REACT_APP_BACK_END_URL}/consultProfiles/${cnsno}`, {
+                const response = await fetch(`${process.env.REACT_APP_BACK_END_URL}/consultant/consultProfiles/${cnsno}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ ...editedProfile, password }),
@@ -138,32 +139,32 @@ const ConsultantProfile: React.FC = () => {
         if (selectedFile) {
             const formData = new FormData();
             formData.append('imgfile', selectedFile);
-    
+
             try {
                 // 파일 업로드 요청
-                const uploadResponse = await fetch(`${process.env.REACT_APP_BACK_END_URL}/consultProfiles/uploadProfileImage`, {
+                const uploadResponse = await fetch(`${process.env.REACT_APP_BACK_END_URL}/consultant/consultProfiles/uploadProfileImage`, {
                     method: 'POST',
                     body: formData,
                 });
-    
+
                 if (!uploadResponse.ok) {
                     throw new Error(`HTTP error! Status: ${uploadResponse.status}`);
                 }
-    
+
                 const uploadResult = await uploadResponse.json();
                 const filename = uploadResult.filename;  // 서버가 반환한 파일 이름을 사용합니다.
-    
+
                 // 프로필 이미지 업데이트 요청
-                const updateResponse = await fetch(`${process.env.REACT_APP_BACK_END_URL}/consultProfiles/${cnsno}/updateProfileImage`, {
+                const updateResponse = await fetch(`${process.env.REACT_APP_BACK_END_URL}/consultant/consultProfiles/${cnsno}/updateProfileImage`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ imgname: filename }),  // 이미지 파일 이름을 JSON 형태로 전송
                 });
 
-    
+
                 if (!updateResponse.ok) {
                     throw new Error(`HTTP error! Status: ${updateResponse.status}`);
-                }    
+                }
                 // 프로필 데이터 다시 불러오기
                 await fetchProfileData();
                 handleCloseUploadModal();
@@ -173,20 +174,20 @@ const ConsultantProfile: React.FC = () => {
             }
         }
     };
-    
+
 
     if (!profileData) {
         return <div>Loading...</div>;
     }
-    
-    
+
+
     return (
         <Container>
             <Header>
-            <ProfileImage
-                src={profileData.imgname ? `/img/upimg/${profileData.imgname}` : "/img/noimage.png"}
-                alt={profileData.name}
-            /><UploadImage src="/img/camera.png" alt="프로필 사진 수정" onClick={handleUploadClick} />
+                <ProfileImage
+                    src={profileData.imgname ? `/img/upimg/${profileData.imgname}` : "/img/noimage.png"}
+                    alt={profileData.name}
+                /><UploadImage src="/img/camera.png" alt="프로필 사진 수정" onClick={handleUploadClick} />
                 <HeaderInfo>
                     <div>
                         <Name as="h1">
@@ -274,7 +275,7 @@ const ConsultantProfile: React.FC = () => {
             <Modal isOpen={isModalOpen}>
                 <ModalContent>
                     <ModalHeader>
-                        <h2>프로필 수정</h2>
+                        <h2>⚙️ 프로필 수정</h2>
                         <button onClick={handleCloseModal}>&times;</button>
                     </ModalHeader>
                     <ModalBody>
@@ -324,7 +325,7 @@ const ConsultantProfile: React.FC = () => {
                                 </FormGroup>
                             )}
                             <FormGroup>
-                                <Label htmlFor="phonenum">📞 전화번호</Label>
+                                <Label htmlFor="phonenum">📞 연락처</Label>
                                 <Input
                                     type="tel"
                                     id="phonenum"
