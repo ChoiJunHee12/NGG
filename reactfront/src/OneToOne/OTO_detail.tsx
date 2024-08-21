@@ -34,7 +34,7 @@ const OTO_detail: React.FC = () => {
    // location.state에서 chtno 값 추출
    const { chtno } = location.state || {}; // location.state가 없을 경우를 대비해 기본값 {}를 사용
 
-   const imageUrl = 'http://localhost:3000/vuefront/img/upimg/1f96af07-f8da-4347-8a12-daa0704d7ade.png';
+   const imageUrl = 'http://localhost:3000/img/upimg/1f96af07-f8da-4347-8a12-daa0704d7ade.png';
 
 
   const chattype = (type: string) => (type === '1' ? 'user' : 'consultant');
