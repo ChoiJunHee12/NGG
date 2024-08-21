@@ -174,14 +174,14 @@ const MemberList: React.FC = () => {
                   <td>
                     <button
                       className="btn btn-primary btn-sm"
-                      style={{ width: "80px", height: "40px" }}
+                      style={{ width: "80px", height: "40px", margin: "3px" }}
                       onClick={() => showModal(member)}
                     >
                       수정
                     </button>
                     <button
                       className="btn btn-danger btn-sm"
-                      style={{ width: "80px", height: "40px" }}
+                      style={{ width: "80px", height: "40px", margin: "3px" }}
                       onClick={() => handleDelete(member.memno)}
                     >
                       삭제
@@ -233,12 +233,12 @@ const MemberList: React.FC = () => {
                   </ul>
                 </nav>
                 <div className="table-foot-btn">
-                  <button
+                  {/* <button
                     className="btn btn-primary mb-3"
                     onClick={() => window.location.reload()}
                   >
                     새로고침
-                  </button>
+                  </button> */}
                 </div>
               </div>
             </tfoot>

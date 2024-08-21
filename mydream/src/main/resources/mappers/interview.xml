@@ -57,11 +57,11 @@
                     INTO TBINTDETAIL (
                         INTNO, QNO, AIQNO, QUESTION, ANSWER,
                         ECNTGOOD, ECNTSOSO, ECNTBAD, PBADCNT, VHERTZ, 
-                        VAMPLIT, VEMPTY, AIFEEDBK, CREDT, UPDDT, ESCORE, PSCORE, VSCORE
+                        VJITTER, VSPEED, AIFEEDBK, CREDT, UPDDT, ESCORE, PSCORE, VSCORE
                     ) VALUES (
                         #{item.intno}, #{item.qno}, #{item.aiqno}, #{item.question}, #{item.answer, jdbcType=CLOB},
                         #{item.ecntgood}, #{item.ecntsoso}, #{item.ecntbad}, #{item.pbadcnt}, #{item.vhertz}, 
-                        #{item.vamplit}, #{item.vempty}, #{item.aifeedbk}, SYSDATE, SYSDATE, #{item.escore}, #{item.pscore}, #{item.vscore}
+                        #{item.vjitter}, #{item.vspeed}, #{item.aifeedbk}, SYSDATE, SYSDATE, #{item.escore}, #{item.pscore}, #{item.vscore}
                     )
                 </when>
                 <otherwise>
@@ -69,11 +69,11 @@
                         INTO TBINTDETAIL (
                             INTNO, QNO, CNSQNO, QUESTION, ANSWER,
                             ECNTGOOD, ECNTSOSO, ECNTBAD, PBADCNT, VHERTZ, 
-                            VAMPLIT, VEMPTY, AIFEEDBK, CREDT, UPDDT, ESCORE, PSCORE, VSCORE
+                            VJITTER, VSPEED, AIFEEDBK, CREDT, UPDDT, ESCORE, PSCORE, VSCORE
                         ) VALUES (
                             #{item.intno}, #{item.qno}, #{item.cnsqno}, #{item.question}, #{item.answer, jdbcType=CLOB},
                             #{item.ecntgood}, #{item.ecntsoso}, #{item.ecntbad}, #{item.pbadcnt}, #{item.vhertz}, 
-                            #{item.vamplit}, #{item.vempty}, #{item.aifeedbk}, SYSDATE, SYSDATE, #{item.escore}, #{item.pscore}, #{item.vscore}
+                            #{item.vjitter}, #{item.vspeed}, #{item.aifeedbk}, SYSDATE, SYSDATE, #{item.escore}, #{item.pscore}, #{item.vscore}
                         )
                     </if>
                 </otherwise>

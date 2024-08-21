@@ -131,8 +131,7 @@
         <div class="resduty-similartip">
           <img class="resduty-tipicon" src="\img\res_tip.png" />
           <div class="resduty-ti">
-            회원님이 작성한 이력서의 기반으로 키워드를 추출하여 면접 내용과
-            비교하여 유사도를 ...
+            면접에서 사용하신 단어를 시각적으로 표현해 드립니다.
           </div>
         </div>
       </div>
@@ -552,27 +551,27 @@ export default {
             ],
           },
           {
-            name: "vamplit",
+            name: "vjitter",
             data: [
-              this.detailvoList[0].vamplit,
-              this.detailvoList[1].vamplit,
-              this.detailvoList[2].vamplit,
-              this.detailvoList[3].vamplit,
-              this.detailvoList[4].vamplit,
-              this.detailvoList[5].vamplit,
-              this.detailvoList[6].vamplit,
+              this.detailvoList[0].vjitter,
+              this.detailvoList[1].vjitter,
+              this.detailvoList[2].vjitter,
+              this.detailvoList[3].vjitter,
+              this.detailvoList[4].vjitter,
+              this.detailvoList[5].vjitter,
+              this.detailvoList[6].vjitter,
             ],
           },
           {
-            name: "vempty",
+            name: "vspeed",
             data: [
-              this.detailvoList[0].vempty,
-              this.detailvoList[1].vempty,
-              this.detailvoList[2].vempty,
-              this.detailvoList[3].vempty,
-              this.detailvoList[4].vempty,
-              this.detailvoList[5].vempty,
-              this.detailvoList[6].vempty,
+              this.detailvoList[0].vspeed,
+              this.detailvoList[1].vspeed,
+              this.detailvoList[2].vspeed,
+              this.detailvoList[3].vspeed,
+              this.detailvoList[4].vspeed,
+              this.detailvoList[5].vspeed,
+              this.detailvoList[6].vspeed,
             ],
           },
         ],
@@ -599,7 +598,7 @@ export default {
         details.forEach((key) => {
             const storedDetail = JSON.parse(localStorage.getItem(key));
 
-            this.stt.push(storedDetail.answer || null);
+            this.stt.push(storedDetail.answer || "");
             this.emotion.push(storedDetail.emotion || { escore: 0 });
             this.position.push(storedDetail.position || { pscore: 0 });
             this.voice.push(storedDetail.voice || { vscore: 0 });
@@ -620,8 +619,8 @@ export default {
             ecntbad: this.emotion[i].ecntbad,
             pbadcnt: this.position[i].pbadcnt,
             vhertz: this.voice[i].vhertz,
-            vamplit: this.voice[i].vamplit,
-            vempty: this.voice[i].vempty,
+            vjitter: this.voice[i].vjitter,
+            vspeed: this.voice[i].vspeed,
             aifeedbk: this.feedback[i],
             escore: this.emotion[i].escore,
             pscore: this.position[i].pscore,
@@ -655,6 +654,22 @@ export default {
         this.mname = res.data.mname;
         this.resdate = res.data.resdate;
     })
+  },  
+  beforeUnmount() {
+    localStorage.removeItem('q1detail');
+    localStorage.removeItem('q2detail');
+    localStorage.removeItem('q3detail');
+    localStorage.removeItem('q4detail');
+    localStorage.removeItem('q5detail');
+    localStorage.removeItem('q6detail');
+    localStorage.removeItem('q7detail');
+    localStorage.removeItem('inttypecd');
+    localStorage.removeItem('inttypename');
+    localStorage.removeItem('questionlist');
+    localStorage.removeItem('pfinalcmt');
+    localStorage.removeItem('efinalcmt');
+    localStorage.removeItem('vfinalcmt');
+    localStorage.removeItem('sttfinalcmt');    
   },
 };
 </script>

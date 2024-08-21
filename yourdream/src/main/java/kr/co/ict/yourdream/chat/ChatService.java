@@ -23,7 +23,7 @@ public class ChatService {
     }
 
     public List<ChatRoomListDTO> getroomlist(Long cnsno) {
-        System.out.println(chatRepository.findChatroomsWithMaxChtno(cnsno).get(0).getNickname());
+        System.out.println(chatRepository.findChatroomsWithMaxChtno(cnsno).get(0).getName());
 
         return chatRepository.findChatroomsWithMaxChtno(cnsno);
 

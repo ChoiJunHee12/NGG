@@ -205,7 +205,7 @@ const ConsultantAdminModal: React.FC<ConsultantAdminModalProps> = ({
           </div>
           <div className="consult-form-row">
             <div className="consult-form-group">
-              <label htmlFor="name">이름</label>
+              <label htmlFor="name">🍀 이름</label>
               <input
                 type="text"
                 id="name"
@@ -215,7 +215,7 @@ const ConsultantAdminModal: React.FC<ConsultantAdminModalProps> = ({
               />
             </div>
             <div className="consult-form-group">
-              <label htmlFor="gendercd">성별</label>
+              <label htmlFor="gendercd">🧑‍💼 성별</label>
               <select
                 id="gendercd"
                 name="gendercd"
@@ -230,7 +230,7 @@ const ConsultantAdminModal: React.FC<ConsultantAdminModalProps> = ({
           </div>
           <div className="consult-form-row">
             <div className="consult-form-group">
-              <label htmlFor="categcd">전문분야</label>
+              <label htmlFor="categcd">👔 전문분야</label>
               <select
                 id="categcd"
                 name="categcd"
@@ -246,7 +246,7 @@ const ConsultantAdminModal: React.FC<ConsultantAdminModalProps> = ({
               </select>
             </div>
             <div className="consult-form-group">
-              <label htmlFor="phonenum">연락처</label>
+              <label htmlFor="phonenum">📞 연락처</label>
               <input
                 type="text"
                 id="phonenum"
@@ -258,7 +258,7 @@ const ConsultantAdminModal: React.FC<ConsultantAdminModalProps> = ({
           </div>
           <div className="consult-form-row">
             <div className="consult-form-group">
-              <label htmlFor="email">이메일</label>
+              <label htmlFor="email">✉️ 이메일</label>
               <input
                 type="text"
                 id="email"
@@ -268,7 +268,7 @@ const ConsultantAdminModal: React.FC<ConsultantAdminModalProps> = ({
               />
             </div>
             <div className="consult-form-group">
-              <label htmlFor="birthymd">생년월일</label>
+              <label htmlFor="birthymd">🎂 생년월일</label>
               <input
                 type="text"
                 id="birthymd"
@@ -280,7 +280,7 @@ const ConsultantAdminModal: React.FC<ConsultantAdminModalProps> = ({
           </div>
           <div className="consult-form-row">
             <div className="consult-form-group">
-              <label htmlFor="cnscareer">컨설팅경력</label>
+              <label htmlFor="cnscareer">💼 컨설팅경력</label>
               <select
                 id="cnscareer"
                 name="cnscareer"
@@ -307,7 +307,7 @@ const ConsultantAdminModal: React.FC<ConsultantAdminModalProps> = ({
               )}
             </div>
             <div className="consult-form-group">
-              <label htmlFor="cnsproject">컨설팅 프로젝트 수</label>
+              <label htmlFor="cnsproject">👥 컨설팅 프로젝트 수</label>
               <select
                 id="cnsproject"
                 name="cnsproject"

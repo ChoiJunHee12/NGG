@@ -55,7 +55,7 @@
                       :data-value="stressRate"
                     ></div>
                   </div>
-                  <div class="analysis-rate">{{ stressRate }}%</div>
+                  <div class="analysis-rate">{{ stressRate }}점</div>
                 </div>
                 <div class="analysis-left">
                   음성분석
@@ -65,17 +65,17 @@
                       :data-value="voiceRate"
                     ></div>
                   </div>
-                  <div class="analysis-rate">{{ voiceRate }}%</div>
+                  <div class="analysis-rate">{{ voiceRate }}점</div>
                 </div>
                 <div class="analysis-left">
                   자세분석
                   <div class="progress-container">
                     <div
                       class="main-progress-bar"
-                      :data-value="postureBadCountRate"
+                      :data-value="postureRate"
                     ></div>
                   </div>
-                  <div class="analysis-rate">{{ postureBadCountRate }}%</div>
+                  <div class="analysis-rate">{{ postureRate }}점</div>
                 </div>
                 <div class="analysis-left">
                   컨설턴트 평가
@@ -234,7 +234,7 @@
             <div id="chart-3" style="margin-top: -10px"></div>
           </div>
           <div class="box6">
-            <p class="box-text">감성, 음성, 자세 요약</p>
+            <p class="box-text">감정, 음성, 자세 요약</p>
             <div id="chart-4" style="margin-top: -10px"></div>
           </div>
           <!-- 블러 오버레이 -->
@@ -423,7 +423,7 @@ export default {
     });
     const stressRate = ref(0);
     const voiceRate = ref(0);
-    const postureBadCountRate = ref(0);
+    const postureRate = ref(0);
     const memberSchedules = ref([]);
     const activeSection = ref("ai-analysis");
     const consultantfeedback = ref({
@@ -514,12 +514,12 @@ export default {
       }
     };
     // 자세분석
-    const fetchPostureBadCountRate = async (intno, memno) => {
+    const fetchPostureRate = async (intno, memno) => {
       try {
         const response = await axios.get(
-          `${process.env.VUE_APP_BACK_END_URL}/mainpage/postureBadCountRate?intno=${intno.value}&memno=${memno}`
+          `${process.env.VUE_APP_BACK_END_URL}/mainpage/postureRate?intno=${intno.value}&memno=${memno}`
         );
-        postureBadCountRate.value = response.data;
+        postureRate.value = response.data;
       } catch (error) {
         console.error("Error fetching posture bad count rate:", error);
       }
@@ -789,13 +789,13 @@ export default {
     const keywordPostureBalance = computed(() => {
       if (
         intno.value === null ||
-        postureBadCountRate.value === null ||
-        postureBadCountRate.value === 0
+        postureRate.value === null ||
+        postureRate.value === 0
       ) {
         return "데이터 없음";
       }
-      // console.log("자세데이터:", postureBadCountRate.value);
-      return postureBadCountRate.value > 50 ? "자세가 불균형함" : "균형 잡힘";
+      // console.log("자세데이터:", postureRate.value);
+      return postureRate.value > 50 ? "자세가 불균형함" : "균형 잡힘";
     });
 
     const keywordConsultantMsg = computed(() => {
@@ -812,13 +812,13 @@ export default {
     });
 
     // 버블차트, 스플라인차트, 바차트, 멀티바차트 시작
-    const recentScores = ref([]);
+    const recentScores = ref(null);
     const fetchRecentInterviewScores = async (memno) => {
       try {
         const response = await axios.get(
           `${process.env.VUE_APP_BACK_END_URL}/mainpage/recentInterviewScores?memno=${memno}`
         );
-        // console.log(response.data);
+        console.log("Fetched interview data:", response.data);
         recentScores.value = response.data;
         updateEmotionBubbleChart(recentScores.value);
         updateVoiceLineChart(recentScores.value);
@@ -838,69 +838,59 @@ export default {
         .toString()
         .padStart(2, "0")}`;
     };
+
+    // display 함수 추가
     const display = () => {
       return { display: "none" };
     };
 
-    // 버블차트
-    // 큰 원 안에 날짜별로 질문들이 묶인 packedbubble 차트
-    const updateEmotionBubbleChart = (data) => {
-      // 날짜와 그에 해당하는 데이터를 함께 정렬
-      const sortedDates = data.dates
-        .map((date, index) => ({
-          date,
-          index,
-        }))
-        .sort((a, b) => new Date(a.date) - new Date(b.date));
-
-      // 감정 점수 중 최대값을 계산
-      const maxEmotionScore = Math.max(
-        ...Object.values(data.questionEmotionScores)
-          .flat()
-          .map((item) => item.score)
+    // 공통 함수: 날짜 정렬 및 회차 레이블 생성
+    const sortInterviewsAndCreateLabels = (data) => {
+      const sortedInterviews = data.interviewData.sort(
+        (a, b) => new Date(a.date) - new Date(b.date)
       );
+      const sessionLabels = sortedInterviews.map(
+        (_, index) => `${index + 1}회`
+      );
+      return { sortedInterviews, sessionLabels };
+    };
 
-      // 정렬된 날짜를 기반으로 series 생성
-      const series = sortedDates.map(({ date, index }) => ({
-        name: formatDate(date), // 날짜를 큰 원의 이름으로 사용
-        data: Object.keys(data.questionEmotionScores).map(
-          (question, questionIndex) => ({
-            name: `Q${questionIndex + 1}`, // Q1, Q2, Q3, Q4, Q5로 이름 설정
-            value: data.questionEmotionScores[question][index].score,
-            good: data.questionEmotionScores[question][index].good,
-            soso: data.questionEmotionScores[question][index].soso,
-            bad: data.questionEmotionScores[question][index].bad,
-          })
-        ),
-      }));
+    // 버블차트 (감정 분석)
+    const updateEmotionBubbleChart = (data) => {
+      const { sortedInterviews, sessionLabels } =
+        sortInterviewsAndCreateLabels(data);
+
+      const series = sessionLabels.map((label, index) => {
+        const interview = sortedInterviews[index];
+        return {
+          name: label,
+          data: Object.entries(data.questionData[interview.intno]).map(
+            ([qno, qData]) => ({
+              name: qno,
+              value: qData[0].emotionScore,
+              good: qData[0].ecntgood,
+              soso: qData[0].ecntsoso,
+              bad: qData[0].ecntbad,
+            })
+          ),
+        };
+      });
 
       Highcharts.chart("chart-1", {
-        chart: {
-          type: "packedbubble",
-          height: "65%",
-        },
-        title: {
-          text: "",
-          align: "left",
-        },
-        subtitle: {
-          text: "최근 5회 인성면접 기준",
-          align: "left",
-        },
+        chart: { type: "packedbubble", height: "65%" },
+        title: { text: "", align: "left" },
+        subtitle: { text: "최근 5회 면접 기준", align: "left" },
         tooltip: {
           useHTML: true,
-          pointFormat: `<b>{point.name}</b><br/>
-                    점수: {point.value}<br/>
-                    Good: {point.good}<br/>
-                    Soso: {point.soso}<br/>
-                    Bad: {point.bad}`,
+          pointFormat:
+            "<b>{point.name}</b><br/>점수: {point.value}<br/>Good: {point.good}<br/>Soso: {point.soso}<br/>Bad: {point.bad}",
         },
         plotOptions: {
           packedbubble: {
             minSize: "20%",
             maxSize: "60%",
             zMin: 0,
-            zMax: maxEmotionScore, // 감정 점수의 최대값을 기준으로 설정
+            zMax: 100,
             layoutAlgorithm: {
               gravitationalConstant: 0.05,
               splitSeries: true,
@@ -922,54 +912,55 @@ export default {
         series: series,
       });
     };
-    // 버블차트 끝
-    // 스플라인차트 시작
-    const updateVoiceLineChart = (data) => {
-      const sortedDates = data.dates
-        .map((date, index) => ({
-          date,
-          index,
-        }))
-        .sort((a, b) => new Date(a.date) - new Date(b.date));
 
-      const series = Object.keys(data.questionVoiceScores).map((question) => {
-        return {
-          name: question,
-          data: sortedDates.map(
-            ({ index }) => data.questionVoiceScores[question][index]
-          ),
-        };
-      });
+    // 스플라인차트 (음성 분석)
+    const updateVoiceLineChart = (data) => {
+      if (!data || !data.interviewData || !data.questionData) {
+        console.error("Invalid data for voice chart");
+        return;
+      }
+
+      const { sortedInterviews, sessionLabels } =
+        sortInterviewsAndCreateLabels(data);
+
+      if (sortedInterviews.length === 0) {
+        console.error("No interview data available");
+        return;
+      }
+
+      const firstInterview = data.questionData[sortedInterviews[0].intno];
+      if (!firstInterview) {
+        console.error("No question data for the first interview");
+        return;
+      }
+
+      const series = Object.keys(firstInterview).map((qno) => ({
+        name: `Q ${qno.slice(1)}`,
+        data: sortedInterviews
+          .map((interview) => {
+            const questionData = data.questionData[interview.intno][qno];
+            return questionData && questionData[0]
+              ? questionData[0].voiceScore
+              : null;
+          })
+          .filter((score) => score !== null),
+      }));
 
       Highcharts.chart("chart-2", {
-        chart: {
-          type: "spline",
-        },
-        title: {
-          text: " ",
-          align: "center",
-        },
-        subtitle: {
-          text: "최근 5회 인성면접 기준",
-          align: "left",
-        },
+        chart: { type: "spline" },
+        title: { text: " ", align: "center" },
+        subtitle: { text: "최근 5회 면접 기준", align: "left" },
         xAxis: {
-          categories: sortedDates.map(({ date }) => formatDate(date)),
-          title: {
-            text: "날짜",
-          },
+          categories: sessionLabels,
+          title: { text: "" },
         },
         yAxis: {
-          title: {
-            text: "음성 점수",
-          },
+          title: { text: "음성 점수" },
           max: 100,
         },
         tooltip: {
           formatter: function () {
-            return `<b>${this.series.name}</b><br/>
-                날짜: ${this.x}<br/>
-                점수: ${this.y}`;
+            return `<b>${this.series.name}</b><br/>회차: ${this.x}<br/>점수: ${this.y}`;
           },
         },
         plotOptions: {
@@ -978,132 +969,148 @@ export default {
               enabled: true,
               radius: 4,
             },
+            dataLabels: {
+              enabled: true,
+              format: "{point.y:.0f}", // 소수점 없는 정수로 표시
+              align: "center",
+              verticalAlign: "bottom",
+              y: -10, // 레이블을 점 위로 조금 이동
+              style: {
+                fontSize: "11px",
+                fontWeight: "bold",
+                textOutline: "1px contrast", // 레이블 가독성 향상
+              },
+            },
           },
         },
         series: series,
       });
     };
-    // 스플라인 차트 끝
-    // 바차트 시작
-    const updatePostureChart = (scores) => {
-      // 날짜를 기준으로 데이터 정렬
-      const sortedData = scores.dates
-        .map((date, index) => ({
-          date,
-          postureScore: scores.postureScores[index],
-        }))
-        .sort((a, b) => new Date(a.date) - new Date(b.date));
+
+    // 바차트 (자세 분석) - 면접 회차별 총합 평균 점수
+    const updatePostureChart = (data) => {
+      const { sortedInterviews, sessionLabels } =
+        sortInterviewsAndCreateLabels(data);
+
+      const series = [
+        {
+          name: "평균 자세 점수",
+          data: sortedInterviews.map((interview) => {
+            const questions = Object.values(data.questionData[interview.intno]);
+            const avgScore =
+              questions.reduce((sum, q) => sum + q[0].postureScore, 0) /
+              questions.length;
+            return Number(avgScore.toFixed(2));
+          }),
+        },
+      ];
 
       Highcharts.chart("chart-3", {
-        chart: {
-          type: "column",
-        },
-        title: {
-          text: "",
-        },
-        subtitle: {
-          text: "최근 5회 인성면접 기준",
-          align: "left",
-        },
-        colors: ["#a0d6e1"], // 기존 차트의 색상 사용
+        chart: { type: "column" },
+        title: { text: "" },
+        subtitle: { text: "최근 5회 면접 기준", align: "left" },
         xAxis: {
-          categories: sortedData.map((item) => formatDate(item.date)),
-          title: {
-            text: "",
-          },
+          categories: sessionLabels,
+          title: { text: " " },
+          crosshair: true,
         },
         yAxis: {
-          title: {
-            text: "자세 점수",
-          },
+          title: { text: "자세 점수" },
           max: 100,
         },
-        credits: {
-          enabled: false,
-        },
-        plotOptions: {
-          column: {
-            borderRadius: 5,
-          },
-        },
-        series: [
-          {
-            name: "",
-            showInLegend: false,
-            data: sortedData.map((item) => item.postureScore),
-          },
-        ],
         tooltip: {
-          formatter: function () {
-            return `<b>${this.x}</b><br/>자세 점수: <b>${this.y}</b>`;
-          },
-        },
-      });
-    };
-    // 바차트 끝
-    // 멀티바차트 시작
-    const updateMultiBarChart = (scores) => {
-      // 날짜를 기준으로 데이터 정렬
-      const sortedData = scores.dates
-        .map((date, index) => ({
-          date,
-          stressRate: scores.stressRates[index],
-          voiceScore: scores.voiceScores[index],
-          postureScore: scores.postureScores[index],
-        }))
-        .sort((a, b) => new Date(a.date) - new Date(b.date));
-
-      Highcharts.chart("chart-4", {
-        chart: {
-          type: "column",
-        },
-        title: {
-          text: "",
-        },
-        subtitle: {
-          text: "최근 5회 인성면접 기준",
-          align: "left",
-        },
-        colors: ["#FF6F61", "#8b8be0", "#88D8B0", "#f8b77d", "#FFABAB"],
-        yAxis: {
-          title: {
-            text: "점수",
-          },
-          max: 100,
-        },
-        xAxis: {
-          categories: ["감정", "음성", "자세"],
-        },
-        credits: {
-          enabled: false,
+          headerFormat:
+            '<span style="font-size:10px">{point.key}</span><table>',
+          pointFormat:
+            '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+            '<td style="padding:0"><b>{point.y:.0f}</b></td></tr>',
+          footerFormat: "</table>",
+          shared: true,
+          useHTML: true,
         },
         plotOptions: {
           column: {
-            borderRadius: "25%",
+            pointPadding: 0.2,
+            borderWidth: 0,
             dataLabels: {
               enabled: true,
-              formatter: function () {
-                return this.y === 0 ? "" : "";
+              format: "{point.y:.0f}",
+              style: {
+                fontWeight: "bold",
               },
             },
           },
-          series: {
-            minPointLength: 3, // 최소 막대 길이 설정
+        },
+        series: series,
+      });
+    };
+
+    // 멀티바차트 (종합분석:emotionScore,voiceScore,postureScore)
+    const updateMultiBarChart = (data) => {
+      const { sortedInterviews, sessionLabels } =
+        sortInterviewsAndCreateLabels(data);
+
+      const series = sortedInterviews.map((interview, index) => {
+        const questions = Object.values(data.questionData[interview.intno]);
+
+        // 각 항목별 평균 계산
+        const avgEmotionScore =
+          questions.reduce((sum, q) => sum + q[0].emotionScore, 0) /
+          questions.length;
+        const avgVoiceScore =
+          questions.reduce((sum, q) => sum + q[0].voiceScore, 0) /
+          questions.length;
+        const avgPostureScore =
+          questions.reduce((sum, q) => sum + q[0].postureScore, 0) /
+          questions.length;
+
+        return {
+          name: `${index + 1}회`,
+          data: [
+            Math.round(avgEmotionScore), // 반올림하여 정수로 변환
+            Math.round(avgVoiceScore),
+            Math.round(avgPostureScore),
+          ],
+        };
+      });
+
+      Highcharts.chart("chart-4", {
+        chart: { type: "column" },
+        title: { text: "" },
+        subtitle: { text: "최근 5회 면접 기준", align: "left" },
+        xAxis: {
+          categories: ["감정", "음성", "자세"],
+          title: { text: " " },
+          crosshair: true,
+        },
+        yAxis: {
+          title: { text: "평균 점수" },
+          max: 100,
+        },
+        tooltip: {
+          headerFormat:
+            '<span style="font-size:10px">{point.key}</span><table>',
+          pointFormat:
+            '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+            '<td style="padding:0"><b>{point.y}</b></td></tr>',
+          footerFormat: "</table>",
+          shared: true,
+          useHTML: true,
+        },
+        plotOptions: {
+          column: {
+            pointPadding: 0.2,
+            borderWidth: 0,
+            dataLabels: {
+              enabled: true,
+              format: "{point.y}",
+              style: {
+                fontWeight: "bold",
+              },
+            },
           },
         },
-        legend: {
-          align: "right",
-          verticalAlign: "middle",
-          layout: "vertical",
-        },
-        series: sortedData.map((item) => ({
-          name: formatDate(item.date),
-          data: [
-            100 - item.stressRate, // 스트레스율을 감정 점수로 변환
-            item.voiceScore,
-            item.postureScore,
-          ],
-        })),
+        series: series,
       });
     };
     // 전체 차트 끝
@@ -1125,7 +1132,7 @@ export default {
           fetchMemberData(memno),
           fetchStressRate(intno, memno),
           fetchVoiceRate(intno, memno),
-          fetchPostureBadCountRate(intno, memno),
+          fetchPostureRate(intno, memno),
           fetchConsultantScore(intno),
           fetchMemberSchedules(memno),
           fetchConsultantQuestions(intno, [6, 7]),
@@ -1163,7 +1170,7 @@ export default {
       interviewReport,
       stressRate,
       voiceRate,
-      postureBadCountRate,
+      postureRate,
       upcomingSchedules,
       activeSection,
       activateSection,

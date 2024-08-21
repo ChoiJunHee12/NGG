@@ -49,9 +49,9 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
                 chatroomvo.setCnsno(Integer.parseInt(inchat[1]));
                 // String chtroom = String.valueOf(chatService.getchatcroom(chatroomvo));
                 // System.out.println(chtroom);
-                SESSION_ROOMS.put(session.getId(), inchat[1]);
+                SESSION_ROOMS.put(session.getId(), String.valueOf(inchat[1]));
                 CLIENTS.put(session.getId(), session);
-                sendMessageToClient(session, inchat[1]);
+                sendMessageToClient(session, String.valueOf(inchat[1]));
 
             } else if (inchat.length == 1) {
                 int intprotocol = Integer.parseInt(inchat[0]);
@@ -60,8 +60,8 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
                 System.out.println(chtroom);
                 System.out.println("연결되었습니다.");
                 // 채팅방 설정 및 사용자 설정
-                SESSION_ROOMS.put(inchat[0], chtroom);
-                CLIENTS.put(inchat[0], session);
+                SESSION_ROOMS.put(session.getId(), chtroom);
+                CLIENTS.put(session.getId(), session);
                 // 값 뷰로 전달
                 sendMessageToClient(session, chtroom);
 

@@ -110,7 +110,14 @@
           </ul>
         </div>
       </template>
-      <template v-else>
+
+      <template v-else-if="isInterviewCompleted && !insertdone">
+        <br>
+        <h1 style="font-weight: bold;">면접 결과 분석중입니다 ...</h1>
+        <img src="/img/InterviewRes_image/waitInsert.gif">
+      </template>
+
+      <template v-else-if="insertdone">
         <div class="interview-completed">
           <h3 class="AI-interview-title">수고하셨습니다.</h3>
           <br />
@@ -198,6 +205,7 @@ export default {
       intfeedbkvo:{},
       intno:0,
       wehereinpage:true,
+      insertdone:false,
     };
   },
   computed: {
@@ -359,13 +367,14 @@ export default {
       }, 500);
     },
     uploadRecordedVideo() {
-      
+      this.isInterviewCompleted = true;
       if (this.recordedChunks.length > 0) {
-        this.isInterviewCompleted = true;
         const recordedBlob = new Blob(this.recordedChunks, { type: 'video/webm' });
+
         // Prepare FormData to send the recorded video
         const formData = new FormData();
         formData.append('video', recordedBlob, 'interview.webm');
+
         // Send the video to the server
         axios.post(
           `${process.env.VUE_APP_DJANGO_APP_BACK_END_URL}/interview/question_detail`,
@@ -377,9 +386,18 @@ export default {
           }
         )
         .then(qres => {
-          localStorage.setItem('q7detail', JSON.stringify(qres.data));          
+          localStorage.setItem('q7detail', JSON.stringify(qres.data));  
+          
+          
+          // 초기화
+          this.stt = [];
+          this.emotion = [];
+          this.position = [];
+          this.voice = [];
+          this.video_url = [];
+          this.feedback = []; 
 
-          // const inttypename = localStorage.getItem('inttypename')
+
           console.log("다들어있는거!!!!!",JSON.parse(localStorage.getItem("q7detail")))
           const details = ["q1detail", "q2detail", "q3detail", "q4detail", "q5detail", "q6detail", "q7detail"];
           details.forEach(key => {
@@ -447,8 +465,8 @@ export default {
                       ecntbad: this.emotion[i].ecntbad,
                       pbadcnt: this.position[i].pbadcnt,
                       vhertz: this.voice[i].vhertz,
-                      vamplit: this.voice[i].vamplit,
-                      vempty: this.voice[i].vempty,
+                      vjitter: this.voice[i].vjitter,
+                      vspeed: this.voice[i].vspeed,
                       aifeedbk: this.feedback[i],
                       escore: this.emotion[i].escore,
                       pscore: this.position[i].pscore,
@@ -485,11 +503,10 @@ export default {
                   axios.post(`${process.env.VUE_APP_BACK_END_URL}/interview/setintdetail`, this.detailvoList)
                   .then(()=>{
                     console.log('디테일인서트완료')
-                    
+                    this.insertdone=true;                    
                   })
-                })            
-                
-              
+
+                })
 
               })
               .catch(error => {
@@ -497,9 +514,6 @@ export default {
               });
               
               
-          })
-          .then(res => {
-              console.log('TBINTDETAIL에 INSERT 완료');
           })
           .catch(error => {
               console.error('요청 중 오류 발생:', error);

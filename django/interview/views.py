@@ -57,7 +57,7 @@ def speach_text(request):
         stt_result=stt_models(audio_file);
         print(stt_result)
         if stt_result=='':
-            stt_result='오류발생';
+            stt_result='목소리가 인식되지 않았습니다.';
         return JsonResponse({'result': stt_result })
 
     return JsonResponse({'error': 'Invalid request method'}, status=405)
@@ -104,12 +104,12 @@ def question_detail(request):
                 "pscore": pscore,
             },
             "voice": {
-                "vhertz": 17.42,
-                "vamplit": 55.18,
-                "vempty": 12.7,
-                "vscore": 87,
+                "vhertz": 5.42,
+                "vjitter": 37.18,
+                "vspeed": 55.7,
+                "vscore": 91,
                 "vhertzimg": "base64로 인코딩(String타입)",
-                "vamplitimg": "(주파수만으로 충분할것같으면 생략)",
+                "vjitterimg": "(주파수만으로 충분할것같으면 생략)",
             },
             "video_url": mp4_url,  # 비디오 파일의 URL을 추가합니다
             "aifeedback": "ai가 피드백 해준 문장입니다."

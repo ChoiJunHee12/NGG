@@ -141,6 +141,7 @@
               <th class="cvwrite-cv2-th3"><span class="headStar">*</span>전공</th>
               <th class="cvwrite-cv2-th4"><span class="headStar">*</span>학력</th>
               <th class="cvwrite-cv2-th5"><span class="headStar">*</span>학점</th>
+
               <th class="cvwrite-cv2-th6">삭제</th>
             </tr>
             <tr v-for="(ed, index) in edu" :key="index">
@@ -207,12 +208,14 @@
           </div>
           <table class="cvwrite-cv3-table">
             <tr class="cvwrite-cv3-tr">
+
               <th class="cvwrite-cv3-th1"><span class="headStar">*</span>재직기간</th>
               <th class="cvwrite-cv3-th2"><span class="headStar">*</span>회사명</th>
               <th class="cvwrite-cv3-th3"><span class="headStar">*</span>직종</th>
               <th class="cvwrite-cv3-th4"><span class="headStar">*</span>주요 직무</th>
               <th class="cvwrite-cv3-th5"><span class="headStar">*</span>직급/직책</th>
               <th class="cvwrite-cv3-th6"></th>
+
             </tr>
             <tr v-for="(ca, index) in car" :key="index">
               <!-- 여기서 데이터 받을시 for문 -->
@@ -283,6 +286,7 @@
               <th class="cvwrite-cv4-th1"><span class="headStar">*</span>제목</th>
               <th class="cvwrite-cv4-th2"><span class="headStar">*</span>내용</th>
               <th class="cvwrite-cv3-th6"></th>
+
             </tr>
             <tr v-for="(int, index) in intro" :key="index">
               <!-- 여기서 데이터 받을시 for문 -->
@@ -344,7 +348,6 @@ export default {
       rsmno: 0,
       imageSrc: "/img/resumePhoto/default.png",
       selectedFile: null,
-      selectedResume: null,
     };
   },
   components: {
@@ -361,6 +364,7 @@ export default {
           console.log(num);
           const resp = await axios.get(
             `${process.env.VUE_APP_BACK_END_URL}/resume/resumeDetail?num=${num}`
+
           );
           console.log(resp.data);
           this.rsmno = num;
@@ -394,6 +398,7 @@ export default {
         alert("모든 필드를 입력해야 합니다.");
         return; // 검증 실패 시 함수 종료
       }
+
 
       const num = this.$route.query.num; // URL 파라미터 접근
       if (num != null) {
@@ -442,6 +447,7 @@ export default {
             {
               headers: { "Content-Type": "application/json" },
             }
+
           );
           console.log("반환값", res.data);
           this.rsmno = res.data;
@@ -517,7 +523,6 @@ export default {
         console.error('업로드 실패 파일:', error);
       }
     },
-  
     upprofile(event) {
       try {
         event.preventDefault();

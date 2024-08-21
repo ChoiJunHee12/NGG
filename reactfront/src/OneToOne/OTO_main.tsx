@@ -4,7 +4,7 @@ import './OTO_main.css';
 import axios from 'axios';
 
 interface Item {
-  nickname: string;
+  name: string;
   chtno: string;
   imgname: string;
 }
@@ -12,7 +12,7 @@ interface Item {
 
 
 const OTO_main: React.FC = () => {
-  const [cnsno] = useState(2);
+  const [cnsno] = useState(localStorage.getItem("cnsno"));
   const [rows, setRows] = useState<Item[][]>([]);
   const items: Item[][] = [
     // {chtno: 43, nickname: '홍길동닉네임4', imgname: 'default.png'} 예시 데이터
@@ -72,14 +72,14 @@ const OTO_main: React.FC = () => {
             <div className="OTO-main-profileImgBox" key={colIndex}>
               <div>
                 <Link to={{pathname:`/consultant/OneToOne/detail`,}}state={{chtno:item.chtno}}>
-                  <img src={`/img/OneToOne_img/default.png`} alt="프로필" className="OTO-main-profileImg" />
+                  <img src={`${process.env.REACT_APP_VUE_FRONT_END_URL}/img/OneToOne_img/${item.imgname}`} alt="프로필" className="OTO-main-profileImg" />
                 </Link>
               </div>
               <div className="OTO-main-txtbox">
                 <div>
-                  <h5 className="OTO-main-h5">{item.nickname}</h5>
+                  <h5 className="OTO-main-h5">{item.name}</h5>
                   <p>
-                    새로운 메시지 <Link to={`/chat/${item.chtno}`} className="OTO-main-msg">✉️</Link>
+                    <Link to={{pathname:`/consultant/OneToOne/detail`,}}state={{chtno:item.chtno}} className="OTO-main-msg"><button className="feedback-nextbtn col-1">상담하기</button></Link>
                   </p>
                 </div>
               </div>

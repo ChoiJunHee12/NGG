@@ -169,6 +169,7 @@ export default {
       } else if(status=='Y') {     
         this.cnsYnN = true;
       }
+      localStorage.removeItem('status');
     })
     .catch((error) => {
       console.error("마운트시 에러발생");
