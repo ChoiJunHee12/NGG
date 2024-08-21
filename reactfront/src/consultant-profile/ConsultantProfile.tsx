@@ -168,6 +168,7 @@ const ConsultantProfile: React.FC = () => {
                 // 프로필 데이터 다시 불러오기
                 await fetchProfileData();
                 handleCloseUploadModal();
+                window.location.reload();
             } catch (error) {
                 console.error('Error uploading file:', error);
                 alert('파일 업로드 중 오류가 발생했습니다.');

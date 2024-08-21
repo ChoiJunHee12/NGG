@@ -233,12 +233,12 @@ const MemberList: React.FC = () => {
                   </ul>
                 </nav>
                 <div className="table-foot-btn">
-                  <button
+                  {/* <button
                     className="btn btn-primary mb-3"
                     onClick={() => window.location.reload()}
                   >
                     새로고침
-                  </button>
+                  </button> */}
                 </div>
               </div>
             </tfoot>
