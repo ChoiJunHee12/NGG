@@ -104,7 +104,7 @@
     flex-direction: row; /* 수직 정렬 */
     gap: 20px; /* 두 요소 간의 간격 */
     overflow-y: auto;
-    height: 950px;
+    height: 800px;
 }
 .resh-qcon {
     display: flex;

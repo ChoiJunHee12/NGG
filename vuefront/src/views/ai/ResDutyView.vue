@@ -8,7 +8,7 @@
       <div @click="pagechage(5)" class="col-1" :class="{ 'resduty-button': true, 'resduty-qactive': nownum === 5 }" > Q5 </div>
       <div @click="pagechage(6)" class="col-1" :class="{ 'resduty-button': true, 'resduty-qactive': nownum === 6 }" > Q6 </div>
       <div @click="pagechage(7)" class="col-1" :class="{ 'resduty-button': true, 'resduty-qactive': nownum === 7 }" > Q7 </div>
-      <div @click="pagechage(8)" class="col-1" :class="{ 'resduty-rbutton': true, 'resduty-qactive': nownum === 8 }" > 종합 평가 </div>
+      <div @click="pagechage(8)" class="col-1" :class="{ 'resduty-rbutton': true, 'resduty-qactive': nownum === 8 }" >  </div>
     </div>
     <div :style="displayPage(1)" class="resduty-con row">
       <div class="resduty-qcon">
