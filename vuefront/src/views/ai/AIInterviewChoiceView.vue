@@ -124,7 +124,7 @@
       
       <!-- Buttons -->
       <div class="device-check-btn">
-        <button class="btn btn-pre" @click="handleBack">< 이전</button>
+        <button class="btn btn-pre" @click="handleBack">〈 이전</button>
         <transition name="fade" mode="out-in">
           <button
             v-if="isInterviewSelected"
@@ -161,6 +161,7 @@ export default {
     axios.get(`${process.env.VUE_APP_BACK_END_URL}/interview/getcnsYnN?memno=${this.memno}`)   
     .then((res) => {    
       const status = res.data;
+      console.log("하",res.data);
       console.log(status);
       localStorage.setItem('status',status);
       if (status=='N'){

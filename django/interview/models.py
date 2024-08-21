@@ -23,7 +23,7 @@ SERVICE_ACCOUNT_JSON = 'interview/static/json/myspeechtotext-431005-a07eb9df65a2
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = SERVICE_ACCOUNT_JSON
 
 #ffpeg.exe 경로 설정 각 위치에 맞게 설정
-AudioSegment.converter = 'D:/ICTEDU/...경로써주세요/static/ffmpeg/ffmpeg.exe'
+AudioSegment.converter = '실제경로'
 
 # MediaPipe Pose 모델 초기화
 mp_pose = mp.solutions.pose
