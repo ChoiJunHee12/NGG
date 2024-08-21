@@ -77,8 +77,8 @@ public class InterviewController {
         // System.out.println(i + 1 + "번쨰 ecntbad" + detailvoList.get(i).getEcntbad());
         // System.out.println(i + 1 + "번쨰 pbadcnt" + detailvoList.get(i).getPbadcnt());
         // System.out.println(i + 1 + "번쨰 vhertz" + detailvoList.get(i).getVhertz());
-        // System.out.println(i + 1 + "번쨰 vamplit" + detailvoList.get(i).getVamplit());
-        // System.out.println(i + 1 + "번쨰 vempty" + detailvoList.get(i).getVempty());
+        // System.out.println(i + 1 + "번쨰 vjitter" + detailvoList.get(i).getVjitter());
+        // System.out.println(i + 1 + "번쨰 vspeed" + detailvoList.get(i).getVspeed());
         // System.out.println(i + 1 + "번쨰 aifeedbk" +
         // detailvoList.get(i).getAifeedbk());
         // System.out.println(i + 1 + "번쨰 escore" + detailvoList.get(i).getEscore());
