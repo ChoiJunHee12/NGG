@@ -137,9 +137,9 @@
               <th class="cvwrite-cv2-th1">재학기간</th>
               <th class="cvwrite-cv2-th2">학교명</th>
               <th class="cvwrite-cv2-th3">전공</th>
-              <th class="cvwrite-cv2-th4">졸업여부</th>
+              <th class="cvwrite-cv2-th4">학력</th>
               <th class="cvwrite-cv2-th5">학점</th>
-              <th class="cvwrite-cv2-th6"></th>
+              <th class="cvwrite-cv2-th6">삭제</th>
             </tr>
             <tr v-for="(ed, index) in edu" :key="index">
               <!-- 여기서 데이터 받을시 for문 -->
@@ -148,7 +148,14 @@
                   type="text"
                   class="cvwrite-cv-input-half-top"
                   placeholder="입학일시"
-                  v-model="ed.enrollymd"
+                  v-model="ed.entymd"
+                />
+                ~
+                <input
+                  type="text"
+                  class="cvwrite-cv-input-half-bottom"
+                  placeholder="졸업일시"
+                  v-model="ed.gradeymd"
                 />
               </td>
               <td class="cvwrite-cv2-td2">
@@ -171,8 +178,8 @@
                 <input
                   type="text"
                   class="cvwrite-cv-input"
-                  placeholder="졸업구분"
-                  v-model="ed.gradeuateclass"
+                  placeholder="학력"
+                  v-model="ed.gradeuateyn"
                 />
               </td>
               <td class="cvwrite-cv2-td5">
@@ -203,7 +210,7 @@
               <th class="cvwrite-cv3-th3">직종</th>
               <th class="cvwrite-cv3-th4">주요 직무</th>
               <th class="cvwrite-cv3-th5">직급/직책</th>
-              <th class="cvwrite-cv3-th6"></th>
+              <th class="cvwrite-cv3-th6">삭제</th>
             </tr>
             <tr v-for="(ca, index) in car" :key="index">
               <!-- 여기서 데이터 받을시 for문 -->
@@ -213,6 +220,13 @@
                   class="cvwrite-cv-input-half-top"
                   placeholder="입사일시"
                   v-model="ca.entymd"
+                />
+                ~
+                <input
+                  type="text"
+                  class="cvwrite-cv-input-half-top"
+                  placeholder="퇴사일시"
+                  v-model="ca.quitymd"
                 />
               </td>
               <td class="cvwrite-cv3-td2">
@@ -264,9 +278,9 @@
 
           <table class="cvwrite-cv4-table">
             <tr class="cvwrite-cv4-tr">
-              <th class="cvwrite-cv4-th1">제목</th>
+              <th class="cvwrite-cv4-th1">질문</th>
               <th class="cvwrite-cv4-th2">내용</th>
-              <th class="cvwrite-cv3-th6"></th>
+              <th class="cvwrite-cv3-th6">삭제</th>
             </tr>
             <tr v-for="(int, index) in intro" :key="index">
               <!-- 여기서 데이터 받을시 for문 -->
@@ -283,7 +297,7 @@
                 <textarea
                   class="auto-resize"
                   placeholder="750자 이내로 입력하세요"
-                  v-model="intro"
+                  v-model="int.content"
                 >
                 </textarea>
               </td>
@@ -328,8 +342,6 @@ export default {
       rsmno: 0,
       imageSrc: "/img/resumePhoto/default.png",
       selectedFile: null,
-      selectedResume: null,
-      resumeData:{}
     };
   },
   components: {
@@ -354,7 +366,7 @@ export default {
             this.edu = resp.data[1];
             this.car = resp.data[2];
             this.intro = resp.data[3];
-            this.imageSrc = "/img/resumePhoto/" + this.basic.imgname;
+            this.imageSrc = "http://localhost:3000/img/resumePhoto/" + this.basic.imgname;
             console.log(this.basic);
             console.log(this.edu);
             console.log(this.car);
@@ -370,10 +382,10 @@ export default {
         console.log("이력서 작성");
       }
     },
-    complete() {
+    async complete() {
       const num = this.$route.query.num; // URL 파라미터 접근
       if (num != null) {
-        axios.post(
+        await axios.post(
           `${process.env.VUE_APP_BACK_END_URL}/resume/resumeUpdate?num=${num}`,
           {
             basic: this.basic,
@@ -395,13 +407,15 @@ export default {
           formData.append("memno", this.memno);
           console.log(formData);
           console.log(typeof formData);
-          axios
+          console.log("이미지:",formData.get("file"));
+          await axios
             .post(
               `${process.env.VUE_APP_BACK_END_URL}/resume/resumeImgUp`,
               formData,
               { headers: { "Content-Type": "multipart/form-data" } }
             )
             .then(() => {
+              console.log("업로드")
               this.savecom = !this.savecom;
             });
         } else {
@@ -409,7 +423,7 @@ export default {
           this.savecom = !this.savecom;
         }
       } else {
-        axios
+        const response = await axios
           .post(
             `${process.env.VUE_APP_BACK_END_URL}/resume/resumeAdd`,
             {
@@ -423,9 +437,8 @@ export default {
               headers: { "Content-Type": "application/json" },
             }
           )
-          .then((res) => {
-            console.log("반환값", res.data);
-            this.rsmno = res.data;
+            console.log("반환값", response.data);
+            this.rsmno = response.data;
 
             // 사진 추가
             if (this.selectedFile != null) {
@@ -435,68 +448,21 @@ export default {
               formData.append("memno", this.memno);
               console.log(formData);
               console.log(typeof formData);
-              axios.post(
+              console.log("이미지:",formData.get("file"));
+              await axios.post(
                 `${process.env.VUE_APP_BACK_END_URL}/resume/resumeImgUp`,
                 formData,
                 { headers: { "Content-Type": "multipart/form-data" } }
               );
             } else {
               console.log("사진 없음");
-            }
-          });
+            };
         this.savecom = !this.savecom;
       }
     },
-    uploadchange(event) {
-  this.upload_text = "진행중";
-  this.selectedResume = event.target.files[0];
-
-  if (this.selectedResume != null) {
-    const formData = new FormData();
-    formData.append("file", this.selectedResume);
-
-    axios.post(
-      `${process.env.VUE_APP_DJANGO_APP_BACK_END_URL}resume/upload/`,
-      formData,
-      { headers: { "Content-Type": "multipart/form-data" } }
-    )
-    .then((res) => {
-      console.log("반환값", res.data.resume_data.intro);
-      this.basic = res.data.resume_data;
-      this.edu = res.data.resume_data.education_data;
-      this.car = res.data.resume_data.career_data;
-      this.intro = res.data.resume_data.intro;
-      this.upload_text = "업로드완료";
-    })
-    .catch((error) => {
-      console.error("파일 업로드 중 오류 발생:", error);
-      this.upload_text = "업로드 실패";
-    });
-  } else {
-    console.log("파일 없음");
-  }
-},
-    async submitFile() {
-      if (!this.selectedFile) {
-        alert("Please select a file first!");
-        return;
-      }
-
-      let formData = new FormData();
-      formData.append('pdf', this.selectedResume);
-
-      try {
-        const response = await axios.post('http://localhost:9000/resume/', formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          }
-        });
-        console.log('File uploaded successfully', response.data);
-      } catch (error) {
-        console.error('Error uploading file:', error);
-      }
+    uploadchange() {
+      this.upload_text = "진행중";
     },
-  
     upprofile(event) {
       event.preventDefault();
       const file = event.target.files[0];

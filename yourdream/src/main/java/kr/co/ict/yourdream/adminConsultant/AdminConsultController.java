@@ -8,7 +8,7 @@ import kr.co.ict.yourdream.consultantProfile.ConsultVO;
 import java.util.List;
 
 @RestController
-@RequestMapping("/adminConsult")
+@RequestMapping("/admin/adminConsult")
 public class AdminConsultController {
 
     @Autowired

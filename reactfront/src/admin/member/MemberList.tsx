@@ -174,14 +174,14 @@ const MemberList: React.FC = () => {
                   <td>
                     <button
                       className="btn btn-primary btn-sm"
-                      style={{ width: "80px", height: "40px" }}
+                      style={{ width: "80px", height: "40px", margin: "3px" }}
                       onClick={() => showModal(member)}
                     >
                       수정
                     </button>
                     <button
                       className="btn btn-danger btn-sm"
-                      style={{ width: "80px", height: "40px" }}
+                      style={{ width: "80px", height: "40px", margin: "3px" }}
                       onClick={() => handleDelete(member.memno)}
                     >
                       삭제

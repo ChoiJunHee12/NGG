@@ -308,7 +308,7 @@ export default {
         })
         .catch(error => {
           console.error('Error uploading video:', error);
-          alert('Failed to upload video');
+          alert('Failed to upload video4');
         });
         this.$router.push({ name: "AIInterview5" });
       }
