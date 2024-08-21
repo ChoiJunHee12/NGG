@@ -969,6 +969,18 @@ export default {
               enabled: true,
               radius: 4,
             },
+            dataLabels: {
+              enabled: true,
+              format: "{point.y:.0f}", // 소수점 없는 정수로 표시
+              align: "center",
+              verticalAlign: "bottom",
+              y: -10, // 레이블을 점 위로 조금 이동
+              style: {
+                fontSize: "11px",
+                fontWeight: "bold",
+                textOutline: "1px contrast", // 레이블 가독성 향상
+              },
+            },
           },
         },
         series: series,
