@@ -21,8 +21,8 @@ public class IntDetailVO {
     private float ecntbad;
     private float pbadcnt;
     private float vhertz;
-    private float vamplit;
-    private float vempty;
+    private float vjitter;
+    private float vspeed;
     private String aifeedbk;
     private Date credt;
     private Date upedt;
