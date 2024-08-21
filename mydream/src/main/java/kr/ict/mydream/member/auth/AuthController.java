@@ -9,6 +9,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -17,6 +18,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -44,22 +46,32 @@ public class AuthController {
     
 
 
-    private final static String filePath = Paths.get(System.getProperty("user.dir"))
-    .resolve("vuefront/public/img/upimg").toString();
+    private final String filePath;
 
     public AuthController() {
-    System.out.println("imagePath=>" + filePath);
-
-    Path directoryPath = Paths.get(filePath);
-
-    if (!Files.exists(directoryPath)) {
+        String tempPath;
         try {
-            Files.createDirectories(directoryPath);
-            System.out.println("디렉토리 생성: " + directoryPath);
+            // 현재 경로에서 "mydream"을 벗어난 경로를 설정하기 위해 프로젝트 루트로 이동
+            Path projectRootPath = Paths.get(new ClassPathResource("").getFile().getAbsolutePath())
+                                        .getParent()    // "classes"
+                                        .getParent()    // "target"
+                                        .getParent();   // "mydream" (벗어남)
+            
+            // 최종 경로를 설정
+            this.filePath = projectRootPath.resolve("vuefront/public/img/upimg").normalize().toString();
+
+            System.out.println("imagePath => " + filePath);
+
+            Path directoryPath = Paths.get(filePath);
+
+            if (!Files.exists(directoryPath)) {
+                Files.createDirectories(directoryPath);
+                System.out.println("디렉토리 생성: " + directoryPath);
+            }
         } catch (Exception e) {
-            System.err.println("디렉토리 생성 실패: " + e.getMessage());
+            System.err.println("경로 설정 실패: " + e.getMessage());
+            throw new RuntimeException("Failed to set file path", e);
         }
-    }
     }
 
 @PostMapping("/login")

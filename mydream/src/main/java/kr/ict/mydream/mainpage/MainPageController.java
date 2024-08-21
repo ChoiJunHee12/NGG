@@ -38,12 +38,12 @@ public class MainPageController {
         return ResponseEntity.ok(voiceRate);
     }
 
-    // 자세 불량 점수 조회(최근 면접 데이터 인성&직무)
-    @GetMapping("/postureBadCountRate")
-    public ResponseEntity<Float> getPostureBadCountRate(@RequestParam("intno") int intno,
+    // 자세 점수 조회(최근 면접 데이터 인성&직무)
+    @GetMapping("/postureRate")
+    public ResponseEntity<Float> getPostureRate(@RequestParam("intno") int intno,
             @RequestParam("memno") int memno) {
-        float postureBadCountRate = mainPageService.calculatePostureBadCountRate(intno, memno);
-        return ResponseEntity.ok(postureBadCountRate);
+        float postureRate = mainPageService.calculatePostureRate(intno, memno);
+        return ResponseEntity.ok(postureRate);
     }
 
     // 컨설턴트 평가 점수 조회
@@ -99,11 +99,11 @@ public class MainPageController {
         return mainPageService.getConsultantTotalFeedback(memno, intno);
     }
 
-    // 최근 5개의 인성면접 데이터
+    // 최근 5개의 면접 데이터
     @GetMapping("/recentInterviewScores")
-    public ResponseEntity<Map<String, Object>> getRecentInterviewScores(@RequestParam("memno") int memno) {
-        Map<String, Object> scores = mainPageService.calculateRecentInterviewScores(memno);
-        return ResponseEntity.ok(scores);
+    public ResponseEntity<Map<String, Object>> getRecentInterviewData(@RequestParam("memno") int memno) {
+        Map<String, Object> interviewData = mainPageService.getRecentInterviewData(memno);
+        return ResponseEntity.ok(interviewData);
     }
 
     // 회원의 최근 인터뷰 정보를 가져옴

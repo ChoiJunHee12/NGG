@@ -25,9 +25,12 @@ import MemberList from "./admin/member/MemberList";
 import MemberModal from "./admin/member/MemberModal";
 import Login from "./main/Login";
 import PrivateRoute from "./components/PrivateRoute"; // PrivateRoute import 추가
+import { useSelector } from "react-redux";
+import { RootState } from "./store";
 
 const App: React.FC = () => {
   const [isSidebarVisible, setIsSidebarVisible] = useState(true);
+  const { token } = useSelector((state: RootState) => state.auth);
 
   const toggleSidebar = () => {
     setIsSidebarVisible(!isSidebarVisible);
@@ -37,19 +40,37 @@ const App: React.FC = () => {
     <Router>
       <Routes>
         {/* Redirect / to /main/login */}
-        <Route path="/" element={<Navigate to="/main/login" replace />} />
+        <Route
+          path="/"
+          element={
+            token ? (
+              <Navigate to="/consultant/consultant-profile" replace />
+            ) : (
+              <Navigate to="/main/login" replace />
+            )
+          }
+        />
 
         {/* Login route */}
-        <Route path="/main/login" element={<LoginPageLayout />} />
+        <Route
+          path="/main/login"
+          element={
+            token ? <Navigate to="/main" replace /> : <LoginPageLayout />
+          }
+        />
 
         {/* Routes that require Header and Sidebar */}
         <Route
           path="/*"
           element={
-            <MainLayout
-              toggleSidebar={toggleSidebar}
-              isSidebarVisible={isSidebarVisible}
-            />
+            token ? (
+              <MainLayout
+                toggleSidebar={toggleSidebar}
+                isSidebarVisible={isSidebarVisible}
+              />
+            ) : (
+              <Navigate to="/main/login" replace />
+            )
           }
         />
       </Routes>
@@ -114,7 +135,7 @@ const MainLayout: React.FC<{
             element={<PrivateRoute element={<OTO_detail />} roleRequired="C" />}
           />
           <Route
-            path="/consultant/feedback"
+            path="/consultant/feedback/list"
             element={<PrivateRoute element={<Feedback />} roleRequired="C" />}
           />
           <Route

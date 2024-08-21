@@ -43,6 +43,7 @@
                 <ul>
                   <li
                     class="project-profile"
+                    :v-if="project.cnscareerVO"
                     v-for="(desc, descIndex) in project.cnscareerVO"
                     :key="descIndex"
                   >
@@ -89,17 +90,31 @@
           </li>
           <li
             class="filter"
-            :class="{ active: currentFilter === '회계/재무' }"
-            @click="setFilter('회계/재무')"
-          >
-            <a href="#noAction">회계/재무</a>
-          </li>
-          <li
-            class="filter"
             :class="{ active: currentFilter === '교육' }"
             @click="setFilter('교육')"
           >
             <a href="#noAction">교육</a>
+          </li>
+          <li
+            class="filter"
+            :class="{ active: currentFilter === '영업/마케팅' }"
+            @click="setFilter('영업/마케팅')"
+          >
+            <a href="#noAction">영업/마케팅</a>
+          </li>
+          <li
+            class="filter"
+            :class="{ active: currentFilter === '기획/전략' }"
+            @click="setFilter('기획/전략')"
+          >
+            <a href="#noAction">기획/전략</a>
+          </li>
+          <li
+            class="filter"
+            :class="{ active: currentFilter === '경영' }"
+            @click="setFilter('경영')"
+          >
+            <a href="#noAction">경영</a>
           </li>
         </ul>
         <ul id="portfolio-grid" class="thumbnails row">
@@ -110,7 +125,7 @@
           >
             <div class="thumbnail">
               <img
-                :src="imgpath(project.imgname)"
+                :src="`http://localhost:3001/img/upimg/${project.imgname}`"
                 :alt="'project ' + (index + 1)"
               />
               <div class="mask">
@@ -122,7 +137,7 @@
                 <h3 style="font-size: 20px">
                   {{ project.category }}{{ project.name }}
                 </h3>
-                <p style="font-size: 15px">
+                <p style="font-size: 15px" v-if="project.introduce">
                   {{ truncateText(project.introduce, 60) }}
                 </p>
                 <ul class="profile-list" style="font-size: 20px">
@@ -137,7 +152,9 @@
                   >
                     {{ desc.content }}
                   </li>
-                  <li v-if="project.introduce.length > 3">...</li>
+                  <li v-if="project.introduce && project.introduce.length > 3">
+                    ...
+                  </li>
                 </ul>
               </div>
             </div>
@@ -218,9 +235,13 @@ export default {
       this.activeProjectIndex = null;
     },
     truncateText(text, maxLength) {
-      return text.length > maxLength
-        ? text.substring(0, maxLength) + "..."
-        : text;
+      if (text) {
+        return text.length > maxLength
+          ? text.substring(0, maxLength) + "..."
+          : text;
+      } else {
+        return "...";
+      }
     },
     application(cnsno) {
       axios
@@ -252,7 +273,8 @@ export default {
         });
     },
     imgpath(imgname) {
-      return `/img/ConsultantInfo_image/${imgname}`;
+      // return `localhost:3001/public/img/upimg/${project.imgname}`;
+      return `http://localhost:3001/img/upimg/${imgname}`;
     },
   },
 };

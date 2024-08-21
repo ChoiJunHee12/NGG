@@ -33,7 +33,6 @@ const OTO_detail: React.FC = () => {
    const { chtno } = location.state || {}; // location.state가 없을 경우를 대비해 기본값 {}를 사용
 
 
-
   const chattype = (type: string) => (type === '1' ? 'user' : 'consultant');
 
   const chatdetail = async () => {

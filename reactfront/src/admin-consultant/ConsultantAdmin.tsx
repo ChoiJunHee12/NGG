@@ -67,7 +67,7 @@ const ConsultantAdmin: React.FC = () => {
   }, []);
 
   const fetchConsultants = () => {
-    fetch(`${process.env.REACT_APP_BACK_END_URL}/adminConsult`, {
+    fetch(`${process.env.REACT_APP_BACK_END_URL}/admin/adminConsult`, {
       method: "GET",
     })
       .then((response) => response.json())
@@ -111,7 +111,7 @@ const ConsultantAdmin: React.FC = () => {
 
   const handleSaveConsultant = (consultant: ConsultWithoutDates) => {
     const url = isEditing
-      ? `${process.env.REACT_APP_BACK_END_URL}/adminConsult/${consultant.cnsno}/updateConsultant`
+      ? `${process.env.REACT_APP_BACK_END_URL}/admin/adminConsult/${consultant.cnsno}/updateConsultant`
       : `${process.env.REACT_APP_BACK_END_URL}/admin/membership/register2`;
 
     fetch(url, {
@@ -155,7 +155,7 @@ const ConsultantAdmin: React.FC = () => {
       )
     ) {
       fetch(
-        `${process.env.REACT_APP_BACK_END_URL}/adminConsult/${cnsno}/delConsultant`,
+        `${process.env.REACT_APP_BACK_END_URL}/admin/adminConsult/${cnsno}/delConsultant`,
         {
           method: "DELETE",
         }

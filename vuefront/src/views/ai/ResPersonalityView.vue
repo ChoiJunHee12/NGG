@@ -128,11 +128,11 @@
         <div class="res-similartip">
           <img class="res-tipicon" src="\img\res_tip.png" />
           <div class="res-ti">
-            회원님이 작성한 이력서의 기반으로 키워드를 추출하여 면접 내용과
-            비교하여 유사도를 ...
-          </div>
+            면접에서 사용하신 단어를 시각적으로 표현해 드립니다.
+
         </div>
       </div>
+    </div>
 
       <router-link to="/Main"
         ><button class="res-homebtn col-1">홈으로 돌아가기</button></router-link
@@ -639,6 +639,20 @@ export default {
         this.mname = res.data.mname;
         this.resdate = res.data.resdate;
     })
+  },
+  beforeUnmount() {
+    localStorage.removeItem('q1detail');
+    localStorage.removeItem('q2detail');
+    localStorage.removeItem('q3detail');
+    localStorage.removeItem('q4detail');
+    localStorage.removeItem('q5detail');
+    localStorage.removeItem('inttypecd');
+    localStorage.removeItem('inttypename');
+    localStorage.removeItem('questionlist');
+    localStorage.removeItem('pfinalcmt');
+    localStorage.removeItem('efinalcmt');
+    localStorage.removeItem('vfinalcmt');
+    localStorage.removeItem('sttfinalcmt');    
   },
 };
 </script>
