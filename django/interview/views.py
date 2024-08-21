@@ -57,7 +57,7 @@ def speach_text(request):
         stt_result=stt_models(audio_file);
         print(stt_result)
         if stt_result=='':
-            stt_result='오류발생';
+            stt_result='목소리가 인식되지 않았습니다.';
         return JsonResponse({'result': stt_result })
 
     return JsonResponse({'error': 'Invalid request method'}, status=405)
