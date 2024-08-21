@@ -92,7 +92,7 @@
     flex-direction: row; /* 수직 정렬 */
     /* gap: 20px;  */
     overflow-y: auto;
-    height: 950px;
+    height: 800px;
 }
 .reshduty-qcon {
     display: flex;

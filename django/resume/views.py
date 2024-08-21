@@ -39,7 +39,10 @@ def upload_pdf(request):
             # 생년월일 추출
             birth_date_match = re.search(r'생년월일\s+(\d{4}년\s*\d{1,2}월\s*\d{1,2}일)', text)
             if birth_date_match:
-                resume_data['birthymd'] = birth_date_match.group(1).strip()
+                # 추출한 날짜 문자열
+                date_str = birth_date_match.group(1).strip()
+                # 숫자만 추출
+                resume_data['birthymd'] = re.sub(r'\D', '', date_str)
 
             # 이메일 추출
             email_match = re.search(r'[Ee]-?mail\s*([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})', text)
@@ -57,7 +60,7 @@ def upload_pdf(request):
                 resume_data['hphonenum'] = phone_match.group(1).strip()
 
             # 자택전화 추출
-            home_phone_match = re.search(r'자택전화\s*(\d{1,3}\s*\d{1,4}\s*\d{1,4})', text)
+            home_phone_match = re.search(r'자택전화\s*(\d{1,3}-\d{1,3}-\d{1,4})', text)
             if home_phone_match:
                 resume_data['mphonenum'] = home_phone_match.group(1).strip()
 
@@ -72,14 +75,15 @@ def upload_pdf(request):
                 education_section = education_section_match.group(1).strip()
                 # 학력정보 항목 추출
                 education_matches = re.finditer(
-                    r'(\d{2}\.\d{2})\s*~\s*(\d{2}\.\d{2})\s*(.*?)?\s*(\w+)\s*(.*?)?\s*(\w+)\s*(.*?)\s*(학사졸업|졸업|재학|중퇴)?',
+                    r'(\d{2}\.\d{2})\s*~\s*(\d{2}\.\d{2})\s*(.*?)?\s*(\w+)\s*(.*?)?\s*(\w+)\s*(.*?)\s*(학사|졸업|재학|중퇴)?',
                     education_section)
                 for match in education_matches:
                     education_data = {
-                        'enrollymd': f"{match.group(1)} ~ {match.group(2)}",
+                        'entymd': match.group(1),
+                        'gradeymd': match.group(2),
                         'schoolname': match.group(4).strip(),
                         'major': match.group(6).strip(),
-                        'gradeuateclass': match.group(8) if match.group(4) else ''
+                        'gradeuateyn': match.group(8) if match.group(4) else ''
                     }
                     # 중복 검사
                     if education_data not in resume_data['education_data']:
@@ -95,7 +99,8 @@ def upload_pdf(request):
                     career_section, re.DOTALL)
                 for match in career_matches:
                     career_data = {
-                        'entymd': f"{match.group(1)} ~ {match.group(2)}",
+                        'entymd': match.group(1),
+                        'quitymd' :match.group(2),
                         'compname': match.group(3).strip(),
                         'jobclass': match.group(4).strip(),
                         'maintask': match.group(5).strip(),

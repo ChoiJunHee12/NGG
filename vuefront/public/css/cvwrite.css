@@ -69,7 +69,8 @@ title.cvwrite-container{
 }
 .cvwrite-input-file-button {
     width: 135px;
-    padding: 12px 40px;
+    padding: 12px 10px;
+    text-align: center;
     margin-bottom: 20px;
     border: none;
     border-radius: 5px;
@@ -86,7 +87,8 @@ title.cvwrite-container{
 
 .cvwrite-input-file-button:hover{
     width: 135px;
-    padding: 12px 40px;
+    padding: 12px 10px;
+    text-align: center;
     margin-bottom: 20px;
     /* border: 3px solid #11045e; */
     background-color: #fff;
@@ -482,4 +484,7 @@ background-color: #11045e;
     box-sizing: border-box;
     text-align: center;
     padding-bottom: 5px;
+}
+.headStar{
+    color: red;
 }

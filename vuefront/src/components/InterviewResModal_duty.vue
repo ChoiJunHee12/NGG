@@ -30,6 +30,17 @@
               <li>{{ vfeed2 }}</li>
               <li>{{ sttfeed1 }}</li>
               <li>{{ sttfeed2 }}</li>
+            </div>
+          </div>
+        </div>
+
+        <div v-if="cnsfeedbk" class="resduty-subtitle3 col-1">
+          <div class="resduty-subtitlecon3">컨설턴트 평가</div>
+        </div>
+
+        <div v-if="cnsfeedbk" class="resduty-qcon10">
+          <div class="reshduty-totalcom">
+            <div class="resduty-analyze6-con">
               <li>{{ cnsfeedbk }}</li>
             </div>
           </div>
