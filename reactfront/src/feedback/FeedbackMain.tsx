@@ -50,7 +50,7 @@ interface Item {
             <div className="feedback-main-con-row" key={rowIndex}>
               {row.map((item, colIndex) => (
                 <div className="feedback-main-profileImgBox" key={colIndex}>
-                  <div>
+                  <div className='feedback-imagebox'>
                       <img src={`http://localhost:3000/img/upimg/${item.imgname}`} alt="프로필" className="feedback-main-profileImg" />
                   </div>
                   <div className="feedback-main-txtbox">
