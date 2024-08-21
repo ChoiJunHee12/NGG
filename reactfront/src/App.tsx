@@ -114,7 +114,7 @@ const MainLayout: React.FC<{
             element={<PrivateRoute element={<OTO_detail />} roleRequired="C" />}
           />
           <Route
-            path="/consultant/feedback"
+            path="/consultant/feedback/list"
             element={<PrivateRoute element={<Feedback />} roleRequired="C" />}
           />
           <Route
