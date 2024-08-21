@@ -359,6 +359,15 @@ export default {
     activeSection: String,
   },
   setup() {
+    const getMemno = () => {
+      const memno = localStorage.getItem("memno");
+      if (!memno) {
+        console.error("No memno found in localStorage");
+        // 사용자를 로그인 페이지로 리디렉션
+        router.push("/login");
+      }
+      return memno;
+    };
     const memberData = ref({});
     const intno = ref(null);
     const cnsno = ref(null);
@@ -527,11 +536,7 @@ export default {
 
     // 컨설턴트 평가점수
     const fetchConsultantScore = async (intno) => {
-      const memno = localStorage.getItem("memno"); // localStorage에서 memno를 직접 가져옵니다.
-
-      console.log("타입확인 intno:", typeof intno.value, intno.value);
-      console.log("타입확인 memno:", typeof memno, memno);
-
+      const memno = getMemno();
       if (!intno.value || !memno) {
         console.error("Invalid intno or memno", { intno: intno.value, memno });
         return;
@@ -1120,13 +1125,13 @@ export default {
       error.value = null;
       console.log(intno.value);
       try {
-        const memno = localStorage.getItem("memno");
+        const memno = getMemno();
         if (!memno) {
           throw new Error("No memno found in localStorage");
         }
 
         await fetchLatestInterviewInfo(memno);
-        console.log("Fetched intno:", intno.value); // 디버깅을 위한 로그
+        console.log("Fetched intno:", intno.value);
 
         await Promise.all([
           fetchMemberData(memno),
