@@ -193,6 +193,9 @@
     border-radius: 20px;
     cursor: pointer;
     font-size: 16px;
+    transition: background-color 0.5s, color 0.5s;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    font-weight: bolder;
 }
 
 .send-button:hover {
