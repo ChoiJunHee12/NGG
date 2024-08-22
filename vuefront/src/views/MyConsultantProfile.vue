@@ -7,7 +7,7 @@
     </div>
 
     <div class="Conpro-procon" v-if="conyn">
-      <div class="Conpro-procon1" >
+      <div class="Conpro-procon1">
         <div class="Conimg">
           <img
             :src="`img/ConsultantInfo_image/${Consultant.imgname}`"
@@ -49,19 +49,16 @@
             </div>
           </div>
         </div>
-        
-
-
       </div>
     </div>
     <div class="Conpro-procon-false" v-else>
-            <div class="Conpro-procon1-false">
-                <h3 class="flase-move-text">이 서비스는 컨설턴트 매칭이후에 사용이 가능합니다.</h3>
-                <button class="false-move-btn" @click="coninfomove">
-                    매칭하기
-                </button>
-            </div>
-        </div>
+      <div class="Conpro-procon1-false">
+        <h3 class="flase-move-text">
+          이 서비스는 컨설턴트 매칭이후에 사용이 가능합니다.
+        </h3>
+        <button class="false-move-btn" @click="coninfomove">매칭하기</button>
+      </div>
+    </div>
   </div>
 </template>
 <script>
@@ -71,7 +68,7 @@ export default {
     return {
       Consultant: null,
       memno: localStorage.getItem("memno"),
-      conyn:false
+      conyn: false,
     };
   },
   methods: {
@@ -94,19 +91,16 @@ export default {
           headers: { "Content-Type": "application/json" },
         })
         .then((res) => {
-            if(res.data.email){
-          this.Consultant = res.data;
-          console.log(this.Consultant);
-          this.conyn=true
-          
-            }
+          if (res.data.email) {
+            this.Consultant = res.data;
+            console.log(this.Consultant);
+            this.conyn = true;
+          }
         });
-
-        
     },
-    coninfomove(){
-        this.$router.push("ConsultantInfo");
-    }
+    coninfomove() {
+      this.$router.push("ConsultantInfo");
+    },
   },
   mounted() {
     this.findcon();
@@ -119,12 +113,17 @@ export default {
   height: 48px;
   width: 110px;
   border: #0f888f;
-  border-radius: 10px;
+  border-radius: 4px;
   margin: 3% 0px;
   color: white;
   font-weight: 600;
   font-size: 18px;
   align-content: center;
+  transition: background-color 0.5s, color 0.5s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+.OTO-move-btn:hover {
+  background-color: #094346;
 }
 .blockquote-conpro {
   display: block;
@@ -173,39 +172,42 @@ export default {
   gap: 20px; /* 요소 사이의 간격 */
 }
 
-.Conpro-procon-false{
-    background: linear-gradient(45deg, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.5), rgba(12, 12, 12, 0.7));
+.Conpro-procon-false {
+  background: linear-gradient(
+    45deg,
+    rgba(0, 0, 0, 0.8),
+    rgba(0, 0, 0, 0.5),
+    rgba(12, 12, 12, 0.7)
+  );
   width: 90%;
   border-radius: 5px;
   min-height: 400px;
   padding: 3% 0%;
   box-shadow: 2px 2px 15px #ccc;
 }
-.false-move-btn{
+.false-move-btn {
+  width: 130px;
+  padding: 10px 25px 10px;
 
-    width: 130px;
-    padding: 10px 25px 10px;
+  border: none;
+  border-radius: 5px;
 
-    border: none;
-    border-radius: 5px;
-
-    font-weight: bold;
-    font-size: 1.1rem;
-    background-color:  #102669;
-    color: #fff;
-    transition: background-color 0.5s, color 0.5s;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+  font-weight: bold;
+  font-size: 1.1rem;
+  background-color: #102669;
+  color: #fff;
+  transition: background-color 0.5s, color 0.5s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
 }
 /* 호버 상태에서 배경색 변경 */
 .false-move-btn:hover {
-    background-color: #f9f8ff;
-    color: #102669;
-    
+  background-color: #f9f8ff;
+  color: #102669;
 }
-.flase-move-text{
-    margin-top: 100px;
-    margin-bottom: 20px;
-    color: white;
+.flase-move-text {
+  margin-top: 100px;
+  margin-bottom: 20px;
+  color: white;
 }
 .Conimg img {
   border-radius: 5px;
